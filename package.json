@@ -15,6 +15,7 @@
         "autoprefixer": "^10.4.16",
         "axios": "^1.6.4",
         "flowbite": "^2.3.0",
+        "flowbite-vue": "^0.1.5",
         "laravel-vite-plugin": "^1.0",
         "postcss": "^8.4.32",
         "tailwindcss": "^3.4.0",

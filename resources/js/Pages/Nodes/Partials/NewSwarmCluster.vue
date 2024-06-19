@@ -1,9 +1,22 @@
 <script setup>
+import {defineProps} from "vue";
 import {router, useForm} from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import FormSection from "@/Components/FormSection.vue";
+import TextInput from "@/Components/TextInput.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import InputError from "@/Components/InputError.vue";
+import Dropdown from "@/Components/Dropdown.vue";
+import {FwbSelect} from "flowbite-vue";
+import Select from "@/Components/Select.vue";
+import FormField from "@/Components/FormField.vue";
+
+const props = defineProps({
+  node: Object
+});
 
 const form = useForm({
+  swarm_name: '',
     swarm_option: 'init',
     swarm_init: {
         listen_addr: '',
@@ -24,7 +37,7 @@ const form = useForm({
         </template>
 
         <template #form>
-            <div v-auto-animate class="col-span-6">
+            <div class="col-span-6 sm:col-span-4">
                 <ul class="items-center w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg sm:flex dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                     <li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600">
                         <div class="flex items-center ps-3">
@@ -40,15 +53,40 @@ const form = useForm({
                     </li>
                 </ul>
 
-                <div v-if="form.swarm_option === 'init'">
-                    Select IP
-                </div>
 
-                <div v-if="form.swarm_option === 'join'">
-                    Unfortunately, this feature is not implemented yet.
-                </div>
             </div>
+
+          <div v-auto-animate class="col-span-6 sm:col-span-4">
+          <template v-if="form.swarm_option === 'init'">
+            <template v-if="$props.node.data.host.networks.length > 0" >
+              <FormField>
+                <InputLabel for="swarm_name" value="Swarm Name" />
+                <TextInput id="swarm_name" v-model="form.swarm_name" class="block w-full" />
+                <InputError :message="form.errors.swarm_name" class="mt-2" />
+              </FormField>
+
+              <FormField>
+                <InputLabel for="listen_addr" value="Listen Address" />
+              <Select id="listen_addr" v-model="form.swarm_init.listen_addr">
+                <option>Select Listen Address</option>
+                <optgroup v-for="network in $props.node.data.host.networks" :label="network.if_name">
+                  <option v-for="ip in network.ips" :value="ip.ip">{{ ip.ip }}</option>
+                </optgroup>
+              </Select>
+                <InputError :message="form.errors.listen_addr" class="mt-2" />
+              </FormField>
+            </template>
+            <template v-else>
+              No IP found
+            </template>
+          </template>
+
+          <div v-if="form.swarm_option === 'join'">
+            Unfortunately, this feature is not implemented yet.
+          </div>
+          </div v-auto-animate class="col-span-6 sm:col-span-4">
         </template>
+
 
         <template #actions>
             <PrimaryButton type="submit">Initialize Node</PrimaryButton>

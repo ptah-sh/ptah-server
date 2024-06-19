@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace ApiNodes\Http\Middleware;
 
 use App\Models\Node;
+use App\Models\Scopes\TeamScope;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class NodeAuth
+class AgentTokenAuth
 {
-    const AUTH_HEADER = 'x-node-token';
+    const AUTH_HEADER = 'x-ptah-token';
 
     /**
      * Handle an incoming request.
@@ -26,11 +27,13 @@ class NodeAuth
             ], 401);
         }
 
-        $node = Node::whereAgentToken($token)->firstOrFail();
+        $node = Node::withoutGlobalScope(TeamScope::class)->whereAgentToken($token)->firstOrFail();
 
         $node->last_seen_at = now();
 
         $node->save();
+
+        app()->singleton(Node::class, fn() => $node);
 
         return $next($request);
     }

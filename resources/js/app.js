@@ -1,6 +1,7 @@
 import './bootstrap';
 import '../css/app.css';
 
+
 import {initFlowbite} from 'flowbite';
 
 import { createApp, h } from 'vue';

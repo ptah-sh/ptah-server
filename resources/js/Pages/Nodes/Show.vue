@@ -30,6 +30,6 @@ defineProps([
 
       <SectionBorder v-if="$props.node.online" />
 
-        <NewSwarmCluster v-if="$props.node.online"/>
+        <NewSwarmCluster v-if="$props.node.online" :node="$props.node"/>
     </ShowLayout>
 </template>

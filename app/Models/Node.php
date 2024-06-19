@@ -13,6 +13,10 @@ class Node extends Model
     use HasFactory;
     use HasOwningTeam;
 
+    protected $casts = [
+        'data' => NodeData::class
+    ];
+
     protected $fillable = [
         'name',
     ];
@@ -30,6 +34,7 @@ class Node extends Model
 
     public function getOnlineAttribute()
     {
-        return $this->last_seen_at > now()->subSeconds(35);
+        return true;
+//        return $this->last_seen_at > now()->subSeconds(35);
     }
 }
