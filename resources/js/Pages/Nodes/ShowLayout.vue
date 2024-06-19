@@ -1,0 +1,51 @@
+<script setup>
+import AppLayout from "@/Layouts/AppLayout.vue";
+import LayoutTab from "@/Components/LayoutTab.vue";
+
+const props = defineProps({
+    node: Object
+})
+</script>
+
+<template>
+    <AppLayout title="Dashboard">
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+                {{ $props.node.name }}
+
+
+              <span v-if="$props.node.online"
+                    class="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Green</span>
+              <span v-else
+                    class="bg-red-300 text-red-950 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Offline</span>
+
+            </h2>
+        </template>
+
+        <template #actions>
+            <!--            <PrimaryButton type="button" @click="router.get(route('nodes.create'))">Create</PrimaryButton>-->
+        </template>
+
+        <template #tabs>
+            <LayoutTab :href="route('nodes.show', {'id': $props.node.id})">
+                <template #icon>
+                    <svg class="w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12a1 1 0 0 0-1 1v4a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1M5 12h14M5 12a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1m-2 3h.01M14 15h.01M17 9h.01M14 9h.01"/>
+                    </svg>
+                </template>
+
+                <template #title>
+                    Overview
+                </template>
+            </LayoutTab>
+        </template>
+
+        <div class="py-12">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+            <slot />
+
+            </div>
+        </div>
+    </AppLayout>
+</template>

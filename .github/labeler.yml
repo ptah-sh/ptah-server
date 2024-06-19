@@ -1,0 +1,3 @@
+# Add 'triage' label to any issue that gets opened
+triage:
+  - '/.*/'

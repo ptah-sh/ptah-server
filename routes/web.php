@@ -21,4 +21,6 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    Route::resource("nodes", \App\Http\Controllers\NodeController::class);
 });
