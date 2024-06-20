@@ -1,5 +1,5 @@
 <script setup>
-import {defineProps} from "vue";
+import {defineProps, reactive} from "vue";
 import {router, useForm} from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import FormSection from "@/Components/FormSection.vue";
@@ -7,7 +7,7 @@ import TextInput from "@/Components/TextInput.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import Dropdown from "@/Components/Dropdown.vue";
-import {FwbSelect} from "flowbite-vue";
+import {FwbCheckbox, FwbSelect} from "flowbite-vue";
 import Select from "@/Components/Select.vue";
 import FormField from "@/Components/FormField.vue";
 
@@ -15,19 +15,28 @@ const props = defineProps({
   node: Object
 });
 
-const form = useForm({
-  swarm_name: '',
-    swarm_option: 'init',
-    swarm_init: {
-        listen_addr: '',
+const swarmOption = reactive({
+  form: 'init',
+});
+
+const initForm = useForm({
+  node_id: props.node.id,
+  name: '',
         advertise_addr: '',
         force_new_cluster: false
-    }
 })
+
+const submit = () => {
+  // TODO: if option is 'init' -> initCluster()
+  // TODO: if option is 'join' -> joinCluster()
+  initForm.post(route('swarm-tasks.init-cluster'), {
+    preserveScroll: 'errors'
+  });
+}
 </script>
 
 <template>
-    <FormSection>
+    <FormSection @submitted="submit">
         <template #title>
             Swarm Cluster
         </template>
@@ -41,13 +50,13 @@ const form = useForm({
                 <ul class="items-center w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg sm:flex dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                     <li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600">
                         <div class="flex items-center ps-3">
-                            <input id="swarm-init-option" v-model="form.swarm_option" type="radio" value="init" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                            <input id="swarm-init-option" v-model="swarmOption.form" type="radio" value="init" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                             <label for="swarm-init-option" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Initialize Cluster</label>
                         </div>
                     </li>
                     <li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600">
                         <div class="flex items-center ps-3">
-                            <input id="swarm-join-option" v-model="form.swarm_option" type="radio" value="join" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                            <input id="swarm-join-option" v-model="swarmOption.form" type="radio" value="join" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
                             <label for="swarm-join-option" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">Join an Existing Cluster</label>
                         </div>
                     </li>
@@ -57,23 +66,26 @@ const form = useForm({
             </div>
 
           <div v-auto-animate class="col-span-6 sm:col-span-4">
-          <template v-if="form.swarm_option === 'init'">
+          <template v-if="swarmOption.form === 'init'">
             <template v-if="$props.node.data.host.networks.length > 0" >
               <FormField>
                 <InputLabel for="swarm_name" value="Swarm Name" />
-                <TextInput id="swarm_name" v-model="form.swarm_name" class="block w-full" />
-                <InputError :message="form.errors.swarm_name" class="mt-2" />
+                <TextInput id="swarm_name" v-model="initForm.name" class="block w-full" />
+                <InputError :message="initForm.errors.name" class="mt-2" />
               </FormField>
-
               <FormField>
-                <InputLabel for="listen_addr" value="Listen Address" />
-              <Select id="listen_addr" v-model="form.swarm_init.listen_addr">
-                <option>Select Listen Address</option>
+                <InputLabel for="advertise_addr" value="Advertisement Address" />
+              <Select id="advertise_addr" v-model="initForm.advertise_addr">
+                <option>Select Advertise Address</option>
                 <optgroup v-for="network in $props.node.data.host.networks" :label="network.if_name">
                   <option v-for="ip in network.ips" :value="ip.ip">{{ ip.ip }}</option>
                 </optgroup>
               </Select>
-                <InputError :message="form.errors.listen_addr" class="mt-2" />
+                <InputError :message="initForm.errors.advertise_addr" class="mt-2" />
+              </FormField>
+
+              <FormField>
+                <FwbCheckbox label="Force New Cluster" v-model="initForm.force_new_cluster" />
               </FormField>
             </template>
             <template v-else>
@@ -81,10 +93,10 @@ const form = useForm({
             </template>
           </template>
 
-          <div v-if="form.swarm_option === 'join'">
+          <div v-if="swarmOption.form === 'join'">
             Unfortunately, this feature is not implemented yet.
           </div>
-          </div v-auto-animate class="col-span-6 sm:col-span-4">
+          </div>
         </template>
 
 

@@ -14,8 +14,6 @@ class EventController
 
         $node->save();
 
-        dd($node->data);
-
         return [
             'settings' => [
                 'poll_interval' => 5

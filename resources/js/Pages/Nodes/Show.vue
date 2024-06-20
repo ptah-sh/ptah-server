@@ -11,10 +11,12 @@ import {onMounted, ref} from "vue";
 import AgentInstall from "@/Pages/Nodes/Partials/AgentInstall.vue";
 import AgentStatus from "@/Pages/Nodes/Partials/AgentStatus.vue";
 import SectionBorder from "@/Components/SectionBorder.vue";
+import InitSwarmProgress from "@/Pages/Nodes/Partials/InitSwarmProgress.vue";
 
 defineProps([
-    'node'
-])
+    'node',
+    'initTaskGroup',
+]);
 
 
 
@@ -30,6 +32,7 @@ defineProps([
 
       <SectionBorder v-if="$props.node.online" />
 
-        <NewSwarmCluster v-if="$props.node.online" :node="$props.node"/>
+        <NewSwarmCluster v-if="$props.node.online && $props.node.swarm_id === null" :node="$props.node"/>
+      <InitSwarmProgress v-if="$props.initTaskGroup" :taskGroup="$props.initTaskGroup" />
     </ShowLayout>
 </template>

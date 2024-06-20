@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\NodeController;
+use App\Http\Controllers\SwarmTaskController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -22,5 +24,7 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 
-    Route::resource("nodes", \App\Http\Controllers\NodeController::class);
+    Route::post('/swarm-tasks/init-cluster', [SwarmTaskController::class, 'initCluster'])->name('swarm-tasks.init-cluster');
+
+    Route::resource("nodes", NodeController::class);
 });

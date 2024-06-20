@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('nodes', function (Blueprint $table) {
-            $table->jsonb('data')->nullable();
+            $table->foreignId('swarm_id')->nullable()->constrained('swarms')->nullOnDelete();
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('nodes', function (Blueprint $table) {
-            $table->dropColumn('data');
+            $table->dropColumn('swarm_id');
         });
     }
 };

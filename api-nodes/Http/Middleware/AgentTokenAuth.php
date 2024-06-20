@@ -3,7 +3,9 @@
 namespace ApiNodes\Http\Middleware;
 
 use App\Models\Node;
+use App\Models\NodeTask;
 use App\Models\Scopes\TeamScope;
+use App\Models\Team;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,6 +36,7 @@ class AgentTokenAuth
         $node->save();
 
         app()->singleton(Node::class, fn() => $node);
+        app()->singleton(Team::class, fn() => $node->team);
 
         return $next($request);
     }

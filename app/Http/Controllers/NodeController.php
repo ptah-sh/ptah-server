@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreNodeRequest;
 use App\Http\Requests\UpdateNodeRequest;
 use App\Models\Node;
+use App\Models\NodeTask;
+use App\Models\NodeTask\InitSwarmTaskPayload;
 use Inertia\Inertia;
 
 class NodeController extends Controller
@@ -40,7 +42,12 @@ class NodeController extends Controller
      */
     public function show(Node $node)
     {
-        return Inertia::render('Nodes/Show', ['node' => $node]);
+        $initTaskGroup = $node->tasks()->inProgress()->ofType(InitSwarmTaskPayload::class)->first()?->taskGroup->with('tasks')->first();
+        if (!$initTaskGroup) {
+            $initTaskGroup = $node->tasks()->failed()->ofType(InitSwarmTaskPayload::class)->first()?->taskGroup->with('tasks')->first();
+        }
+
+        return Inertia::render('Nodes/Show', ['node' => $node, 'initTaskGroup' => $initTaskGroup]);
     }
 
     /**
