@@ -20,7 +20,7 @@ class NextTaskController
 
         $taskGroup = $node->taskGroups()->inProgress()->first();
 
-        $task = $taskGroup ? $this->getNextTaskFromGroup($taskGroup) : $this->pickNextTask($node);
+        $task = $taskGroup ? $this->getNextTaskFromGroup($node, $taskGroup) : $this->pickNextTask($node);
         if ($task) {
             if ($task instanceof Response) {
                 return $task;
@@ -38,7 +38,7 @@ class NextTaskController
         ], 204);
     }
 
-    protected function getNextTaskFromGroup(NodeTaskGroup $taskGroup)
+    protected function getNextTaskFromGroup(Node $node, NodeTaskGroup $taskGroup)
     {
         if ($taskGroup->tasks()->running()->first()) {
             return new Response([
@@ -49,7 +49,7 @@ class NextTaskController
         $task = $taskGroup->tasks()->pending()->first();
 
         if ($task) {
-            $task->start();
+            $task->start($node);
 
             return $task;
         }
@@ -63,9 +63,13 @@ class NextTaskController
             return $query->where('node_id', $node->id)->orWhere('node_id', null);
         })->pending()->first();
 
+        if (!$taskGroup) {
+            return null;
+        }
+
         $task = $taskGroup->tasks()->first();
 
-        $taskGroup->startTask($node, $task);
+        $task->start($node);
 
         return $task;
     }

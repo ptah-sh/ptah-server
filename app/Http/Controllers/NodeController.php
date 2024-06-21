@@ -44,7 +44,7 @@ class NodeController extends Controller
     {
         $initTaskGroup = $node->tasks()->inProgress()->ofType(InitSwarmTaskPayload::class)->first()?->taskGroup->with('tasks')->first();
         if (!$initTaskGroup) {
-            $initTaskGroup = $node->tasks()->failed()->ofType(InitSwarmTaskPayload::class)->first()?->taskGroup->with('tasks')->first();
+            $initTaskGroup = $node->tasks()->unsuccessful()->ofType(InitSwarmTaskPayload::class)->first()?->taskGroup->with('tasks')->first();
         }
 
         return Inertia::render('Nodes/Show', ['node' => $node, 'initTaskGroup' => $initTaskGroup]);

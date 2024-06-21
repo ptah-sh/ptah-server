@@ -43,25 +43,11 @@ class NodeTaskGroup extends Model
         return $this->belongsTo(Node::class);
     }
 
-    public function startTask(Node $node, NodeTask $task): void
+    public function start(Node $node): void
     {
         $this->status = TaskStatus::Running;
         $this->node_id = $node->id;
         $this->started_at = now();
         $this->save();
-
-        $task->start();
-    }
-
-    public function completeTask(NodeTask $task, AbstractTaskResult $result): void
-    {
-
-
-        $task->complete($result);
-    }
-
-    public function failTask(NodeTask $task, AbstractTaskResult $result): void
-    {
-        $task->fail($result);
     }
 }

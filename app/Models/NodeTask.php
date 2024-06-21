@@ -97,8 +97,12 @@ class NodeTask extends Model
         return $this->status === TaskStatus::Failed;
     }
 
-    public function start(): void
+    public function start(Node $node): void
     {
+        if ($this->taskGroup->is_pending) {
+            $this->taskGroup->start($node);
+        }
+
         $this->status = TaskStatus::Running;
         $this->started_at = now();
         $this->save();
@@ -116,7 +120,8 @@ class NodeTask extends Model
             $this->taskGroup->save();
         }
 
-        event(new self::TYPE_TO_EVENT_COMPLETED[$this->type]($this));
+        $eventMap = self::TYPE_TO_EVENT_COMPLETED;
+        event(new $eventMap[$this->type]($this));
     }
 
     public function fail(AbstractTaskResult $result): void
@@ -129,6 +134,9 @@ class NodeTask extends Model
         $this->taskGroup->status = TaskStatus::Failed;
         $this->taskGroup->save();
 
-        event(new self::TYPE_TO_EVENT_FAILED[$this->type]($this));
+        $this->taskGroup->tasks()->pending()->update(['status' => TaskStatus::Canceled]);
+
+        $eventMap = self::TYPE_TO_EVENT_FAILED;
+        event(new $eventMap[$this->type]($this));
     }
 }

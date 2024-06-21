@@ -32,7 +32,7 @@ class TaskResultCast implements CastsAttributes
             return ErrorResult::from($value);
         }
 
-        if ($model->is_ended) {
+        if ($value != null) {
             return self::RESULT_BY_TYPE[$model->type]::from($value);
         }
 

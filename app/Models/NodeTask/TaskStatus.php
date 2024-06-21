@@ -8,12 +8,12 @@ enum TaskStatus: string
     case Running = 'running';
     case Completed = 'completed';
     case Failed = 'failed';
-    case Cancelled = 'cancelled';
+    case Canceled = 'canceled';
 
     public function isEnded(): bool
     {
         return $this->value === TaskStatus::Completed->value
             || $this->value === TaskStatus::Failed->value
-            || $this->value === TaskStatus::Cancelled->value;
+            || $this->value === TaskStatus::Canceled->value;
     }
 }

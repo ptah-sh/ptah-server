@@ -32,9 +32,7 @@ defineProps([
 
       <SectionBorder v-if="$props.node.online" />
 
-        <NewSwarmCluster v-if="$props.node.online && $props.node.swarm_id === null" :node="$props.node"/>
-
-      <SectionBorder v-if="$props.initTaskGroup" />
+      <NewSwarmCluster v-if="$props.node.online && $props.node.swarm_id === null" :node="$props.node"/>
       <InitSwarmProgress v-if="$props.initTaskGroup" :taskGroup="$props.initTaskGroup" />
     </ShowLayout>
 </template>

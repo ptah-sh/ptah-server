@@ -32,6 +32,16 @@ trait HasTaskStatus
         return $builder->where($builder->qualifyColumn('status'), TaskStatus::Failed);
     }
 
+    public function scopeUnsuccessful(Builder $builder): Builder
+    {
+        return $builder->whereIn($builder->qualifyColumn('status'), [TaskStatus::Failed, TaskStatus::Canceled]);
+    }
+
+    public function getIsPendingAttribute() : bool
+    {
+        return $this->status === TaskStatus::Pending;
+    }
+
     public function getIsRunningAttribute() : bool
     {
         return $this->status === TaskStatus::Running;
