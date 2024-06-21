@@ -63,6 +63,8 @@ const classes = computed(() => {
 
   <span v-html="task.formatted_payload" class="grow" />
 
+    <span class="text-xs me-2 text-gray-500">#{{ task.id }}</span>
+
     <span v-auto-animate="{duration: 100}" v-if="task.result">
       <svg  v-if="state.expanded"
             class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -75,6 +77,7 @@ const classes = computed(() => {
     </svg>
 
 </span>
+  <span v-else class="w-4"></span>
 </div>
     <div v-if="state.expanded" class="px-4 py-2 border-t border-t-gray-100 bg-gray-50" v-html="task.formatted_result" />
   </li>

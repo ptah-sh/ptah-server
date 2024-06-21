@@ -52,15 +52,15 @@ class NodeTask extends Model
 
     protected static function booted()
     {
-        self::creating(function (NodeTask $nodeTask) {
-            $payload = $nodeTask->payload;
-
-            if (!($payload instanceof AbstractTaskPayload)) {
-                throw new IllegalArgumentException('Payload must be an instance of AbstractTaskPayload');
-            }
-
-            $nodeTask->type = TaskPayloadCast::TYPE_BY_PAYLOAD[get_class($payload)];
-        });
+//        self::creating(function (NodeTask $nodeTask) {
+//            $payload = $nodeTask->payload;
+//
+//            if (!($payload instanceof AbstractTaskPayload)) {
+//                throw new IllegalArgumentException('Payload must be an instance of AbstractTaskPayload');
+//            }
+//
+//            $nodeTask->type = TaskPayloadCast::TYPE_BY_PAYLOAD[get_class($payload)];
+//        });
     }
 
     public function taskGroup(): BelongsTo

@@ -32,7 +32,11 @@ class TaskPayloadCast implements CastsAttributes
             throw new InvalidArgumentException('Model must be an instance of NodeTask');
         }
 
-        return self::PAYLOAD_BY_TYPE[$model->type]::from($value);
+//        if (!isset($attributes['type'])) {
+//            return null;
+//        }
+//dd($model->type, $attributes);
+        return self::PAYLOAD_BY_TYPE[$attributes['type']]::from($value);
     }
 
     /**
@@ -44,6 +48,10 @@ class TaskPayloadCast implements CastsAttributes
     {
         if (!($model instanceof NodeTask)) {
             throw new InvalidArgumentException('Model must be an instance of NodeTask');
+        }
+
+        if (is_string($value)) {
+            return $value;
         }
 
         return $value->toJson();

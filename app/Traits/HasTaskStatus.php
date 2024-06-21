@@ -47,6 +47,11 @@ trait HasTaskStatus
         return $this->status === TaskStatus::Running;
     }
 
+    public function getIsCompletedAttribute() : bool
+    {
+        return $this->status === TaskStatus::Completed;
+    }
+
     public function scopeOfType(Builder $query, string $typeClass): Builder
     {
         return $query->where('type', TaskPayloadCast::TYPE_BY_PAYLOAD[$typeClass]);

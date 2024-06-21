@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\NodeController;
+use App\Http\Controllers\NodeTaskGroupController;
 use App\Http\Controllers\SwarmTaskController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,8 @@ Route::middleware([
     })->name('dashboard');
 
     Route::post('/swarm-tasks/init-cluster', [SwarmTaskController::class, 'initCluster'])->name('swarm-tasks.init-cluster');
+
+    Route::post('/node-task-groups/{taskGroup}/retry', [NodeTaskGroupController::class, 'retry'])->name('node-task-groups.retry');
 
     Route::resource("nodes", NodeController::class);
 });

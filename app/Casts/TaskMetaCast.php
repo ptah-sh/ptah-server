@@ -29,7 +29,11 @@ class TaskMetaCast implements CastsAttributes
             throw new InvalidArgumentException('Model must be an instance of NodeTask');
         }
 
-        return self::META_BY_TYPE[$model->type]::from($value);
+//        if (!isset($attributes['type'])) {
+//            return null;
+//        }
+
+        return self::META_BY_TYPE[$attributes['type']]::from($value);
     }
 
     /**
@@ -41,6 +45,10 @@ class TaskMetaCast implements CastsAttributes
     {
         if (!($model instanceof NodeTask)) {
             throw new InvalidArgumentException('Model must be an instance of NodeTask');
+        }
+
+        if (is_string($value)) {
+            return $value;
         }
 
         return $value->toJson();

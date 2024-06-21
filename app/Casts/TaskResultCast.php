@@ -32,8 +32,12 @@ class TaskResultCast implements CastsAttributes
             return ErrorResult::from($value);
         }
 
+//        if (!isset($attributes['type'])) {
+//            return null;
+//        }
+
         if ($value != null) {
-            return self::RESULT_BY_TYPE[$model->type]::from($value);
+            return self::RESULT_BY_TYPE[$attributes['type']]::from($value);
         }
 
         return null;
@@ -48,6 +52,10 @@ class TaskResultCast implements CastsAttributes
     {
         if (!($model instanceof NodeTask)) {
             throw new InvalidArgumentException('Model must be an instance of NodeTask');
+        }
+
+        if (is_string($value)) {
+            return $value;
         }
 
         return $value->toJson();
