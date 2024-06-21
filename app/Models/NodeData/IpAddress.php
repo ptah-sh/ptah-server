@@ -10,7 +10,7 @@ class IpAddress extends Data
 {
     public function __construct(
         #[Enum(IpVersion::class)]
-        public string $proto,
+        public string $version,
         #[IP]
         public string $ip
     )

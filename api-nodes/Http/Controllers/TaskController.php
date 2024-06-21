@@ -22,7 +22,7 @@ class TaskController
 
         $result = TaskResultCast::RESULT_BY_TYPE[$task->type]::validateAndCreate($request->all());
 
-        $task->complete($result);
+        $task->taskGroup->completeTask($task, $result);
 
         return new Response('', 204);
     }
@@ -39,7 +39,7 @@ class TaskController
 
         $result = ErrorResult::validateAndCreate($request->all());
 
-        $task->fail($result);
+        $task->taskGroup->failTask($task, $result);
 
         return new Response('', 204);
     }

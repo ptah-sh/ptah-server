@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Casts\TaskMetaCast;
 use App\Casts\TaskPayloadCast;
 use App\Casts\TaskResultCast;
+use App\Events\Tasks\CreateNetworkCompleted;
+use App\Events\Tasks\CreateNetworkFailed;
+use App\Events\Tasks\InitSwarmCompleted;
+use App\Events\Tasks\InitSwarmFailed;
 use App\Models\NodeTask\AbstractTaskPayload;
 use App\Models\NodeTask\AbstractTaskResult;
-use App\Models\NodeTask\CreateNetworkTaskPayload;
-use App\Models\NodeTask\InitSwarmTaskPayload;
 use App\Models\NodeTask\TaskStatus;
 use App\Traits\HasOwningTeam;
 use App\Traits\HasTaskStatus;
@@ -22,11 +25,22 @@ class NodeTask extends Model
     use HasOwningTeam;
     use HasTaskStatus;
 
+    const TYPE_TO_EVENT_COMPLETED = [
+        0 => CreateNetworkCompleted::class,
+        1 => InitSwarmCompleted::class,
+    ];
+    const TYPE_TO_EVENT_FAILED = [
+        0 => CreateNetworkFailed::class,
+        1 => InitSwarmFailed::class,
+    ];
+
     protected $fillable = [
+        'meta',
         'payload'
     ];
 
     protected $casts = [
+        'meta' => TaskMetaCast::class,
         'payload' => TaskPayloadCast::class,
         'result' => TaskResultCast::class
     ];
@@ -39,7 +53,13 @@ class NodeTask extends Model
     protected static function booted()
     {
         self::creating(function (NodeTask $nodeTask) {
-            $nodeTask->type = TaskPayloadCast::TYPE_BY_PAYLOAD[get_class($nodeTask->payload)];
+            $payload = $nodeTask->payload;
+
+            if (!($payload instanceof AbstractTaskPayload)) {
+                throw new IllegalArgumentException('Payload must be an instance of AbstractTaskPayload');
+            }
+
+            $nodeTask->type = TaskPayloadCast::TYPE_BY_PAYLOAD[get_class($payload)];
         });
     }
 
@@ -77,18 +97,6 @@ class NodeTask extends Model
         return $this->status === TaskStatus::Failed;
     }
 
-    /**
-     * @throws IllegalArgumentException
-     */
-    public function setPayloadAttribute($payload): void
-    {
-        if (!($payload instanceof AbstractTaskPayload)) {
-            throw new IllegalArgumentException('Payload must be an instance of AbstractTaskPayload');
-        }
-
-        $this->attributes['payload'] = $payload;
-    }
-
     public function start(): void
     {
         $this->status = TaskStatus::Running;
@@ -99,21 +107,28 @@ class NodeTask extends Model
     public function complete(AbstractTaskResult $result): void
     {
         $this->status = TaskStatus::Completed;
+        $this->ended_at = now();
+        $this->result = $result;
+        $this->save();
 
-        $this->endTask($result);
+        if ($this->taskGroup->allTasksEnded()) {
+            $this->taskGroup->status = TaskStatus::Completed;
+            $this->taskGroup->save();
+        }
+
+        event(new self::TYPE_TO_EVENT_COMPLETED[$this->type]($this));
     }
 
     public function fail(AbstractTaskResult $result): void
     {
         $this->status = TaskStatus::Failed;
-
-        $this->endTask($result);
-    }
-
-    protected function endTask(AbstractTaskResult $result): void
-    {
         $this->ended_at = now();
         $this->result = $result;
         $this->save();
+
+        $this->taskGroup->status = TaskStatus::Failed;
+        $this->taskGroup->save();
+
+        event(new self::TYPE_TO_EVENT_FAILED[$this->type]($this));
     }
 }

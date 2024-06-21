@@ -12,16 +12,30 @@ class NextTaskController
 {
     public function __invoke(Node $node)
     {
+        if ($node->swarm_id === null) {
+            return new Response([
+               'message' => 'No task found.'
+            ], 204);
+        }
+
         $taskGroup = $node->taskGroups()->inProgress()->first();
 
         $task = $taskGroup ? $this->getNextTaskFromGroup($taskGroup) : $this->pickNextTask($node);
         if ($task) {
-            return $task;
+            if ($task instanceof Response) {
+                return $task;
+            }
+
+            return $task->only([
+                'id',
+                'type',
+                'payload'
+            ]);
         }
 
         return new Response([
             'message' => 'No task found.'
-        ], 404);
+        ], 204);
     }
 
     protected function getNextTaskFromGroup(NodeTaskGroup $taskGroup)
@@ -34,9 +48,13 @@ class NextTaskController
 
         $task = $taskGroup->tasks()->pending()->first();
 
-        $task->start();
+        if ($task) {
+            $task->start();
 
-        return $task;
+            return $task;
+        }
+
+        return null;
     }
 
     protected function pickNextTask(Node $node)

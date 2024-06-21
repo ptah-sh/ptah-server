@@ -20,7 +20,7 @@ defineProps([
     <div v-if="$props.node.data" class="flex">
       <ValueCard :value="$props.node.data.version" label="Agent Version"/>
       <template v-for="network in $props.node.data.host.networks" :key="network.if_name">
-        <ValueCard v-for="ip in network.ips" :key="ip" :value="ip.ip" :label="network.if_name + '/' + ip.proto" />
+        <ValueCard v-for="ip in network.ips" :key="ip" :value="ip.ip" :label="network.if_name" />
       </template>
       <ValueCard :value="$props.node.data.docker.platform.name" label="Docker Platform"/>
     </div>

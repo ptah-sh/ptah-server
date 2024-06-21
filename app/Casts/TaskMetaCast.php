@@ -3,18 +3,19 @@
 namespace App\Casts;
 
 use App\Models\NodeTask;
-use App\Models\NodeTask\CreateNetworkTaskResult;
-use App\Models\NodeTask\ErrorResult;
-use App\Models\NodeTask\InitSwarmTaskResult;
-use InvalidArgumentException;
+use App\Models\NodeTask\CreateNetworkTaskMeta;
+use App\Models\NodeTask\CreateNetworkTaskPayload;
+use App\Models\NodeTask\InitSwarmTaskMeta;
+use App\Models\NodeTask\InitSwarmTaskPayload;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use Illuminate\Database\Eloquent\Model;
+use InvalidArgumentException;
 
-class TaskResultCast implements CastsAttributes
+class TaskMetaCast implements CastsAttributes
 {
-    public const RESULT_BY_TYPE = [
-        0 => CreateNetworkTaskResult::class,
-        1 => InitSwarmTaskResult::class
+    public const META_BY_TYPE = [
+        0 => CreateNetworkTaskMeta::class,
+        1 => InitSwarmTaskMeta::class
     ];
 
     /**
@@ -28,15 +29,7 @@ class TaskResultCast implements CastsAttributes
             throw new InvalidArgumentException('Model must be an instance of NodeTask');
         }
 
-        if ($model->is_failed) {
-            return ErrorResult::from($value);
-        }
-
-        if ($model->is_ended) {
-            return self::RESULT_BY_TYPE[$model->type]::from($value);
-        }
-
-        return null;
+        return self::META_BY_TYPE[$model->type]::from($value);
     }
 
     /**

@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('team_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->string('agent_token')->unique();
-            $table->string('ext_id')->nullable();
+            $table->string('docker_id')->nullable();
             $table->timestamp('last_seen_at')->nullable();
             $table->timestamps();
         });

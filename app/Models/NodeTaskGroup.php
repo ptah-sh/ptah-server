@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\NodeTask\AbstractTaskResult;
 use App\Models\NodeTask\TaskStatus;
 use App\Traits\HasOwningTeam;
 use App\Traits\HasTaskStatus;
@@ -32,6 +33,11 @@ class NodeTaskGroup extends Model
         return $this->hasMany(NodeTask::class, 'task_group_id');
     }
 
+    public function allTasksEnded() :bool
+    {
+        return ! $this->tasks()->whereNull('ended_at')->exists();
+    }
+
     public function node(): BelongsTo
     {
         return $this->belongsTo(Node::class);
@@ -45,5 +51,17 @@ class NodeTaskGroup extends Model
         $this->save();
 
         $task->start();
+    }
+
+    public function completeTask(NodeTask $task, AbstractTaskResult $result): void
+    {
+
+
+        $task->complete($result);
+    }
+
+    public function failTask(NodeTask $task, AbstractTaskResult $result): void
+    {
+        $task->fail($result);
     }
 }

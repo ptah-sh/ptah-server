@@ -45,7 +45,6 @@ class Node extends Model
 
     public function getOnlineAttribute()
     {
-        return true;
-//        return $this->last_seen_at > now()->subSeconds(35);
+        return $this->last_seen_at > now()->subSeconds(35);
     }
 }

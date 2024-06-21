@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('team_id')->constrained()->cascadeOnDelete();
             $table->foreignId('task_group_id')->constrained('node_task_groups')->cascadeOnDelete();
             $table->smallInteger('type');
+            $table->jsonb('meta');
             $table->jsonb('payload');
             $table->enum('status', ['pending', 'running', 'completed', 'failed', 'canceled'])->default('pending');
             $table->timestamp('started_at')->nullable();
