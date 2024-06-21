@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import LayoutTab from "@/Components/LayoutTab.vue";
+import NodeStatus from "@/Components/NodeStatus.vue";
 
 const props = defineProps({
     node: Object
@@ -10,14 +11,11 @@ const props = defineProps({
 <template>
     <AppLayout title="Dashboard">
         <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight flex" >
                 {{ $props.node.name }}
 
 
-              <span v-if="$props.node.online"
-                    class="bg-green-300 text-green-950 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">Online</span>
-              <span v-else
-                    class="bg-red-300 text-red-950 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">Offline</span>
+              <NodeStatus :node="$props.node" />
 
             </h2>
         </template>

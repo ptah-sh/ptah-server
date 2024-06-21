@@ -16,7 +16,9 @@ class NodeController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Nodes/Index');
+        $nodes = Node::all();
+
+        return Inertia::render('Nodes/Index', ['nodes' => $nodes]);
     }
 
     /**

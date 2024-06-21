@@ -3,6 +3,12 @@ import { router } from '@inertiajs/vue3'
 
 import AppLayout from '@/Layouts/AppLayout.vue';
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import NodeStatus from "@/Components/NodeStatus.vue";
+import ValueCard from "@/Components/ValueCard.vue";
+
+defineProps({
+  'nodes': Array,
+})
 </script>
 
 <template>
@@ -19,9 +25,23 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
-                    list nodes here
-                </div>
+                <a v-for="node in nodes" :key="node.id" :href="route('nodes.show', {node: node.id})"
+                    class="w-96 bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-4 flex justify-around">
+
+                  <div class="flex">
+                    <div class="font-bold text-xl">{{ node.name }}</div>
+                    <NodeStatus :node="node" />
+                  </div>
+                  <div                       class="flex flex-col"
+                  >
+                  <template v-for="network in node.data.host.networks" :key="network.if_name"
+                  >
+                    <ValueCard
+                        v-for="ip in network.ips" :key="ip.ip"
+                        :label="network.if_name" :value="ip.ip" />
+                  </template>
+                  </div>
+                </a>
             </div>
         </div>
     </AppLayout>

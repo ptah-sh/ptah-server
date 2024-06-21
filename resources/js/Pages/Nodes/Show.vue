@@ -5,7 +5,7 @@ import ShowLayout from "@/Pages/Nodes/ShowLayout.vue";
 import AgentStatus from "@/Pages/Nodes/Partials/AgentStatus.vue";
 import SectionBorder from "@/Components/SectionBorder.vue";
 import InitSwarmProgress from "@/Pages/Nodes/Partials/InitSwarmProgress.vue";
-import SwarmDetauls from "@/Pages/Nodes/Partials/SwarmDetauls.vue";
+import SwarmDetails from "@/Pages/Nodes/Partials/SwarmDetails.vue";
 
 defineProps([
     'node',
@@ -26,7 +26,7 @@ defineProps([
       <template v-if="$props.node.online">
       <NewSwarmCluster v-if="$props.node.swarm_id === null" :node="$props.node"/>
       <InitSwarmProgress v-if="$props.initTaskGroup" :taskGroup="$props.initTaskGroup" />
-      <SwarmDetauls v-if="$props.node.swarm_id !== null" :node="$props.node"/>
+      <SwarmDetails v-if="$props.node.swarm_id !== null" :node="$props.node"/>
       </template>
     </ShowLayout>
 </template>

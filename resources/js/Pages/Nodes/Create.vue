@@ -47,7 +47,8 @@ const createNode = () => {
                     </template>
 
                     <template #description>
-                        How your server will be represented in our system.
+                        <p>How your server will be represented in our system.</p>
+                      <p>You will receive Agent installation instructions on the next step.</p>
                     </template>
 
                     <template #form>
