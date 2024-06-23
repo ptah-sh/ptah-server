@@ -26,7 +26,7 @@ defineProps([
     </div>
   </div>
   <div v-else class="col-span-10">
-    <AgentInstall />
+    <AgentInstall :node="$props.node" />
   </div>
 </template>
 

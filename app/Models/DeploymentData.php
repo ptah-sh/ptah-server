@@ -35,7 +35,7 @@ class DeploymentData extends Data
         #[DataCollectionOf(Volume::class)]
         /* @var Volume[] */
         public array  $volumes,
-        public int    $networkId,
+        public string    $networkName,
         public string $internalDomain,
         #[DataCollectionOf(NodePort::class)]
         /* @var NodePort[] */

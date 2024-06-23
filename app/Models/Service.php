@@ -32,15 +32,7 @@ class Service extends Model
 
     public function makeResourceName($name): string
     {
-        $name = "svc_" . $this->id . '_'. $name;
-
-        $name = Str::snake($name);
-        $name = Str::replaceMatches('/\W/', '_', $name);
-        $name = Str::replaceMatches('/_+/', '_', $name);
-
-        if (Str::length($name) > 63) {
-            $name = Str::substr($name, 0, 57) . '_' . Str::random(5);
-        }
+        $name = dockerize_name("svc_" . $this->id . '_'. $name);
 
         return $name;
     }

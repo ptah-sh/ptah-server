@@ -34,7 +34,7 @@ const form = useForm({
   secretFiles: [],
   placementNodeId: '',
   volumes: [],
-  networkId: props.networks[0]?.id,
+  networkName: props.networks[0]?.docker_name,
   internalDomain: '',
   ports: [],
   replicas: 1,
@@ -435,10 +435,10 @@ const createService = () => {
           </template>
 
           <template #content>
-            <FormField :error="form.errors.networkId">
+            <FormField :error="form.errors.networkName">
               <template #label>Attach to Network</template>
 
-              <Select v-model="form.networkId">
+              <Select v-model="form.networkName">
                 <option v-for="network in $page.props.networks" :value="network.id">{{ network.name }}</option>
               </Select>
             </FormField>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\NodeTask\InitClusterFormRequest;
+use App\Models\DeploymentData;
 use App\Models\Network;
 use App\Models\Node;
 use App\Models\NodeTaskGroup;
@@ -26,7 +27,7 @@ class SwarmTaskController extends Controller
 
         $network = Network::create([
             'swarm_id' => $swarm->id,
-            'name' => 'ptah-net',
+            'name' => dockerize_name('ptah-net'),
         ]);
 
         $taskGroup = NodeTaskGroup::create([
@@ -36,7 +37,7 @@ class SwarmTaskController extends Controller
             'invoker_id' => auth()->user()->id,
         ]);
 
-        $taskGroup->tasks()->createMany([
+        $tasks = [
             [
                 'type' => NodeTaskType::InitSwarm,
                 'meta' => InitSwarmMeta::from([
@@ -64,7 +65,7 @@ class SwarmTaskController extends Controller
                 'type' => NodeTaskType::CreateNetwork,
                 'meta' => CreateNetworkMeta::from(['networkId' => $network->id, 'name' => $network->name]),
                 'payload' => [
-                    'NetworkName' => $network->name,
+                    'NetworkName' => $network->docker_name,
                     'NetworkCreateOptions' => [
                         'Driver' => 'overlay',
                         'Labels' => dockerize_labels([
@@ -73,10 +74,68 @@ class SwarmTaskController extends Controller
                     ],
                 ],
             ],
-            // TODO: create bare-bones Caddy
-//            [
-//                'type' => NodeTaskType::CreateService,
-//            ]
+        ];
+
+        $caddyService = $swarm->services()->create([
+            'name' => 'caddy',
         ]);
+
+        $deployment = $caddyService->deployments()->create([
+            'task_group_id' => $taskGroup->id,
+            'data' => DeploymentData::from([
+                'dockerRegistryId' => null,
+                'dockerImage' => 'caddy:2.8-alpine',
+                'envVars' => [
+                    [
+                        'name' => 'CADDY_ADMIN',
+                        'value' => '0.0.0.0:2019',
+                    ]
+                ],
+                'secretVars' => [],
+                'configFiles' => [
+                    [
+                        'path' => '/ptah/caddy/tls/.keep',
+                        'content' => '# Keep this file',
+                    ]
+                ],
+                'secretFiles' => [],
+                'volumes' => [
+                    [
+                        'name' => 'data',
+                        'path' => '/data',
+                    ],
+                    [
+                        'name' => 'config',
+                        'path' => '/config',
+                    ]
+                ],
+                'networkName' => $network->docker_name,
+                'internalDomain' => 'caddy.ptah.local',
+                'ports' => [
+                    [
+                        'targetPort' => '80',
+                        'publishedPort' => '80',
+                    ],
+                    [
+                        'targetPort' => '443',
+                        'publishedPort' => '443',
+                    ],
+                    [
+                        'targetPort' => '2019',
+                        'publishedPort' => '2019',
+                    ],
+                ],
+                'replicas' => 1,
+                'placementNodeId' => null,
+                'caddy' => [],
+                'fastcgiVars' => [],
+            ]),
+        ]);
+
+        foreach ($deployment->asNodeTasks() as $task) {
+            $tasks[] = $task;
+        }
+
+        $taskGroup->tasks()->createMany($tasks);
     }
 }

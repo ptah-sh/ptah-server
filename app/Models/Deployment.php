@@ -179,7 +179,7 @@ class Deployment extends Model
                             ],
                             'Networks' => [
                                 [
-                                    'Target' => Network::find($data->networkId)->docker_id,
+                                    'Target' => $data->networkName,
                                     'Aliases' => [$data->internalDomain],
                                 ]
                             ],
@@ -203,6 +203,7 @@ class Deployment extends Model
         ];
     }
 
+    // TODO: update node labels and select by the labels instead of the id
     protected function getNodeDockerId($nodeId)
     {
         return Node::find($nodeId)->docker_id;

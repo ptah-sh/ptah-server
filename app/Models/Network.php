@@ -15,4 +15,11 @@ class Network extends Model
         'swarm_id',
         'name',
     ];
+
+    protected static function booted(): void
+    {
+        self::creating(function (Network $network) {
+            $network->docker_name = dockerize_name($network->name);
+        });
+    }
 }
