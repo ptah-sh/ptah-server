@@ -2,22 +2,16 @@
 
 namespace App\Models;
 
-use App\Casts\TaskMetaCast;
-use App\Casts\TaskPayloadCast;
-use App\Casts\TaskResultCast;
-use App\Events\Tasks\CreateNetworkCompleted;
-use App\Events\Tasks\CreateNetworkFailed;
-use App\Events\Tasks\InitSwarmCompleted;
-use App\Events\Tasks\InitSwarmFailed;
-use App\Models\NodeTask\AbstractTaskPayload;
-use App\Models\NodeTask\AbstractTaskResult;
-use App\Models\NodeTask\TaskStatus;
+use App\Models\NodeTasks\AbstractTaskResult;
+use App\Models\NodeTasks\ErrorResult;
+use App\Models\NodeTasks\TaskStatus;
 use App\Traits\HasOwningTeam;
 use App\Traits\HasTaskStatus;
-use DASPRiD\Enum\Exception\IllegalArgumentException;
+use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\LaravelData\Data;
 
 class NodeTask extends Model
 {
@@ -25,52 +19,30 @@ class NodeTask extends Model
     use HasOwningTeam;
     use HasTaskStatus;
 
-    const TYPE_TO_EVENT_COMPLETED = [
-        0 => CreateNetworkCompleted::class,
-        1 => InitSwarmCompleted::class,
-    ];
-    const TYPE_TO_EVENT_FAILED = [
-        0 => CreateNetworkFailed::class,
-        1 => InitSwarmFailed::class,
-    ];
-
     protected $fillable = [
+        'type',
         'meta',
-        'payload'
+        'payload',
+        'result',
     ];
 
     protected $casts = [
-        'meta' => TaskMetaCast::class,
-        'payload' => TaskPayloadCast::class,
-        'result' => TaskResultCast::class
+        'type' => NodeTaskType::class,
     ];
 
     protected $appends = [
-        'formatted_payload',
+        'formatted_meta',
         'formatted_result',
     ];
-
-    protected static function booted()
-    {
-//        self::creating(function (NodeTask $nodeTask) {
-//            $payload = $nodeTask->payload;
-//
-//            if (!($payload instanceof AbstractTaskPayload)) {
-//                throw new IllegalArgumentException('Payload must be an instance of AbstractTaskPayload');
-//            }
-//
-//            $nodeTask->type = TaskPayloadCast::TYPE_BY_PAYLOAD[get_class($payload)];
-//        });
-    }
 
     public function taskGroup(): BelongsTo
     {
         return $this->belongsTo(NodeTaskGroup::class);
     }
 
-    public function getFormattedPayloadAttribute(): string
+    public function getFormattedMetaAttribute(): string
     {
-        return $this->payload->formattedHtml();
+        return $this->meta->formattedHtml();
     }
 
     public function getFormattedResultAttribute(): string | null
@@ -87,7 +59,7 @@ class NodeTask extends Model
         return $this->status->isEnded();
     }
 
-    public function getIsPendingAttribute()
+    public function getIsPendingAttribute(): bool
     {
         return $this->status === TaskStatus::Pending;
     }
@@ -95,6 +67,69 @@ class NodeTask extends Model
     public function getIsFailedAttribute()
     {
         return $this->status === TaskStatus::Failed;
+    }
+
+    public function getMetaAttribute()
+    {
+        $class = $this->type->meta();
+
+        return $class::from(Json::decode($this->attributes['meta']));
+    }
+
+    public function setMetaAttribute($value): void
+    {
+        if ($value instanceof Data) {
+            $value = $value->toArray();
+        }
+
+        if (is_array($value)) {
+            $value = Json::encode($value);
+        }
+
+        $this->attributes['meta'] = $value;
+    }
+
+    public function getPayloadAttribute()
+    {
+        return Json::decode($this->attributes['payload']);
+    }
+
+    public function setPayloadAttribute($value): void
+    {
+        if (is_array($value)) {
+            $value = Json::encode($value);
+        }
+
+        $this->attributes['payload'] = $value;
+    }
+
+    public function getResultAttribute()
+    {
+        if (empty($this->attributes['result'])) {
+            return null;
+        }
+
+        $result = $this->attributes['result'];
+        if ($this->status === TaskStatus::Failed) {
+            return ErrorResult::from($result);
+        }
+
+        $class = $this->type->result();
+
+        return $class::from($result);
+    }
+
+    public function setResultAttribute($value): void
+    {
+        if ($value instanceof Data) {
+            $value = $value->toArray();
+        }
+
+        if (is_array($value)) {
+            $value = Json::encode($value);
+        }
+
+        $this->attributes['result'] = $value;
     }
 
     public function start(Node $node): void
@@ -120,8 +155,8 @@ class NodeTask extends Model
             $this->taskGroup->save();
         }
 
-        $eventMap = self::TYPE_TO_EVENT_COMPLETED;
-        event(new $eventMap[$this->type]($this));
+        $event = $this->type->completed();
+        event(new $event($this));
     }
 
     public function fail(AbstractTaskResult $result): void
@@ -136,7 +171,7 @@ class NodeTask extends Model
 
         $this->taskGroup->tasks()->pending()->update(['status' => TaskStatus::Canceled]);
 
-        $eventMap = self::TYPE_TO_EVENT_FAILED;
-        event(new $eventMap[$this->type]($this));
+        $event = $this->type->failed();
+        event(new $event($this));
     }
 }

@@ -2,10 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Events\Tasks\InitSwarmCompleted;
+use App\Events\NodeTasks\InitSwarm\InitSwarmCompleted;
 use App\Models\Swarm;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class UpdateSwarmDockerId
 {

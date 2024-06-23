@@ -3,8 +3,14 @@
 namespace App\Traits;
 
 use App\Casts\TaskPayloadCast;
-use App\Models\NodeTask\TaskStatus;
+use App\Models\NodeTask;
+use App\Models\NodeTasks;
+use App\Models\NodeTasks\TaskStatus;
+use App\Models\NodeTaskGroup;
+use App\Models\NodeTaskGroupType;
+use App\Models\NodeTaskType;
 use Illuminate\Database\Eloquent\Builder;
+use InvalidArgumentException;
 
 trait HasTaskStatus
 {
@@ -52,9 +58,17 @@ trait HasTaskStatus
         return $this->status === TaskStatus::Completed;
     }
 
-    public function scopeOfType(Builder $query, string $typeClass): Builder
+    public function scopeOfType(Builder $query, NodeTaskType | NodeTaskGroupType $typeClass): Builder
     {
-        return $query->where('type', TaskPayloadCast::TYPE_BY_PAYLOAD[$typeClass]);
+        if ($this instanceof NodeTaskGroup && !($typeClass instanceof NodeTaskGroupType)) {
+            throw new InvalidArgumentException('typeClass must be an instance of NodeTaskGroupType');
+        }
+
+        if ($this instanceof NodeTask && !($typeClass instanceof NodeTaskType)) {
+            throw new InvalidArgumentException('typeClass must be an instance of NodeTaskType');
+        }
+
+        return $query->where('type', $typeClass->value);
     }
 
     public function scopeInProgress(Builder $query): Builder

@@ -47,4 +47,16 @@ class Node extends Model
     {
         return $this->last_seen_at > now()->subSeconds(35);
     }
+
+    public function actualTaskGroup($type): ?NodeTaskGroup
+    {
+        $base = $this->taskGroups()->ofType($type)->with(['tasks', 'invoker']);
+
+        $inProgress = $base->clone()->inProgress()->first();
+        if ($inProgress) {
+            return $inProgress;
+        }
+
+        return $base->orderByDesc('id')->take(1)->get()[0] ?? null;
+    }
 }

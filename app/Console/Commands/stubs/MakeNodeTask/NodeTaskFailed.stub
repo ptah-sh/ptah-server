@@ -1,0 +1,9 @@
+<?php
+
+namespace App\Events\NodeTasks\$taskName;
+
+use App\Events\NodeTasks\BaseTaskEvent;
+
+class $taskNameFailed extends BaseTaskEvent
+{
+}

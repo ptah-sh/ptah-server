@@ -55,6 +55,9 @@ const logout = () => {
                                 <NavLink :href="route('nodes.index')" :active="route().current('nodes.index')">
                                     Nodes
                                 </NavLink>
+                              <NavLink :href="route('services.index')" :active="route().current('services.index')">
+                                    Services
+                                </NavLink>
                             </div>
                         </div>
 
@@ -202,6 +205,10 @@ const logout = () => {
                         <ResponsiveNavLink :href="route('nodes.index')" :active="route().current('nodes.index')">
                             Nodes
                         </ResponsiveNavLink>
+
+                        <ResponsiveNavLink :href="route('services.index')" :active="route().current('services.index')">
+                            Services
+                        </ResponsiveNavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
@@ -287,12 +294,12 @@ const logout = () => {
                     <div>
                         <slot name="header" />
                     </div>
-                    <div class="flex gap-4">
+                    <div v-if="$slots.actions" class="flex gap-4">
                         <slot name="actions" />
                     </div>
                 </div>
 
-                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-gray-200 dark:border-gray-700">
+                <div v-if="$slots.tabs" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-gray-200 dark:border-gray-700">
                     <ul class="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 dark:text-gray-400">
                         <slot name="tabs" />
 

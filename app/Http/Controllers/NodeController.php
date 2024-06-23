@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreNodeRequest;
 use App\Http\Requests\UpdateNodeRequest;
 use App\Models\Node;
-use App\Models\NodeTask;
-use App\Models\NodeTask\InitSwarmTaskPayload;
+use App\Models\NodeTaskGroupType;
 use Inertia\Inertia;
 
 class NodeController extends Controller
@@ -34,7 +33,7 @@ class NodeController extends Controller
      */
     public function store(StoreNodeRequest $request)
     {
-        $node = Node::create($request->all());
+        $node = Node::create($request->validated());
 
         return to_route('nodes.show', ['node' => $node->id]);
     }
@@ -44,12 +43,9 @@ class NodeController extends Controller
      */
     public function show(Node $node)
     {
-        $initTaskGroup = null;
-        if (is_null($node->swarm_id)) {
-            $initTaskGroup = $node->tasks()->inProgress()->ofType(InitSwarmTaskPayload::class)->first()?->taskGroup->load(['tasks', 'invoker']);
-            if (!$initTaskGroup) {
-                $initTaskGroup = $node->tasks()->unsuccessful()->ofType(InitSwarmTaskPayload::class)->latest('id')->first()?->taskGroup->load(['tasks', 'invoker']);
-            }
+        $initTaskGroup = $node->actualTaskGroup(NodeTaskGroupType::InitSwarm);
+        if ($initTaskGroup?->is_completed) {
+            $initTaskGroup = null;
         }
 
         return Inertia::render('Nodes/Show', ['node' => $node, 'initTaskGroup' => $initTaskGroup]);

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use App\Models\NodeTask\AbstractTaskResult;
-use App\Models\NodeTask\TaskStatus;
+use App\Models\NodeTasks\AbstractTaskResult;
+use App\Models\NodeTasks\TaskStatus;
 use App\Traits\HasOwningTeam;
 use App\Traits\HasTaskStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,6 +20,7 @@ class NodeTaskGroup extends Model
     use HasTaskStatus;
 
     protected $fillable = [
+        'type',
         'swarm_id',
         'node_id',
         'invoker_id',
@@ -63,6 +64,7 @@ class NodeTaskGroup extends Model
         $nodeId = is_null($node) ? null : $node->id;
 
         $taskGroup = new NodeTaskGroup();
+        $taskGroup->type = $this->type;
         $taskGroup->node_id = $nodeId;
         $taskGroup->forceFill(collect($this->attributes)->only([
             'swarm_id',

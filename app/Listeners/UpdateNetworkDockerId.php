@@ -2,10 +2,8 @@
 
 namespace App\Listeners;
 
-use App\Events\Tasks\CreateNetworkCompleted;
+use App\Events\NodeTasks\CreateNetwork\CreateNetworkCompleted;
 use App\Models\Network;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
 class UpdateNetworkDockerId
 {

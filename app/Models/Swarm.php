@@ -16,6 +16,11 @@ class Swarm extends Model
         'name'
     ];
 
+    public function networks(): HasMany
+    {
+        return $this->hasMany(Network::class);
+    }
+
     public function nodes(): HasMany
     {
         return $this->hasMany(Node::class);

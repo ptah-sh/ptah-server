@@ -61,7 +61,7 @@ const classes = computed(() => {
 
 
 
-  <span v-html="task.formatted_payload" class="grow" />
+  <span v-html="task.formatted_meta" class="grow" />
 
     <span class="text-xs me-2 text-gray-500">#{{ task.id }}</span>
 

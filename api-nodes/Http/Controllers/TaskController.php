@@ -2,9 +2,8 @@
 
 namespace ApiNodes\Http\Controllers;
 
-use App\Casts\TaskResultCast;
 use App\Models\NodeTask;
-use App\Models\NodeTask\ErrorResult;
+use App\Models\NodeTasks\ErrorResult;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -20,7 +19,9 @@ class TaskController
             return new Response(['error' => "Task didn't start yet."], 409);
         }
 
-        $result = TaskResultCast::RESULT_BY_TYPE[$task->type]::validateAndCreate($request->all());
+        $resultClass = $task->type->result();
+
+        $result = $resultClass::validateAndCreate($request->all());
 
         $task->complete($result);
 

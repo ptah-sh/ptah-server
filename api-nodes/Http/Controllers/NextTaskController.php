@@ -3,7 +3,7 @@
 namespace ApiNodes\Http\Controllers;
 
 use App\Models\Node;
-use App\Models\NodeTask\TaskStatus;
+use App\Models\NodeTasks\TaskStatus;
 use App\Models\NodeTaskGroup;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Response;

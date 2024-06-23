@@ -12,6 +12,7 @@ class Network extends Model
     use HasOwningTeam;
 
     protected $fillable = [
+        'swarm_id',
         'name',
     ];
 }

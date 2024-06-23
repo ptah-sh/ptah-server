@@ -68,23 +68,23 @@ const submit = () => {
           <div v-auto-animate class="col-span-6 sm:col-span-4">
           <template v-if="swarmOption.form === 'init'">
             <template v-if="$props.node.data.host.networks.length > 0" >
-              <FormField>
-                <InputLabel for="swarm_name" value="Swarm Name" />
-                <TextInput id="swarm_name" v-model="initForm.name" class="block w-full" />
-                <InputError :message="initForm.errors.name" class="mt-2" />
+              <FormField :error="initForm.errors.name">
+                <template #label>Swarm Name</template>
+
+                <TextInput v-model="initForm.name" class="block w-full" />
               </FormField>
-              <FormField>
-                <InputLabel for="advertise_addr" value="Advertisement Address" />
-              <Select id="advertise_addr" v-model="initForm.advertise_addr">
-                <option>Select Advertise Address</option>
-                <optgroup v-for="network in $props.node.data.host.networks" :label="network.if_name">
-                  <option v-for="ip in network.ips" :value="ip.ip">{{ ip.ip }}</option>
-                </optgroup>
-              </Select>
-                <InputError :message="initForm.errors.advertise_addr" class="mt-2" />
+              <FormField :error="initForm.errors.advertise_addr">
+                <template #label>Advertisement Address</template>
+                <Select id="advertise_addr" v-model="initForm.advertise_addr">
+                  <option>Select Advertise Address</option>
+                  <optgroup v-for="network in $props.node.data.host.networks" :label="network.if_name">
+                    <option v-for="ip in network.ips" :value="ip.ip">{{ ip.ip }}</option>
+                  </optgroup>
+                </Select>
               </FormField>
 
-              <FormField>
+              <FormField :error="initForm.errors.force_new_cluster">
+                <!-- TODO: add warning that the force new cluster will wipe out your existing cluster (services, data?) -->
                 <FwbCheckbox label="Force New Cluster" v-model="initForm.force_new_cluster" />
               </FormField>
             </template>

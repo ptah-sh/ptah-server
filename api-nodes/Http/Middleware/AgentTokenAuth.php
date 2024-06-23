@@ -3,7 +3,7 @@
 namespace ApiNodes\Http\Middleware;
 
 use App\Models\Node;
-use App\Models\NodeTask;
+use App\Models\NodeTasks;
 use App\Models\Scopes\TeamScope;
 use App\Models\Team;
 use Closure;
