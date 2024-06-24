@@ -12,6 +12,8 @@ use App\Events\NodeTasks\CreateService\CreateServiceCompleted;
 use App\Events\NodeTasks\CreateService\CreateServiceFailed;
 use App\Events\NodeTasks\InitSwarm\InitSwarmCompleted;
 use App\Events\NodeTasks\InitSwarm\InitSwarmFailed;
+use App\Events\NodeTasks\RebuildCaddyConfig\RebuildCaddyConfigCompleted;
+use App\Events\NodeTasks\RebuildCaddyConfig\RebuildCaddyConfigFailed;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateConfig\CreateConfigResult;
 use App\Models\NodeTasks\CreateNetwork\CreateNetworkMeta;
@@ -22,6 +24,8 @@ use App\Models\NodeTasks\CreateService\CreateServiceMeta;
 use App\Models\NodeTasks\CreateService\CreateServiceResult;
 use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmResult;
+use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
+use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigResult;
 
 // Mb use dynamic class names? $class = "{$this->name}Payload"; ??
 enum NodeTaskType: int
@@ -31,6 +35,7 @@ enum NodeTaskType: int
     case CreateConfig = 2;
     case CreateSecret = 3;
     case CreateService = 4;
+    case ApplyCaddyConfig = 5;
 
     public function meta(): string
     {
@@ -40,6 +45,7 @@ enum NodeTaskType: int
             self::CreateConfig => CreateConfigMeta::class,
             self::CreateSecret => CreateSecretMeta::class,
             self::CreateService => CreateServiceMeta::class,
+            self::ApplyCaddyConfig => ApplyCaddyConfigMeta::class,
         };
     }
 
@@ -51,6 +57,7 @@ enum NodeTaskType: int
             self::CreateConfig => CreateConfigResult::class,
             self::CreateSecret => CreateSecretResult::class,
             self::CreateService => CreateServiceResult::class,
+            self::ApplyCaddyConfig => ApplyCaddyConfigResult::class,
         };
     }
 
@@ -62,6 +69,7 @@ enum NodeTaskType: int
             self::CreateConfig => CreateConfigCompleted::class,
             self::CreateSecret => CreateSecretCompleted::class,
             self::CreateService => CreateServiceCompleted::class,
+            self::ApplyCaddyConfig => RebuildCaddyConfigCompleted::class,
         };
     }
 
@@ -73,6 +81,7 @@ enum NodeTaskType: int
             self::CreateConfig => CreateConfigFailed::class,
             self::CreateSecret => CreateSecretFailed::class,
             self::CreateService => CreateServiceFailed::class,
+            self::ApplyCaddyConfig => RebuildCaddyConfigFailed::class,
         };
     }
 }

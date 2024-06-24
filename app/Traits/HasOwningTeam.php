@@ -9,7 +9,7 @@ trait HasOwningTeam
 {
     protected static function bootHasOwningTeam(): void
     {
-        static::addGlobalScope(new TeamScope());
+//        static::addGlobalScope(new TeamScope());
 
         static::creating(function ($model) {
             $model->team_id = auth()->user()->currentTeam->id;

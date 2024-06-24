@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Models\NodeTasks\LoadCaddyConfig;
+namespace App\Models\NodeTasks\ApplyCaddyConfig;
 
 use App\Models\NodeTasks\AbstractTaskMeta;
 
-class LoadCaddyConfigMeta extends AbstractTaskMeta
+class ApplyCaddyConfigMeta extends AbstractTaskMeta
 {
     public function __construct(
+        public int $deploymentId
     )
     {
         //
@@ -14,6 +15,6 @@ class LoadCaddyConfigMeta extends AbstractTaskMeta
 
     public function formattedHtml(): string
     {
-        return "LoadCaddyConfig - Task Payload";
+        return "Apply Caddy Config";
     }
 }

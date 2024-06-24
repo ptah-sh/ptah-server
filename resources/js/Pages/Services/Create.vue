@@ -11,7 +11,7 @@ import FormField from "@/Components/FormField.vue";
 import Select from "@/Components/Select.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextArea from "@/Components/TextArea.vue";
-import {computed, effect} from "vue";
+import {computed, effect, reactive} from "vue";
 
 // TODO: !!!!!!! When implementing EDIT functionality
 //   need to add tons of readonly inputs to preserve docker id and docker names for resources
@@ -37,9 +37,13 @@ const form = useForm({
   networkName: props.networks[0]?.docker_name,
   internalDomain: '',
   ports: [],
-  replicas: 1,
+  replicas: "1",
   caddy: [],
-  fastcgiVars: [],
+  fastCgi: null
+});
+
+const state = reactive({
+  internalDomainTouched: false,
 });
 
 const makeId = (prefix) =>  prefix + '-' + Math.random().toString(36).slice(2);
@@ -72,15 +76,15 @@ const addCaddy = () => {
   form.caddy.push({
     id: makeId('caddy'),
     targetProtocol: 'http',
-    targetPort: '80',
-    publishedPort: '443',
+    targetPort: '',
+    publishedPort: "443",
     domain: '',
     path: '',
   });
 }
 
 const addFastCgiVar = () => {
-  form.fastcgiVars.push({id: makeId('fastcgi') , name: '', value: ''});
+  form.fastCgi.env.push({id: makeId('fastcgi') , name: '', value: ''});
 }
 
 const hasFastCgiHandlers = computed(() => {
@@ -88,9 +92,16 @@ const hasFastCgiHandlers = computed(() => {
 })
 
 effect(() => {
-  if (!hasFastCgiHandlers.value) {
-    form.fastcgiVars.splice(0, form.fastcgiVars.length);
-  }
+    form.fastCgi = hasFastCgiHandlers.value
+        ? {
+          root: '',
+          env: [],
+        }
+        : null;
+
+    if (!state.internalDomainTouched) {
+      form.internalDomain = form.name + '.svc.local';
+    }
 });
 
 const createService = () => {
@@ -439,14 +450,14 @@ const createService = () => {
               <template #label>Attach to Network</template>
 
               <Select v-model="form.networkName">
-                <option v-for="network in $page.props.networks" :value="network.id">{{ network.name }}</option>
+                <option v-for="network in $page.props.networks" :value="network.docker_name">{{ network.name }}</option>
               </Select>
             </FormField>
 
             <FormField :error="form.errors.internalDomain">
               <template #label>Internal Domain Name</template>
 
-              <TextInput v-model="form.internalDomain" class="w-full"/>
+              <TextInput v-model="form.internalDomain" @change="state.internalDomainTouched = true" class="w-full"/>
             </FormField>
 
             <InputError :message="form.errors.ports" class="mt-2"/>
@@ -457,8 +468,8 @@ const createService = () => {
                 <template #label v-if="index === 0">Ports</template>
 
                 <div class="flex gap-2">
-                  <TextInput v-model="port.targetPort" class="w-56" placeholder="Container Port"/>
-                  <TextInput v-model="port.publishedPort" class="grow" placeholder="Host Port"/>
+                  <TextInput v-model="port.targetPort" class="w-56" placeholder="8080"/>
+                  <TextInput v-model="port.publishedPort" class="grow" placeholder="80"/>
                   <SecondaryButton @click="form.ports.splice(index, 1)" tabindex="-1">
                     <svg class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true"
                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -533,7 +544,7 @@ const createService = () => {
             <div v-for="(caddy, index) in form.caddy" :key="caddy.id">
               <hr v-if="index > 0" class="my-4"/>
 
-              <FormField :error="form.errors[`caddy.${index}.targetProtocol`] || form.errors[`caddy.${index}.targetPort`] || form.errors[`caddy.${index}.publishedPort`]">
+              <FormField :error="form.errors[`caddy.${index}.targetProtocol`] || form.errors[`caddy.${index}.targetPort`] || form.errors[`caddy.${index}.publishedPort`] || form.errors[`caddy.${index}.domain`] || form.errors[`caddy.${index}.path`]">
                 <div class="flex gap-2">
                   <div class="w-36">
                     <InputLabel>Container Protocol</InputLabel>
@@ -543,14 +554,26 @@ const createService = () => {
                     </Select>
                   </div>
 
-                  <div>
+                  <div class="w-28">
                     <InputLabel>Container Port</InputLabel>
-                    <TextInput v-model="caddy.targetPort" class="w-56" placeholder="Container Port"/>
+                    <TextInput v-model="caddy.targetPort" placeholder="8080" class="w-full"/>
+                  </div>
+                  <div class="w-28">
+                    <InputLabel>Published Port</InputLabel>
+<!--                    <TextInput v-model="caddy.publishedPort" placeholder="443" class="w-full"/>-->
+                    <Select v-model="caddy.publishedPort">
+                      <option value="443">HTTPS</option>
+                      <option value="80">HTTP</option>
+                    </Select>
                   </div>
 
-                  <div>
-                    <InputLabel>Internet Port</InputLabel>
-                    <TextInput v-model="caddy.publishedPort" class="" placeholder="Internet Port"/>
+                  <div class="grow">
+                    <InputLabel>Domain</InputLabel>
+                    <TextInput v-model="caddy.domain" class="w-full" placeholder="example.com"/>
+                  </div>
+                  <div class="grow">
+                    <InputLabel>Path</InputLabel>
+                    <TextInput v-model="caddy.path" class="w-full" placeholder="/*"/>
                   </div>
                   <div class="flex flex-col">
                     <InputLabel value="&nbsp;"/>
@@ -564,34 +587,28 @@ const createService = () => {
                   </div>
                 </div>
               </FormField>
-              <FormField :error="form.errors[`caddy.${index}.domain`] || form.errors[`caddy.${index}.path`]">
-                <div class="flex gap-2">
-                  <div>
-                    <InputLabel>Domain</InputLabel>
-                    <TextInput v-model="caddy.domain" class="w-56" placeholder="example.com"/>
-                  </div>
-                  <div>
-                    <InputLabel>Path</InputLabel>
-                    <TextInput v-model="caddy.path" class="w-56" placeholder="/*"/>
-                  </div>
-                </div>
-              </FormField>
             </div>
 
             <template v-if="hasFastCgiHandlers">
-              <hr v-if="form.fastcgiVars.length > 0" class="my-4"/>
+              <FormField :error="form.errors['fastCgi.root']">
+                <template #label>FastCGI Root</template>
 
-              <InputError :message="form.errors.fastcgiVars"/>
+                <TextInput v-model="form.fastCgi.root" class="grow" placeholder="/app/public"/>
+              </FormField>
 
-              <template v-for="(fastcgiVar, index) in form.fastcgiVars" :key="fastcgiVar.id">
-                <FormField :error="form.errors[`fastcgiVars.${index}.name`] || form.errors[`fastcgiVars.${index}.value`]">
+              <hr v-if="form.fastCgi.env.length > 0" class="my-4"/>
+
+              <InputError :message="form.errors['fastCgi.env']"/>
+
+              <template v-for="(fastcgiVar, index) in form.fastCgi.env" :key="fastcgiVar.id">
+                <FormField :error="form.errors[`fastCgi.env.${index}.name`] || form.errors[`fastCgi.env.${index}.value`]">
                   <template #label v-if="index === 0">FastCGI Variables</template>
 
                   <div class="flex gap-2">
                     <TextInput v-model="fastcgiVar.name" class="w-56" placeholder="SCRIPT_FILENAME"/>
                     <TextInput v-model="fastcgiVar.value" class="grow" placeholder="/app/public/index.php"/>
 
-                    <SecondaryButton @click="form.fastcgiVars.splice(index, 1)" tabindex="-1">
+                    <SecondaryButton @click="form.fastCgi.env.splice(index, 1)" tabindex="-1">
                       <svg class="w-4 h-4 text-gray-800 dark:text-white" aria-hidden="true"
                            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
                            viewBox="0 0 24 24">

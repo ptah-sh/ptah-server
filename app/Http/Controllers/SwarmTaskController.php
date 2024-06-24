@@ -8,10 +8,12 @@ use App\Models\Network;
 use App\Models\Node;
 use App\Models\NodeTaskGroup;
 use App\Models\NodeTaskGroupType;
+use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateNetwork\CreateNetworkMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTaskType;
 use App\Models\Swarm;
+use Illuminate\Database\Eloquent\Casts\Json;
 
 class SwarmTaskController extends Controller
 {
@@ -131,6 +133,35 @@ class SwarmTaskController extends Controller
                 'fastcgiVars' => [],
             ]),
         ]);
+
+        $caddyJson = Json::encode([
+            'apps' => [
+                'tls' => [
+                    !!111
+                ]
+            ]
+        ]);
+
+        $tasks[] = [
+            'type' => NodeTaskType::CreateConfig,
+            'meta' => CreateConfigMeta::from([
+                'deploymentId' => $deployment->id,
+                'path' => 'caddy base config',
+                'hash' => md5($caddyJson),
+            ]),
+            'payload' => [
+                'SwarmConfigSpec' => [
+                    'Name' => $caddyService->makeResourceName('caddy_base'),
+                    'Data' => base64_encode($caddyJson),
+                    'Labels' => dockerize_labels([
+                        'service.id' => $caddyService->id,
+                        'deployment.id' => $deployment->id,
+                        "content.hash" => md5($caddyJson),
+                        "kind" => 'caddy',
+                    ]),
+                ],
+            ],
+        ];
 
         foreach ($deployment->asNodeTasks() as $task) {
             $tasks[] = $task;

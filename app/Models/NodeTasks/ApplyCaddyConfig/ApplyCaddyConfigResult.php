@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\NodeTasks\LoadCaddyConfig;
+namespace App\Models\NodeTasks\ApplyCaddyConfig;
 
 use App\Models\NodeTasks\AbstractTaskResult;
 
-class LoadCaddyConfigResult extends AbstractTaskResult
+class ApplyCaddyConfigResult extends AbstractTaskResult
 {
     public function __construct(
     )
@@ -14,6 +14,6 @@ class LoadCaddyConfigResult extends AbstractTaskResult
 
     public function formattedHtml(): string
     {
-        return "LoadCaddyConfig - Task Result";
+        return "Success.";
     }
 }

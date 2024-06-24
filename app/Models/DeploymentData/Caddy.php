@@ -14,10 +14,10 @@ class Caddy extends Data
         public string $targetProtocol,
         #[Between(1, 65535)]
         public int $targetPort,
-        #[Between(1, 65535)]
+        #[In(80, 443)]
         public int $publishedPort,
         public string $domain,
-        public string $path
+        public string $path,
     )
     {
 

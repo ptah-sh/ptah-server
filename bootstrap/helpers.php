@@ -10,7 +10,11 @@ if (!function_exists('dockerize_labels')) {
         ];
 
         foreach ($labels as $label => $value) {
-            $result["sh.ptah.{$label}"] = (string) $value;
+            if (Str::startsWith($label, 'sh.ptah.')) {
+                $result[$label] = (string) $value;
+            } else {
+                $result["sh.ptah.{$label}"] = (string) $value;
+            }
         }
 
         return $result;
