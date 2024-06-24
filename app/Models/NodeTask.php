@@ -151,6 +151,7 @@ class NodeTask extends Model
         $this->save();
 
         if ($this->taskGroup->allTasksEnded()) {
+            $this->taskGroup->ended_at = now();
             $this->taskGroup->status = TaskStatus::Completed;
             $this->taskGroup->save();
         }
@@ -166,6 +167,7 @@ class NodeTask extends Model
         $this->result = $result;
         $this->save();
 
+        $this->taskGroup->ended_at = now();
         $this->taskGroup->status = TaskStatus::Failed;
         $this->taskGroup->save();
 

@@ -12,6 +12,7 @@ use App\Models\NodeTasks\CreateService\CreateServiceMeta;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
 use App\Traits\HasOwningTeam;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -38,6 +39,11 @@ class Deployment extends Model
     public function service(): BelongsTo
     {
         return $this->belongsTo(Service::class);
+    }
+
+    public function taskGroup(): BelongsTo
+    {
+        return $this->belongsTo(NodeTaskGroup::class);
     }
 
     public function makeResourceName($name): string

@@ -18,7 +18,13 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Services/Index');
+        $services = Service::with(['latestDeployment' => function ($query) {
+            $query->with(['taskGroup' => function ($query) {
+                $query->with('latestTask');
+            }]);
+        }])->get();
+
+        return Inertia::render('Services/Index', ['services' => $services]);
     }
 
     /**

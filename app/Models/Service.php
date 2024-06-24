@@ -6,6 +6,7 @@ use App\Traits\HasOwningTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 
 class Service extends Model
@@ -28,6 +29,11 @@ class Service extends Model
     public function deployments(): HasMany
     {
         return $this->hasMany(Deployment::class);
+    }
+
+    public function latestDeployment(): HasOne
+    {
+        return $this->hasOne(Deployment::class)->latest();
     }
 
     public function makeResourceName($name): string

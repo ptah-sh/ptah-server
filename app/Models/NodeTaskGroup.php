@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Symfony\Component\VarDumper\VarDumper;
 use function Psy\debug;
 
@@ -34,6 +35,11 @@ class NodeTaskGroup extends Model
     public function tasks(): HasMany
     {
         return $this->hasMany(NodeTask::class, 'task_group_id');
+    }
+
+    public function latestTask(): HasOne
+    {
+        return $this->hasOne(NodeTask::class, 'task_group_id')->latest();
     }
 
     public function allTasksEnded() :bool
