@@ -10,6 +10,8 @@ use App\Events\NodeTasks\CreateSecret\CreateSecretCompleted;
 use App\Events\NodeTasks\CreateSecret\CreateSecretFailed;
 use App\Events\NodeTasks\CreateService\CreateServiceCompleted;
 use App\Events\NodeTasks\CreateService\CreateServiceFailed;
+use App\Events\NodeTasks\DeleteService\DeleteServiceCompleted;
+use App\Events\NodeTasks\DeleteService\DeleteServiceFailed;
 use App\Events\NodeTasks\InitSwarm\InitSwarmCompleted;
 use App\Events\NodeTasks\InitSwarm\InitSwarmFailed;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigCompleted;
@@ -26,6 +28,8 @@ use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretResult;
 use App\Models\NodeTasks\CreateService\CreateServiceMeta;
 use App\Models\NodeTasks\CreateService\CreateServiceResult;
+use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
+use App\Models\NodeTasks\DeleteService\DeleteServiceResult;
 use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmResult;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
@@ -46,6 +50,7 @@ enum NodeTaskType: int
     case ApplyCaddyConfig = 5;
     case UpdateService = 6;
     case UpdateCurrentNode = 7;
+    case DeleteService = 8;
 
     public function meta(): string
     {
@@ -58,6 +63,7 @@ enum NodeTaskType: int
             self::ApplyCaddyConfig => ApplyCaddyConfigMeta::class,
             self::UpdateService => UpdateServiceMeta::class,
             self::UpdateCurrentNode => UpdateCurrentNodeMeta::class,
+            self::DeleteService => DeleteServiceMeta::class,
         };
     }
 
@@ -72,6 +78,7 @@ enum NodeTaskType: int
             self::ApplyCaddyConfig => ApplyCaddyConfigResult::class,
             self::UpdateService => UpdateServiceResult::class,
             self::UpdateCurrentNode => UpdateCurrentNodeResult::class,
+            self::DeleteService => DeleteServiceResult::class,
         };
     }
 
@@ -86,6 +93,7 @@ enum NodeTaskType: int
             self::ApplyCaddyConfig => ApplyCaddyConfigCompleted::class,
             self::UpdateService => UpdateServiceCompleted::class,
             self::UpdateCurrentNode => UpdateCurrentNodeCompleted::class,
+            self::DeleteService => DeleteServiceCompleted::class,
         };
     }
 
@@ -100,6 +108,7 @@ enum NodeTaskType: int
             self::ApplyCaddyConfig => ApplyCaddyConfigFailed::class,
             self::UpdateService => UpdateServiceFailed::class,
             self::UpdateCurrentNode => UpdateCurrentNodeFailed::class,
+            self::DeleteService => DeleteServiceFailed::class,
         };
     }
 }

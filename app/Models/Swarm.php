@@ -31,4 +31,9 @@ class Swarm extends Model
     {
         return $this->hasMany(Service::class);
     }
+
+    public function taskGroups(): HasMany
+    {
+        return $this->hasMany(NodeTaskGroup::class, 'swarm_id');
+    }
 }

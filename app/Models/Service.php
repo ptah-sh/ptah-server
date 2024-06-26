@@ -2,17 +2,20 @@
 
 namespace App\Models;
 
+use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
 use App\Traits\HasOwningTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
 class Service extends Model
 {
+    use SoftDeletes;
     use HasFactory;
     use HasOwningTeam;
 
@@ -23,8 +26,24 @@ class Service extends Model
 
     protected static function booted()
     {
-        self::creating(function ($model) {
-            $model->docker_name = 'swarm_' . $model->swarm_id . '_' . $model->name;
+        self::saved(function (Service $service) {
+            $service->docker_name = $service->makeResourceName($service->name);
+            $service->saveQuietly();
+        });
+
+        self::deleting(function (Service $service) {
+            $taskGroup = $service->swarm->taskGroups()->create([
+                'type' => NodeTaskGroupType::DeleteService,
+                'invoker_id' => auth()->id(),
+            ]);
+
+            $taskGroup->tasks()->create([
+                'type' => NodeTaskType::DeleteService,
+                'meta' => new DeleteServiceMeta($service->id, $service->name),
+                'payload' => [
+                    'ServiceName' => $service->docker_name,
+                ],
+            ]);
         });
     }
 

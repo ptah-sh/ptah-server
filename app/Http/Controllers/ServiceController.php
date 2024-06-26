@@ -129,6 +129,12 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
-        //
+        DB::transaction(function () use ($service) {
+            $service->delete();
+        });
+
+        session()->flash('success', "Service '{$service->name}' deleted successfully!");
+
+        return to_route('services.index');
     }
 }
