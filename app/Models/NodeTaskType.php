@@ -12,8 +12,12 @@ use App\Events\NodeTasks\CreateService\CreateServiceCompleted;
 use App\Events\NodeTasks\CreateService\CreateServiceFailed;
 use App\Events\NodeTasks\InitSwarm\InitSwarmCompleted;
 use App\Events\NodeTasks\InitSwarm\InitSwarmFailed;
-use App\Events\NodeTasks\RebuildCaddyConfig\RebuildCaddyConfigCompleted;
-use App\Events\NodeTasks\RebuildCaddyConfig\RebuildCaddyConfigFailed;
+use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigCompleted;
+use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigFailed;
+use App\Events\NodeTasks\UpdateNode\UpdateCurrentNodeCompleted;
+use App\Events\NodeTasks\UpdateNode\UpdateCurrentNodeFailed;
+use App\Events\NodeTasks\UpdateService\UpdateServiceCompleted;
+use App\Events\NodeTasks\UpdateService\UpdateServiceFailed;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateConfig\CreateConfigResult;
 use App\Models\NodeTasks\CreateNetwork\CreateNetworkMeta;
@@ -26,6 +30,10 @@ use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmResult;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigResult;
+use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeMeta;
+use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeResult;
+use App\Models\NodeTasks\UpdateService\UpdateServiceMeta;
+use App\Models\NodeTasks\UpdateService\UpdateServiceResult;
 
 // Mb use dynamic class names? $class = "{$this->name}Payload"; ??
 enum NodeTaskType: int
@@ -36,6 +44,8 @@ enum NodeTaskType: int
     case CreateSecret = 3;
     case CreateService = 4;
     case ApplyCaddyConfig = 5;
+    case UpdateService = 6;
+    case UpdateCurrentNode = 7;
 
     public function meta(): string
     {
@@ -46,6 +56,8 @@ enum NodeTaskType: int
             self::CreateSecret => CreateSecretMeta::class,
             self::CreateService => CreateServiceMeta::class,
             self::ApplyCaddyConfig => ApplyCaddyConfigMeta::class,
+            self::UpdateService => UpdateServiceMeta::class,
+            self::UpdateCurrentNode => UpdateCurrentNodeMeta::class,
         };
     }
 
@@ -58,6 +70,8 @@ enum NodeTaskType: int
             self::CreateSecret => CreateSecretResult::class,
             self::CreateService => CreateServiceResult::class,
             self::ApplyCaddyConfig => ApplyCaddyConfigResult::class,
+            self::UpdateService => UpdateServiceResult::class,
+            self::UpdateCurrentNode => UpdateCurrentNodeResult::class,
         };
     }
 
@@ -69,7 +83,9 @@ enum NodeTaskType: int
             self::CreateConfig => CreateConfigCompleted::class,
             self::CreateSecret => CreateSecretCompleted::class,
             self::CreateService => CreateServiceCompleted::class,
-            self::ApplyCaddyConfig => RebuildCaddyConfigCompleted::class,
+            self::ApplyCaddyConfig => ApplyCaddyConfigCompleted::class,
+            self::UpdateService => UpdateServiceCompleted::class,
+            self::UpdateCurrentNode => UpdateCurrentNodeCompleted::class,
         };
     }
 
@@ -81,7 +97,9 @@ enum NodeTaskType: int
             self::CreateConfig => CreateConfigFailed::class,
             self::CreateSecret => CreateSecretFailed::class,
             self::CreateService => CreateServiceFailed::class,
-            self::ApplyCaddyConfig => RebuildCaddyConfigFailed::class,
+            self::ApplyCaddyConfig => ApplyCaddyConfigFailed::class,
+            self::UpdateService => UpdateServiceFailed::class,
+            self::UpdateCurrentNode => UpdateCurrentNodeFailed::class,
         };
     }
 }

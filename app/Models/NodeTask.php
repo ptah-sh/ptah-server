@@ -89,11 +89,6 @@ class NodeTask extends Model
         $this->attributes['meta'] = $value;
     }
 
-    public function getPayloadAttribute()
-    {
-        return Json::decode($this->attributes['payload']);
-    }
-
     public function setPayloadAttribute($value): void
     {
         if (is_array($value)) {

@@ -5,6 +5,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import NodeStatus from "@/Components/NodeStatus.vue";
 import ValueCard from "@/Components/ValueCard.vue";
+import NoDataYet from "@/Components/NoDataYet.vue";
 
 defineProps({
   'nodes': Array,
@@ -25,6 +26,8 @@ defineProps({
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+              <NoDataYet v-if="nodes.length === 0" />
+
                 <a v-for="node in nodes" :key="node.id" :href="route('nodes.show', {node: node.id})"
                     class="w-96 bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-4 flex justify-around">
 

@@ -24,9 +24,9 @@ defineProps([
       <SectionBorder v-if="$props.node.online" />
 
       <template v-if="$props.node.online">
-      <NewSwarmCluster v-if="$props.node.swarm_id === null" :node="$props.node"/>
-      <InitSwarmProgress v-if="$props.initTaskGroup" :taskGroup="$props.initTaskGroup" />
-      <SwarmDetails v-if="!$props.initTaskGroup && $props.node.swarm_id !== null" :node="$props.node"/>
+        <NewSwarmCluster v-if="$props.node.swarm_id === null" :node="$props.node"/>
+        <InitSwarmProgress v-if="$props.initTaskGroup" :taskGroup="$props.initTaskGroup" />
+        <SwarmDetails v-if="!$props.initTaskGroup && $props.node.swarm_id !== null" :node="$props.node"/>
       </template>
     </ShowLayout>
 </template>

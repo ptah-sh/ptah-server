@@ -4,6 +4,7 @@ import {router} from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TaskResult from "@/Components/NodeTasks/TaskResult.vue";
 import { Link } from '@inertiajs/vue3';
+import NoDataYet from "@/Components/NoDataYet.vue";
 
 
 const props = defineProps({
@@ -21,10 +22,13 @@ const props = defineProps({
 
     <template #actions>
       <PrimaryButton type="button" @click="router.get(route('services.create'))">Create</PrimaryButton>
+      disable service create if no swarms available
     </template>
 
     <div class="py-12">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <NoDataYet v-if="$props.services.length === 0" />
+
         <div class=" grid grid-cols-3 gap-4">
           <div  v-for="service in props.services" :key="service.id">
         <div
@@ -36,10 +40,10 @@ const props = defineProps({
               <span class="text-sm text-gray-500">{{ service.latest_deployment.data.dockerImage }}</span>
             </div>
 
-            <div class="flex flex-col w-44 overflow-hidden ">
+            <div class="flex flex-col w-44  ">
               <span class="text-sm text-gray-500">{{ service.latest_deployment.data.internalDomain }}</span>
               <span v-if="service.latest_deployment.data.caddy[0]"
-                    class="text-sm text-gray-400"
+                    class="text-sm text-gray-400 text-nowrap truncate"
               >
                 <span v-if="service.latest_deployment.data.caddy[0].publishedPort === 80">http://</span>
                 <span v-else-if="service.latest_deployment.data.caddy[0].publishedPort === 443">https://</span>

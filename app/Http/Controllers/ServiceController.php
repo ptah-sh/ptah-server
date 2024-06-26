@@ -9,6 +9,7 @@ use App\Models\NodeTaskGroup;
 use App\Models\NodeTaskGroupType;
 use App\Models\Service;
 use App\Models\Swarm;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ServiceController extends Controller
@@ -22,7 +23,7 @@ class ServiceController extends Controller
             $query->with(['taskGroup' => function ($query) {
                 $query->with('latestTask');
             }]);
-        }])->get();
+        }])->orderBy('name')->get();
 
         return Inertia::render('Services/Index', ['services' => $services]);
     }
@@ -37,10 +38,15 @@ class ServiceController extends Controller
         $networks = count($swarms) ? $swarms[0]->networks : [];
         $nodes = count($swarms) ? $swarms[0]->nodes : [];
 
+        $deploymentData = DeploymentData::make([
+            'networkName' => count($networks) ? $networks[0]->name : null,
+        ]);
+
         return Inertia::render('Services/Create', [
             'swarms' => $swarms,
             'networks' => $networks,
             'nodes' => $nodes,
+            'deploymentData' => $deploymentData,
         ]);
     }
 
@@ -49,22 +55,15 @@ class ServiceController extends Controller
      */
     public function store(StoreServiceRequest $request)
     {
-        $deploymentData = DeploymentData::validateAndCreate($request->all());
+        $deploymentData = DeploymentData::validateAndCreate($request->get('deploymentData'));
 
-        $service = Service::create($request->validated());
+        $service = Service::make($request->validated());
+        DB::transaction(function () use ($service, $deploymentData) {
+            $service->save();
 
-        $taskGroup = NodeTaskGroup::create([
-            'swarm_id' => $service->swarm_id,
-            'invoker_id' => auth()->id(),
-            'type' => NodeTaskGroupType::DeployService,
-        ]);
+            $service->deploy($deploymentData);
+        });
 
-        $deployment = $service->deployments()->create([
-            'task_group_id' => $taskGroup->id,
-            'data' => $deploymentData,
-        ]);
-
-        $taskGroup->tasks()->createMany($deployment->asNodeTasks());
 
         return to_route('services.deployments', ['service' => $service->id]);
     }
@@ -74,12 +73,26 @@ class ServiceController extends Controller
      */
     public function show(Service $service)
     {
-        return Inertia::render('Services/Show', ['service' => $service]);
+        $service->load(['latestDeployment', 'team', 'swarm']);
+
+        $networks = $service->swarm->networks;
+        $nodes = $service->swarm->nodes;
+
+        return Inertia::render('Services/Show', ['service' => $service, 'networks' => $networks, 'nodes' => $nodes]);
     }
 
     public function deployments(Service $service)
     {
         return Inertia::render('Services/Deployments', ['service' => $service]);
+    }
+
+    public function deploy(Service $service, DeploymentData $deploymentData)
+    {
+        DB::transaction(function() use ($service, $deploymentData) {
+            $service->deploy($deploymentData);
+        });
+
+        return to_route('services.deployments', ['service' => $service->id]);
     }
 
     /**
@@ -95,7 +108,11 @@ class ServiceController extends Controller
      */
     public function update(UpdateServiceRequest $request, Service $service)
     {
-        //
+        $service->update($request->validated());
+
+        session()->flash('success', 'Service updated successfully!');
+
+        return to_route('services.index');
     }
 
     /**

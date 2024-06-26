@@ -7,6 +7,7 @@ use App\Models\DeploymentData\ConfigFile;
 use App\Models\DeploymentData\EnvVar;
 use App\Models\DeploymentData\FastCgi;
 use App\Models\DeploymentData\NodePort;
+use App\Models\DeploymentData\SecretVars;
 use App\Models\DeploymentData\Volume;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
@@ -27,9 +28,7 @@ class DeploymentData extends Data
         #[DataCollectionOf(EnvVar::class)]
         /* @var EnvVar[] */
         public array  $envVars,
-        #[DataCollectionOf(EnvVar::class)]
-        /* @var EnvVar[] */
-        public array  $secretVars,
+        public SecretVars  $secretVars,
         #[DataCollectionOf(ConfigFile::class)]
         /* @var ConfigFile[] */
         public array  $configFiles,
@@ -39,6 +38,7 @@ class DeploymentData extends Data
         #[DataCollectionOf(Volume::class)]
         /* @var Volume[] */
         public array  $volumes,
+//        #[Exists(Network::class, 'networkName')]
         public string    $networkName,
         public string $internalDomain,
         #[DataCollectionOf(NodePort::class)]
@@ -54,5 +54,42 @@ class DeploymentData extends Data
         public ?FastCgi $fastCgi
     )
     {
+    }
+
+    public static function make(array $attributes): static
+    {
+        $defaults = [
+            'dockerRegistryId' => null,
+            'dockerImage' => '',
+            'envVars' => [],
+            'secretVars' => SecretVars::from([
+                'vars' => [],
+            ]),
+            'configFiles' => [],
+            'secretFiles' => [],
+            'volumes' => [],
+            'networkName' => '',
+            'internalDomain' => '',
+            'ports' => [],
+            'replicas' => 1,
+            'placementNodeId' => null,
+            'caddy' => [],
+            'fastCgi' => null,
+        ];
+
+        return self::from([
+            ...$defaults,
+            ...$attributes
+        ]);
+    }
+
+    public function findConfigFile(string $path): ?ConfigFile
+    {
+        return collect($this->configFiles)->first(fn(ConfigFile $file) => $file->path === $path);
+    }
+
+    public function findSecretFile(string $path): ?ConfigFile
+    {
+        return collect($this->secretFiles)->first(fn(ConfigFile $file) => $file->path === $path);
     }
 }

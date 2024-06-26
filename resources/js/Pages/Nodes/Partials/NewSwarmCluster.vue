@@ -87,6 +87,7 @@ const submit = () => {
                 <!-- TODO: add warning that the force new cluster will wipe out your existing cluster (services, data?) -->
                 <FwbCheckbox label="Force New Cluster" v-model="initForm.force_new_cluster" />
               </FormField>
+              <InputError v-if="initForm.force_new_cluster" message="Be aware that you will lose your data!" />
             </template>
             <template v-else>
               No IP found

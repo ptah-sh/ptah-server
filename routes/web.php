@@ -33,4 +33,5 @@ Route::middleware([
     Route::resource("nodes", NodeController::class);
     Route::resource("services", ServiceController::class);
     Route::get('/services/{service}/deployments', [ServiceController::class, 'deployments'])->name('services.deployments');
+    Route::post('/services/{service}/deployments', [ServiceController::class, 'deploy'])->name('services.deploy');
 });

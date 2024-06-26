@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\DeploymentData\Caddy;
+use App\Models\DeploymentData\ConfigFile;
 use App\Models\DeploymentData\EnvVar;
 use App\Models\DeploymentData\NodePort;
 use App\Models\DeploymentData\Volume;
@@ -46,6 +47,11 @@ class Deployment extends Model
         return $this->belongsTo(NodeTaskGroup::class);
     }
 
+    public function previousDeployment(): ?Deployment
+    {
+        return $this->service->deployments()->where('id', '<', $this->id)->latest('id')->get()->first();
+    }
+
     public function makeResourceName($name): string
     {
         return $this->service->makeResourceName("dpl_". $this->id . "_" . $name);
@@ -73,78 +79,71 @@ class Deployment extends Model
 
         $configTasks = [];
         foreach ($data->configFiles as $configFile) {
+            $previousConfig = $this->previousDeployment()?->data->findConfigFile($configFile->path);
+            if ($previousConfig && $configFile->sameAs($previousConfig)) {
+                $configFile->dockerName = $previousConfig->dockerName;
+
+                continue;
+            }
+
+            $configFile->dockerName = $this->makeResourceName('cfg_' . $configFile->path);
+
             $configTasks[] = [
                 'type' => NodeTaskType::CreateConfig,
                 'meta' => CreateConfigMeta::from([
                     'deploymentId' => $this->id,
                     'path' => $configFile->path,
-                    'hash' => md5($configFile->content),
+                    'hash' => $configFile->hash(),
                 ]),
                 'payload' => [
                     'SwarmConfigSpec' => [
-                        'Name' => $this->makeResourceName('cfg_' . $configFile->path),
-                        'Data' => base64_encode($configFile->content),
+                        'Name' => $configFile->dockerName,
+                        'Data' => $configFile->base64(),
                         'Labels' => dockerize_labels([
                             ...$labels,
-                            "content.hash" => md5($configFile->content),
+                            'kind' => 'config',
+                            "content.hash" => $configFile->hash(),
                         ]),
                     ],
                 ],
             ];
         }
 
-        $secretFiles = $data->secretFiles;
         $secretTasks = [];
-        foreach ($secretFiles as $secretFile) {
+        foreach ($this->data->secretFiles as $secretFile) {
+            $previousSecret = $this->previousDeployment()?->data->findSecretFile($secretFile->path);
+            if ($previousSecret && ($secretFile->content === null || $secretFile->sameAs($previousSecret))) {
+                $secretFile->dockerName = $previousSecret->dockerName;
+
+                continue;
+            }
+
+            $secretFile->dockerName = $this->makeResourceName($secretFile->path);
+
             $secretTasks[] = [
                 'type' => NodeTaskType::CreateSecret,
                 'meta' => CreateSecretMeta::from([
                     'deploymentId' => $this->id,
                     'path' => $secretFile->path,
-                    'hash' => md5($secretFile->content),
+                    'hash' => $secretFile->hash(),
                 ]),
                 'payload' => [
                     'SwarmSecretSpec' => [
-                        'Name' => $this->makeResourceName($secretFile->path),
-                        'Data' => base64_encode($secretFile->content),
+                        'Name' => $secretFile->dockerName,
+                        'Data' => $secretFile->base64(),
                         'Labels' => dockerize_labels([
                             ...$labels,
-                            "content.hash" => md5($secretFile->content),
+                            "content.hash" => $secretFile->hash(),
                         ]),
                     ]
                 ]
             ];
         }
 
-        $secretVarsTasks = [];
-        $secretVarsConfigName = $this->makeResourceName('secrets');
-        if (count($data->secretVars)) {
-            $secretEnvVars = collect($data->secretVars)->map(fn (EnvVar $var) => "{$var->name}={$var->value}")->toJson();
-            $secretEnvVarsHash = md5($secretEnvVars);
-            $secretVarsTasks[] = [
-                'type' => NodeTaskType::CreateConfig,
-                'meta' => CreateConfigMeta::from([
-                    'deploymentId' => $this->id,
-                    'path' => 'secret env vars',
-                    'hash' => $secretEnvVarsHash,
-                ]),
-                'payload' => [
-                    'SwarmConfigSpec' => [
-                        'Name' => $secretVarsConfigName,
-                        'Data' => base64_encode($secretEnvVars),
-                        'Labels' => dockerize_labels([
-                            ...$labels,
-                            "content.hash" => $secretEnvVarsHash,
-                        ]),
-                    ],
-                ],
-            ];
-        }
-
         $services = [];
 
         $services[] = [
-            'type' => NodeTaskType::CreateService,
+            'type' => $this->previousDeployment() ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
             'meta' => CreateServiceMeta::from([
                 'deploymentId' => $this->id,
                 'serviceId' => $this->service_id,
@@ -152,7 +151,7 @@ class Deployment extends Model
             ]),
             'payload' => [
 //                    'AuthConfigName' => "",
-                'SecretVarsConfigName' => count($secretVarsTasks) ? $secretVarsConfigName : "",
+                'SecretVars' => (object) $this->getSecretVars($labels),
                 'SwarmServiceSpec' => [
                     'Name' => $this->service->makeResourceName('service'),
                     'Labels' => $labels,
@@ -173,29 +172,29 @@ class Deployment extends Model
                             'Hosts' => [
                                 $data->internalDomain,
                             ],
-                            'Secrets' => collect($secretTasks)->map(fn($task) => [
+                            'Secrets' => collect($this->data->secretFiles)->map(fn(ConfigFile $secretFile) => [
                                 'File' => [
-                                    'Name' => $task['meta']->path,
+                                    'Name' => $secretFile->path,
                                     // TODO: figure out better permissions settings (if any)
                                     'UID' => "0",
                                     "GID" => "0",
                                     "Mode" => 0777
                                 ],
-                                'SecretName' => $task['payload']['SwarmSecretSpec']['Name'],
-                            ]),
-                            'Configs' => collect($configTasks)->map(fn($task) => [
+                                'SecretName' => $secretFile->dockerName,
+                            ])->values()->toArray(),
+                            'Configs' => collect($this->data->configFiles)->map(fn(ConfigFile $configFile) => [
                                 'File' => [
-                                    'Name' => $task['meta']->path,
+                                    'Name' => $configFile->path,
                                     // TODO: figure out better permissions settings (if any)
                                     'UID' => "0",
                                     "GID" => "0",
                                     "Mode" => 0777
                                 ],
-                                'ConfigName' => $task['payload']['SwarmConfigSpec']['Name'],
-                            ]),
+                                'ConfigName' => $configFile->dockerName,
+                            ])->values()->toArray(),
                             'Placement' => $data->placementNodeId ? [
                                 'Constraints' => [
-                                    "node.id=={$this->getNodeDockerId($data->placementNodeId)}",
+                                    "node.labels.sh.ptah.node.id=={$data->placementNodeId}",
                                 ]
                             ] : [],
                         ],
@@ -224,6 +223,7 @@ class Deployment extends Model
         ];
 
         $caddyHandlers = [];
+
         $this->latestDeployments()->each(function ($deployment) use (&$caddyHandlers) {
             $caddyHandlers[] = collect($deployment->data->caddy)->map(fn(Caddy $caddy) => [
                 'apps' =>[
@@ -274,7 +274,14 @@ class Deployment extends Model
         // Flatten array
         $caddyHandlers = array_merge(...$caddyHandlers);
 
-        $caddy = [];
+        $caddy = [
+            'apps' => [
+                'http' => [
+                    'servers' => [],
+                ]
+            ]
+        ];
+
         foreach ($caddyHandlers as $handler) {
             $caddy = array_merge_recursive($caddy, $handler);
         }
@@ -285,23 +292,57 @@ class Deployment extends Model
         }
 
         $caddyTask = [];
-        $caddyTask[] = [
-            'type' => NodeTaskType::ApplyCaddyConfig,
-            'meta' => ApplyCaddyConfigMeta::from([
-                'deploymentId' => $this->id,
-            ]),
-            'payload' => [
-                'caddy' => $caddy,
-            ]
-        ];
+
+        if (!empty($caddyHandlers)) {
+            $caddyTask[] = [
+                'type' => NodeTaskType::ApplyCaddyConfig,
+                'meta' => ApplyCaddyConfigMeta::from([
+                    'deploymentId' => $this->id,
+                ]),
+                'payload' => [
+                    'caddy' => $caddy,
+                ]
+            ];
+        }
+
+        $this->saveQuietly();
 
         return [
             ...$configTasks,
             ...$secretTasks,
-            ...$secretVarsTasks,
             ...$services,
             ...$caddyTask,
         ];
+    }
+
+    protected function getSecretVars($labels): array|object
+    {
+        if (empty($this->data->secretVars->vars)) {
+            return (object) [];
+        }
+
+        $this->data->secretVars->dockerName = $this->makeResourceName('secret_vars');
+
+        $data = [
+            'ConfigName' => $this->data->secretVars->dockerName,
+            'ConfigLabels' => dockerize_labels([
+                ...$labels,
+                'kind' => 'secret-env-vars',
+            ]),
+            'Values' => (object) collect($this->data->secretVars->vars)
+                ->reject(fn(EnvVar $var) => $var->value === null)
+                ->reduce(fn($carry, EnvVar $var) => [...$carry, $var->name => $var->value], []),
+        ];
+
+        if (!empty($this->previousDeployment()?->data->secretVars->dockerName)) {
+            $data['Preserve'] = collect($this->data->secretVars->vars)
+                ->filter(fn (EnvVar $var) => $var->value === null)
+                ->map(fn (EnvVar $var) => $var->name)
+                ->toArray();
+            $data['PreserveFromConfig'] = $this->previousDeployment()->data->secretVars->dockerName;
+        }
+
+        return $data;
     }
 
     protected function getTransportOptions(Caddy $caddy): array
@@ -371,11 +412,5 @@ class Deployment extends Model
             'segments' => $pathSegments,
             'wildcards' => $wildcardSegments,
         ];
-    }
-
-    // TODO: update node labels and select by the labels instead of the id
-    protected function getNodeDockerId($nodeId)
-    {
-        return Node::find($nodeId)->docker_id;
     }
 }
