@@ -7,6 +7,7 @@ use App\Models\NodeTasks\AbstractTaskMeta;
 class CreateServiceMeta extends AbstractTaskMeta
 {
     public function __construct(
+        public int $deploymentId,
         public int $serviceId,
         public string $serviceName
     )

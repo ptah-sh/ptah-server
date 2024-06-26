@@ -20,7 +20,7 @@ class ServiceController extends Controller
     public function index()
     {
         $services = Service::with(['latestDeployment' => function ($query) {
-            $query->with(['taskGroup' => function ($query) {
+            $query->with(['latestTaskGroup' => function ($query) {
                 $query->with('latestTask');
             }]);
         }])->orderBy('name')->get();
@@ -83,6 +83,15 @@ class ServiceController extends Controller
 
     public function deployments(Service $service)
     {
+        $service->load(['deployments' => function ($deployments) {
+            $deployments->with(['latestTaskGroup' => function ($taskGroups) {
+                $taskGroups->with([
+                    'invoker',
+                    'tasks' => function ($tasks) {
+                }]);
+            }]);
+        }]);
+
         return Inertia::render('Services/Deployments', ['service' => $service]);
     }
 

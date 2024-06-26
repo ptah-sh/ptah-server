@@ -57,11 +57,11 @@ const props = defineProps({
 
 <!--          <pre>{{service}}</pre>-->
           </Link>
-          <ul  v-if="service.latest_deployment.task_group.latest_task.status !== 'completed'"
+          <ul  v-if="service.latest_deployment.latest_task_group.status !== 'completed'"
 
                class="border-t-2 relative">
           <TaskResult
-              :task="service.latest_deployment.task_group.latest_task"
+              :task="service.latest_deployment.latest_task_group.latest_task"
           class="">
           </TaskResult>
           </ul>

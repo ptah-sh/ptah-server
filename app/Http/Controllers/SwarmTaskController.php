@@ -104,7 +104,6 @@ class SwarmTaskController extends Controller
             ]);
 
             $deployment = $caddyService->deployments()->create([
-                'task_group_id' => $taskGroup->id,
                 'data' => DeploymentData::from([
                     'dockerRegistryId' => null,
                     'dockerImage' => 'caddy:2.8-alpine',

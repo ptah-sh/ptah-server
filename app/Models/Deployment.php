@@ -13,7 +13,9 @@ use App\Models\NodeTasks\CreateService\CreateServiceMeta;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
 use App\Traits\HasOwningTeam;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -42,9 +44,14 @@ class Deployment extends Model
         return $this->belongsTo(Service::class);
     }
 
-    public function taskGroup(): BelongsTo
+    public function taskGroups(): HasManyThrough
     {
-        return $this->belongsTo(NodeTaskGroup::class);
+        return $this->hasManyThrough(NodeTaskGroup::class, NodeTask::class,  'meta__deployment_id', 'id', 'id', 'task_group_id')->orderByDesc('id');
+    }
+
+    public function latestTaskGroup(): HasOneThrough
+    {
+        return $this->hasOneThrough(NodeTaskGroup::class, NodeTask::class,  'meta__deployment_id', 'id', 'id', 'task_group_id')->latest();
     }
 
     public function previousDeployment(): ?Deployment

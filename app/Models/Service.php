@@ -35,7 +35,7 @@ class Service extends Model
 
     public function deployments(): HasMany
     {
-        return $this->hasMany(Deployment::class);
+        return $this->hasMany(Deployment::class)->orderByDesc('id');
     }
 
     public function latestDeployment(): HasOne
@@ -57,7 +57,6 @@ class Service extends Model
         ]);
 
         $deployment = $this->deployments()->create([
-            'task_group_id' => $taskGroup->id,
             'data' => $deploymentData,
         ]);
 
