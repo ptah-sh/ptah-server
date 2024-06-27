@@ -86,7 +86,7 @@ const deleteApiToken = () => {
 
             <template #form>
                 <!-- Token Name -->
-                <div class="col-span-6 sm:col-span-4">
+                <div class="col-span-6 sm:col-span-4" v-auto-animate>
                     <InputLabel for="name" value="Name" />
                     <TextInput
                         id="name"
@@ -99,7 +99,7 @@ const deleteApiToken = () => {
                 </div>
 
                 <!-- Token Permissions -->
-                <div v-if="availablePermissions.length > 0" class="col-span-6">
+                <div v-if="availablePermissions.length > 0" class="col-span-6" v-auto-animate>
                     <InputLabel for="permissions" value="Permissions" />
 
                     <div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">

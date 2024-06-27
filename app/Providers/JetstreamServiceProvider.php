@@ -45,6 +45,10 @@ class JetstreamServiceProvider extends ServiceProvider
     {
         Jetstream::defaultApiTokenPermissions(['read']);
 
+        Jetstream::permissions([
+            'services:deploy',
+        ]);
+
         Jetstream::role('admin', 'Administrator', [
             'create',
             'read',

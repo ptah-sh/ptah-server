@@ -163,5 +163,5 @@ describe('Secret Vars', function () {
                 'PreserveFromConfig' => "svc_{$this->service->id}_dpl_{$previous->id}_secret_vars",
             ]);
         });
-    })->only();
+    });
 });

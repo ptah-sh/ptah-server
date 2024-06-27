@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
@@ -69,6 +70,8 @@ class Service extends Model
 
     public function deploy(DeploymentData $deploymentData): Deployment
     {
+        Gate::authorize('deploy', $this);
+
         $taskGroup = NodeTaskGroup::create([
             'swarm_id' => $this->swarm_id,
             'invoker_id' => auth()->id(),

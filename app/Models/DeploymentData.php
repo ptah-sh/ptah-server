@@ -13,6 +13,7 @@ use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
 use App\Models\NodeTasks\CreateService\CreateServiceMeta;
 use App\Rules\RequiredIfArrayHas;
+use App\Util\Arrays;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Exists;
 use Spatie\LaravelData\Attributes\Validation\RequiredIf;
@@ -91,5 +92,10 @@ class DeploymentData extends Data
     public function findSecretFile(string $path): ?ConfigFile
     {
         return collect($this->secretFiles)->first(fn(ConfigFile $file) => $file->path === $path);
+    }
+
+    public function copyWith(array $attributes): DeploymentData
+    {
+        return DeploymentData::make(Arrays::niceMerge($this->toArray(), $attributes));
     }
 }

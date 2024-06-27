@@ -63,4 +63,9 @@ class ServicePolicy
     {
         //
     }
+
+    public function deploy(User $user, Service $service): bool
+    {
+        return $user->belongsToTeam($service->team);
+    }
 }
