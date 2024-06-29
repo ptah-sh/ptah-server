@@ -22,6 +22,10 @@ const form = useForm({
             Server Details
         </template>
 
+        <template #description>
+            <p>You can change the name of your server.</p>
+        </template>
+
         <template #form>
             <div class="col-span-6 sm:col-span-4" v-auto-animate>
                 <InputLabel for="server_name" value="Server Name" />

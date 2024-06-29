@@ -25,7 +25,7 @@ defineProps({
         </template>
 
         <div class="py-12">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 flex gap-8">
               <NoDataYet v-if="nodes.length === 0" />
 
                 <a v-for="node in nodes" :key="node.id" :href="route('nodes.show', {node: node.id})"
@@ -37,7 +37,9 @@ defineProps({
                   </div>
                   <div                       class="flex flex-col"
                   >
-                  <template v-for="network in node.data.host.networks" :key="network.if_name"
+                  <template
+                      v-if="node.online"
+                      v-for="network in node.data.host.networks" :key="network.if_name"
                   >
                     <ValueCard
                         v-for="ip in network.ips" :key="ip.ip"

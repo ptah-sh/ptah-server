@@ -52,7 +52,7 @@ onMounted(() => {
 <!--               value="script cli goes here" disabled readonly>-->
         <input id="agent-install-cli" ref="copyToClipboardRef" type="text"
                class="ps-10 p-2.5  col-span-6 bg-gray-50 border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full px-2.5 py-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-400 dark:focus:ring-blue-500 dark:focus:border-blue-500"
-               :value="$props.node.agent_token" disabled readonly>
+               :value="'export PTAH_TOKEN=' + $props.node.agent_token + ' && curl -sSL https://raw.githubusercontent.com/ptah-sh/ptah-agent/main/install.sh | bash' " disabled readonly>
       </div>
       <button ref="trigger"
               class="absolute end-2.5 w-24 top-1/2 -translate-y-1/2 text-gray-900 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 rounded-lg py-2 px-2.5 inline-flex items-center justify-center bg-white border-gray-200 border">

@@ -8,6 +8,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import {router, useForm} from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import FormSection from "@/Components/FormSection.vue";
+import TeamCard from "@/Components/TeamCard.vue";
 
 const form = useForm({
     name: '',
@@ -52,15 +53,7 @@ const createNode = () => {
                     </template>
 
                     <template #form>
-                        <div class="col-span-6">
-                            <div class="flex items-center mt-2">
-                                <img class="object-cover w-12 h-12 rounded-full" :src="'https://ui-avatars.com/api/?name=' + encodeURIComponent($page.props.auth.user.current_team.name) + '&color=7F9CF5&background=EBF4FF'" :alt="$page.props.auth.user.current_team.name">
-
-                                <div class="ms-4 leading-tight">
-                                    <div class="text-gray-900 dark:text-white">{{ $page.props.auth.user.current_team.name }}</div>
-                                </div>
-                            </div>
-                        </div>
+                        <TeamCard :team="$page.props.auth.user.current_team" />
 
                         <div class="col-span-6 sm:col-span-4" v-auto-animate>
                             <InputLabel for="server_name" value="Server Name" />

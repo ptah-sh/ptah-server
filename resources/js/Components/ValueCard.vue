@@ -8,7 +8,7 @@ defineProps({
 </script>
 
 <template>
-  <div class="min-w-40">
+  <div class="min-w-40 inline-block">
     <div class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ $props.value }}</div>
   <div class="text-xs text-gray-500">{{ $props.label }}</div>
 
