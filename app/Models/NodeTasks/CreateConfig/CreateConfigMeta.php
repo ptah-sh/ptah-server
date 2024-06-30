@@ -8,6 +8,7 @@ class CreateConfigMeta extends AbstractTaskMeta
 {
     public function __construct(
         public int    $deploymentId,
+        public string $processName,
         public string $path,
         public string $hash
     )
@@ -17,6 +18,6 @@ class CreateConfigMeta extends AbstractTaskMeta
 
     public function formattedHtml():string
     {
-        return "Create Docker Config for <code>$this->path</code>";
+        return "Create Docker Config <code>$this->path</code> for process <code>{$this->processName}</code>";
     }
 }

@@ -2,7 +2,6 @@
 import {ref, onMounted, reactive, onActivated} from 'vue';
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
-import FormFieldBlock from "@/Components/FormFieldBlock.vue";
 
 const props = defineProps({
   'error': String,
@@ -23,7 +22,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <FormFieldBlock v-auto-animate>
+  <div v-auto-animate>
     <InputLabel :for="state.domId">
       <slot name="label" />
     </InputLabel>
@@ -33,5 +32,5 @@ onMounted(() => {
     </div>
 
     <InputError :message="$props.error" class="mt-2" />
-  </FormFieldBlock>
+  </div>
 </template>

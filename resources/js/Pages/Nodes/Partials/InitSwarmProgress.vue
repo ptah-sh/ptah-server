@@ -19,7 +19,9 @@ defineProps({
     </template>
 
     <template #content>
-      <TaskGroup :taskGroup="taskGroup"/>
+      <div class="col-span-full">
+        <TaskGroup :taskGroup="taskGroup"/>
+      </div>
     </template>
   </ActionSection>
 </template>

@@ -25,7 +25,9 @@ class ServiceController extends Controller
             }]);
         }])->orderBy('name')->get();
 
-        return Inertia::render('Services/Index', ['services' => $services]);
+        $swarmExists = Swarm::exists();
+
+        return Inertia::render('Services/Index', ['services' => $services, 'swarmExists' => $swarmExists]);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
 use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
 use App\Traits\HasOwningTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -38,13 +39,18 @@ class Service extends Model
                 'invoker_id' => auth()->id(),
             ]);
 
-            $taskGroup->tasks()->create([
-                'type' => NodeTaskType::DeleteService,
-                'meta' => new DeleteServiceMeta($service->id, $service->name),
-                'payload' => [
-                    'ServiceName' => $service->docker_name,
-                ],
-            ]);
+            $deleteProcessesTasks = collect($service->latestDeployment->data->processes)->map(function ($process) use ($service) {
+                return [
+                    'type' => NodeTaskType::DeleteService,
+                    'meta' => new DeleteServiceMeta($service->id, $process->name, $service->name),
+                    'payload' => [
+                        'ServiceName' => $service->docker_name,
+                    ],
+                ];
+            })->toArray();
+
+            // TODO: apply caddy config after the services deletion
+            $taskGroup->tasks()->createMany($deleteProcessesTasks);
         });
     }
 

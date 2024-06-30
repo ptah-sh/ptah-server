@@ -52,6 +52,13 @@ const createService = () => {
             <p>Select a swarm where the service will be deployed to.</p>
             <p>The name of the service can be changed at any time. Be aware, that the service name in the Swarm cluster
               will not be changed.</p>
+
+            <p>You can isolate containers from each other by using different networks.</p>
+            <p>Service will be accessible by the internal domain name to other containers on the same network.</p>
+            <p>You can make certain ports of the containers accessible from the host network. Please set up the firewall
+              rule on your host to prevent unwanted access.</p>
+            <p>If you don't select the Placement Node, the containers will be able to run on any node of the Swarm
+              Cluster.</p>
           </template>
 
           <template #content>

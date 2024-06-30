@@ -8,7 +8,8 @@ class UpdateServiceMeta extends AbstractTaskMeta
 {
     public function __construct(
         public int $serviceId,
-        public string $serviceName
+        public string $serviceName,
+        public string $processName
     )
     {
         //
@@ -16,6 +17,6 @@ class UpdateServiceMeta extends AbstractTaskMeta
 
     public function formattedHtml(): string
     {
-        return "Update Docker Service <code>$this->serviceName</code>";
+        return "Update Docker process <code>{$this->processName}</code> in <code>$this->serviceName</code>";
     }
 }

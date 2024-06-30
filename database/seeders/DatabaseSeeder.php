@@ -16,10 +16,16 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->withPersonalTeam()->create();
 
-        User::factory()->withPersonalTeam()->create([
+        $user = User::factory()->withPersonalTeam()->create([
             'name' => 'Seeded User',
             'email' => 'seed@example.com',
             'password' => 'password',
+        ]);
+
+        Node::factory()->createQuietly([
+            'name' => 'Seeded Node',
+            'agent_token' => 'seeded-node',
+            'team_id' => $user->personalTeam()->id,
         ]);
     }
 }

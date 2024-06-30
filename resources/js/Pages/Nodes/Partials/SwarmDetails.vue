@@ -14,7 +14,9 @@ import ActionSection from "@/Components/ActionSection.vue";
     </template>
 
     <template #content>
-      Sorry, we're still working on the Swarm Cluster details block.
+        <div class="text-sm text-gray-600 dark:text-gray-400 col-span-full">
+          The Swarm Cluster has been initialized and is in a healthy state.
+      </div>
     </template>
   </ActionSection>
 </template>

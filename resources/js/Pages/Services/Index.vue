@@ -5,10 +5,12 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TaskResult from "@/Components/NodeTasks/TaskResult.vue";
 import { Link } from '@inertiajs/vue3';
 import NoDataYet from "@/Components/NoDataYet.vue";
+import {FwbTooltip} from "flowbite-vue";
 
 
 const props = defineProps({
-  'services': Array
+  'services': Array,
+  'swarmExists': Boolean,
 })
 </script>
 
@@ -21,8 +23,16 @@ const props = defineProps({
     </template>
 
     <template #actions>
-      <PrimaryButton type="button" @click="router.get(route('services.create'))">Create</PrimaryButton>
-      disable service create if no swarms available
+      <PrimaryButton v-if="props.swarmExists" type="button" @click="router.get(route('services.create'))">Create</PrimaryButton>
+      <fwb-tooltip v-else>
+        <template #trigger>
+          <PrimaryButton type="button" @click="router.get(route('services.create'))" disabled="disabled">Create</PrimaryButton>
+        </template>
+
+        <template #content>
+          Please initialize a Swarm first
+        </template>
+      </fwb-tooltip>
     </template>
 
     <div class="py-12">
@@ -42,17 +52,18 @@ const props = defineProps({
 
             <div class="flex flex-col w-44  ">
               <span class="text-sm text-gray-500">{{ service.latest_deployment.data.internalDomain }}</span>
-              <span v-if="service.latest_deployment.data.caddy[0]"
+              <!-- FIXME: collect urls from all processes -->
+              <span v-if="service.latest_deployment.data.processes[0].caddy[0]"
                     class="text-sm text-gray-400 text-nowrap truncate"
               >
-                <span v-if="service.latest_deployment.data.caddy[0].publishedPort === 80">http://</span>
-                <span v-else-if="service.latest_deployment.data.caddy[0].publishedPort === 443">https://</span>
-                <span class="text-black">{{ service.latest_deployment.data.caddy[0].domain }}</span>
-                <span>{{ service.latest_deployment.data.caddy[0].path }}</span>
+                <span v-if="service.latest_deployment.data.processes[0].caddy[0].publishedPort === 80">http://</span>
+                <span v-else-if="service.latest_deployment.data.processes[0].caddy[0].publishedPort === 443">https://</span>
+                <span class="text-black">{{ service.latest_deployment.processes[0].data.caddy[0].domain }}</span>
+                <span>{{ service.latest_deployment.data.processes[0].caddy[0].path }}</span>
               </span>
-              <span v-if="service.latest_deployment.data.caddy.length > 1"
+              <span v-if="service.latest_deployment.data.processes[0].caddy.length > 1"
                     class="text-xs text-gray-400"
-              >(+{{ service.latest_deployment.data.caddy.length - 1 }} more)</span>
+              >(+{{ service.latest_deployment.data.processes[0].caddy.length - 1 }} more)</span>
             </div>
 
 <!--          <pre>{{service}}</pre>-->

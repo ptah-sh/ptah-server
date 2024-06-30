@@ -1,5 +1,18 @@
 <script setup>
 import SectionTitle from './SectionTitle.vue';
+import {computed, useSlots} from "vue";
+
+const slots = useSlots();
+
+const contentClasses = computed(() => {
+  const base = 'px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg grid grid-cols-6 gap-4';
+
+  if (slots.tabs) {
+    return base + ' rounded-tl-none sm:rounded-tl-none';
+  }
+
+  return base;
+})
 </script>
 
 <template>
@@ -16,7 +29,11 @@ import SectionTitle from './SectionTitle.vue';
         </SectionTitle>
 
         <div class="mt-5 md:mt-0 md:col-span-2">
-            <div class="px-4 py-5 sm:p-6 bg-white dark:bg-gray-800 shadow sm:rounded-lg" v-auto-animate>
+          <div v-if="$slots.tabs">
+              <slot name="tabs" />
+          </div>
+
+            <div :class="contentClasses" v-auto-animate>
                 <slot name="content" />
             </div>
 

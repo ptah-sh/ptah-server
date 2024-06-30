@@ -8,7 +8,9 @@ class CreateSecretMeta extends AbstractTaskMeta
 {
     public function __construct(
         public int $deploymentId,
-        public string $path
+        public string $processName,
+        public string $path,
+        public string $hash
     )
     {
         //
@@ -16,6 +18,6 @@ class CreateSecretMeta extends AbstractTaskMeta
 
     public function formattedHtml(): string
     {
-        return "Create Docker Secret <code>$this->path</code>";
+        return "Create Docker Secret <code>$this->path</code> for process <code>{$this->processName}</code>";
     }
 }

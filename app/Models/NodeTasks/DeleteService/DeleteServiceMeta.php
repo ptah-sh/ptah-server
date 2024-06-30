@@ -8,6 +8,7 @@ class DeleteServiceMeta extends AbstractTaskMeta
 {
     public function __construct(
         public int $serviceId,
+        public string $processName,
         public string $serviceName,
     )
     {
@@ -16,6 +17,6 @@ class DeleteServiceMeta extends AbstractTaskMeta
 
     public function formattedHtml(): string
     {
-        return "Delete service <code>{$this->serviceName}</code>";
+        return "Delete process <code>{$this->processName}</code> of <code>{$this->serviceName}</code>";
     }
 }

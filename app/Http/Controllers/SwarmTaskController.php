@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\NodeTask\InitClusterFormRequest;
 use App\Models\DeploymentData;
+use App\Models\DeploymentData\LaunchMode;
 use App\Models\Network;
 use App\Models\Node;
 use App\Models\NodeTaskGroup;
@@ -104,55 +105,66 @@ class SwarmTaskController extends Controller
             ]);
 
             $deployment = $caddyService->deployments()->create([
-                'data' => DeploymentData::from([
-                    'dockerRegistryId' => null,
-                    'dockerImage' => 'caddy:2.8-alpine',
-                    'envVars' => [
-                        [
-                            'name' => 'CADDY_ADMIN',
-                            'value' => '0.0.0.0:2019',
-                        ]
-                    ],
-                    'secretVars' => [
-                        'vars' => [],
-                    ],
-                    'configFiles' => [
-                        [
-                            'path' => '/ptah/caddy/tls/.keep',
-                            'content' => '# Keep this file',
-                        ]
-                    ],
-                    'secretFiles' => [],
-                    'volumes' => [
-                        [
-                            'name' => 'data',
-                            'path' => '/data',
-                        ],
-                        [
-                            'name' => 'config',
-                            'path' => '/config',
-                        ]
-                    ],
+                'data' => DeploymentData::validateAndCreate([
                     'networkName' => $network->docker_name,
                     'internalDomain' => 'caddy.ptah.local',
-                    'ports' => [
+                    'placementNodeId' => null,
+                    'processes' => [
                         [
-                            'targetPort' => '80',
-                            'publishedPort' => '80',
-                        ],
-                        [
-                            'targetPort' => '443',
-                            'publishedPort' => '443',
-                        ],
-                        [
-                            'targetPort' => '2019',
-                            'publishedPort' => '2019',
+                            'name' => 'caddy',
+                            'launchMode' => LaunchMode::Daemon->value,
+                            'dockerRegistryId' => null,
+                            'dockerImage' => 'caddy:2.8-alpine',
+                            'command' => 'sh /start.sh',
+                            'envVars' => [
+                                [
+                                    'name' => 'CADDY_ADMIN',
+                                    'value' => '0.0.0.0:2019',
+                                ]
+                            ],
+                            'secretVars' => [
+                                'vars' => [],
+                            ],
+                            'configFiles' => [
+                                [
+                                    'path' => '/ptah/caddy/tls/.keep',
+                                    'content' => '# Keep this file',
+                                ],
+                                [
+                                    'path' => '/start.sh',
+                                    'content' => file_get_contents(resource_path('support/caddy/start.sh')),
+                                ]
+                            ],
+                            'secretFiles' => [],
+                            'volumes' => [
+                                [
+                                    'name' => 'data',
+                                    'path' => '/data',
+                                ],
+                                [
+                                    'name' => 'config',
+                                    'path' => '/config',
+                                ]
+                            ],
+                            'ports' => [
+                                [
+                                    'targetPort' => '80',
+                                    'publishedPort' => '80',
+                                ],
+                                [
+                                    'targetPort' => '443',
+                                    'publishedPort' => '443',
+                                ],
+                                [
+                                    'targetPort' => '2019',
+                                    'publishedPort' => '2019',
+                                ],
+                            ],
+                            'replicas' => 1,
+                            'caddy' => [],
+                            'fastcgiVars' => null,
                         ],
                     ],
-                    'replicas' => 1,
-                    'placementNodeId' => null,
-                    'caddy' => [],
-                    'fastcgiVars' => [],
                 ]),
             ]);
 
