@@ -51,7 +51,7 @@ class NodeController extends Controller
             $initTaskGroup = null;
         }
 
-        $lastAgentVersion = AgentRelease::latest()->sole()->tag_name;
+        $lastAgentVersion = AgentRelease::latest()->first()?->tag_name;
 
         $taskGroup = $node->actualTaskGroup(NodeTaskGroupType::SelfUpgrade);
 

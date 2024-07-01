@@ -16,6 +16,7 @@ use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
 use App\Models\NodeTasks\CreateService\CreateServiceMeta;
 use App\Rules\RequiredIfArrayHas;
 use App\Util\Arrays;
+use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Exists;
 use Spatie\LaravelData\Attributes\Validation\RequiredIf;
@@ -75,7 +76,38 @@ class DeploymentData extends Data
 
     public function copyWith(array $attributes): DeploymentData
     {
-        return DeploymentData::make(Arrays::niceMerge($this->toArray(), $attributes));
+        $result = $this->toArray();
+        $errors = [];
+
+        if (isset($attributes['processes'])) {
+            foreach ($attributes['processes'] as $idx => $process) {
+                if (!isset($process['name'])) {
+                    $errors["processes.{$idx}.name"] = "Process name is required";
+
+                    continue;
+                }
+
+                $processExists = false;
+
+                foreach ($result['processes'] as $existingIdx => $existingProcess) {
+                    if ($existingProcess['name'] === $process['name']) {
+                        $result['processes'][$existingIdx] = Arrays::niceMerge($existingProcess, $process);
+
+                        $processExists = true;
+                    }
+                }
+
+                if (!$processExists) {
+                    $errors["processes.{$idx}.name"] = "Process {$process['name']} does not exist";
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            throw ValidationException::withMessages($errors);
+        }
+
+        return DeploymentData::validateAndCreate($result);
     }
 
     public function findProcess(string $dockerName): ?Process
