@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Events\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeCompleted;
+use App\Events\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeFailed;
 use App\Events\NodeTasks\CreateConfig\CreateConfigCompleted;
 use App\Events\NodeTasks\CreateConfig\CreateConfigFailed;
 use App\Events\NodeTasks\CreateNetwork\CreateNetworkCompleted;
@@ -12,14 +14,20 @@ use App\Events\NodeTasks\CreateService\CreateServiceCompleted;
 use App\Events\NodeTasks\CreateService\CreateServiceFailed;
 use App\Events\NodeTasks\DeleteService\DeleteServiceCompleted;
 use App\Events\NodeTasks\DeleteService\DeleteServiceFailed;
+use App\Events\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeCompleted;
+use App\Events\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeFailed;
 use App\Events\NodeTasks\InitSwarm\InitSwarmCompleted;
 use App\Events\NodeTasks\InitSwarm\InitSwarmFailed;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigCompleted;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigFailed;
+use App\Events\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkCompleted;
+use App\Events\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkFailed;
 use App\Events\NodeTasks\UpdateNode\UpdateCurrentNodeCompleted;
 use App\Events\NodeTasks\UpdateNode\UpdateCurrentNodeFailed;
 use App\Events\NodeTasks\UpdateService\UpdateServiceCompleted;
 use App\Events\NodeTasks\UpdateService\UpdateServiceFailed;
+use App\Models\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeMeta;
+use App\Models\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeResult;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateConfig\CreateConfigResult;
 use App\Models\NodeTasks\CreateNetwork\CreateNetworkMeta;
@@ -30,10 +38,14 @@ use App\Models\NodeTasks\CreateService\CreateServiceMeta;
 use App\Models\NodeTasks\CreateService\CreateServiceResult;
 use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
 use App\Models\NodeTasks\DeleteService\DeleteServiceResult;
+use App\Models\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeMeta;
+use App\Models\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeResult;
 use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmResult;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigResult;
+use App\Models\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkMeta;
+use App\Models\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkResult;
 use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeMeta;
 use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeResult;
 use App\Models\NodeTasks\UpdateService\UpdateServiceMeta;
@@ -51,6 +63,9 @@ enum NodeTaskType: int
     case UpdateService = 6;
     case UpdateCurrentNode = 7;
     case DeleteService = 8;
+    case DownloadAgentUpgrade = 9;
+    case UpdateAgentSymlink = 10;
+    case ConfirmAgentUpgrade = 11;
 
     public function meta(): string
     {
@@ -64,6 +79,9 @@ enum NodeTaskType: int
             self::UpdateService => UpdateServiceMeta::class,
             self::UpdateCurrentNode => UpdateCurrentNodeMeta::class,
             self::DeleteService => DeleteServiceMeta::class,
+            self::DownloadAgentUpgrade => DownloadAgentUpgradeMeta::class,
+            self::UpdateAgentSymlink => UpdateAgentSymlinkMeta::class,
+            self::ConfirmAgentUpgrade => ConfirmAgentUpgradeMeta::class,
         };
     }
 
@@ -79,6 +97,9 @@ enum NodeTaskType: int
             self::UpdateService => UpdateServiceResult::class,
             self::UpdateCurrentNode => UpdateCurrentNodeResult::class,
             self::DeleteService => DeleteServiceResult::class,
+            self::DownloadAgentUpgrade => DownloadAgentUpgradeResult::class,
+            self::UpdateAgentSymlink => UpdateAgentSymlinkResult::class,
+            self::ConfirmAgentUpgrade => ConfirmAgentUpgradeResult::class,
         };
     }
 
@@ -94,6 +115,9 @@ enum NodeTaskType: int
             self::UpdateService => UpdateServiceCompleted::class,
             self::UpdateCurrentNode => UpdateCurrentNodeCompleted::class,
             self::DeleteService => DeleteServiceCompleted::class,
+            self::DownloadAgentUpgrade => DownloadAgentUpgradeCompleted::class,
+            self::UpdateAgentSymlink => UpdateAgentSymlinkCompleted::class,
+            self::ConfirmAgentUpgrade => ConfirmAgentUpgradeCompleted::class,
         };
     }
 
@@ -109,6 +133,9 @@ enum NodeTaskType: int
             self::UpdateService => UpdateServiceFailed::class,
             self::UpdateCurrentNode => UpdateCurrentNodeFailed::class,
             self::DeleteService => DeleteServiceFailed::class,
+            self::DownloadAgentUpgrade => DownloadAgentUpgradeFailed::class,
+            self::UpdateAgentSymlink => UpdateAgentSymlinkFailed::class,
+            self::ConfirmAgentUpgrade => ConfirmAgentUpgradeFailed::class,
         };
     }
 }

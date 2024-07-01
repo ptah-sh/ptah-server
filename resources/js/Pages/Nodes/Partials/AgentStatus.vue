@@ -4,10 +4,24 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import AgentInstall from "@/Pages/Nodes/Partials/AgentInstall.vue";
 import FormSection from "@/Components/FormSection.vue";
 import ValueCard from "@/Components/ValueCard.vue";
+import {useForm} from "@inertiajs/vue3";
 
-defineProps([
-    'node'
+const props = defineProps([
+    'node',
+    'lastAgentVersion',
 ])
+
+const upgradeAgentForm = useForm({
+  targetVersion: props.lastAgentVersion,
+})
+
+function upgradeAgent() {
+  upgradeAgentForm.post(route('nodes.upgrade-agent', {
+    node: props.node.id,
+  }), {
+    preserveScroll: true,
+  });
+}
 </script>
 <template>
   <FormSection>
@@ -32,8 +46,9 @@ defineProps([
       </div>
     </template>
 
-    <template #actions>
-      <PrimaryButton type="button">Upgrade to 1.1.1</PrimaryButton>
+    <template v-if="$props.lastAgentVersion !== $props.node.data.version && $props.node.online" #actions>
+      <a class="text-sm text-blue-700 hover:underline px-8" :href="'https://github.com/ptah-sh/ptah-agent/compare/' + $props.node.data.version + '...' + $props.lastAgentVersion" target="_blank">Compare {{$props.node.data.version}}...{{$props.lastAgentVersion}}</a>
+      <PrimaryButton type="button" @click="upgradeAgent">Upgrade to {{$props.lastAgentVersion}}</PrimaryButton>
     </template>
   </FormSection>
 </template>

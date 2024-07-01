@@ -59,4 +59,48 @@ class Node extends Model
 
         return $base->orderByDesc('id')->take(1)->get()[0] ?? null;
     }
+
+    public function upgradeAgent($targetVersion): void
+    {
+        $release = AgentRelease::where('tag_name', $targetVersion)->sole();
+
+        $taskGroup = NodeTaskGroup::create([
+            'swarm_id' => $this->swarm_id,
+            'node_id' => $this->id,
+            'type' => NodeTaskGroupType::SelfUpgrade,
+            'invoker_id' => auth()->user()->id,
+        ]);
+
+        $taskGroup->tasks()->createMany([
+            [
+                'type' => NodeTaskType::DownloadAgentUpgrade,
+                'meta' => [
+                    'targetVersion' => $targetVersion,
+                    'downloadUrl' => $release->download_url,
+                ],
+                'payload' => [
+                    'TargetVersion' => $targetVersion,
+                    'DownloadUrl' => $release->download_url,
+                ]
+            ],
+            [
+                'type' => NodeTaskType::UpdateAgentSymlink,
+                'meta' => [
+                    'targetVersion' => $targetVersion,
+                ],
+                'payload' => [
+                    'TargetVersion' => $targetVersion,
+                ]
+            ],
+            [
+                'type' => NodeTaskType::ConfirmAgentUpgrade,
+                'meta' => [
+                    'targetVersion' => $targetVersion,
+                ],
+                'payload' => [
+                    'TargetVersion' => $targetVersion,
+                ]
+            ]
+        ]);
+    }
 }

@@ -8,4 +8,5 @@ enum NodeTaskGroupType: int
     case CreateService = 1;
     case UpdateService = 2;
     case DeleteService = 3;
+    case SelfUpgrade = 4;
 }

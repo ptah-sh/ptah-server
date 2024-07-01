@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreNodeRequest;
 use App\Http\Requests\UpdateNodeRequest;
+use App\Models\AgentRelease;
 use App\Models\Node;
 use App\Models\NodeTaskGroupType;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class NodeController extends Controller
@@ -48,7 +51,16 @@ class NodeController extends Controller
             $initTaskGroup = null;
         }
 
-        return Inertia::render('Nodes/Show', ['node' => $node, 'initTaskGroup' => $initTaskGroup]);
+        $lastAgentVersion = AgentRelease::latest()->sole()->tag_name;
+
+        $taskGroup = $node->actualTaskGroup(NodeTaskGroupType::SelfUpgrade);
+
+        return Inertia::render('Nodes/Show', [
+            'node' => $node,
+            'initTaskGroup' => $initTaskGroup,
+            'lastAgentVersion' => $lastAgentVersion,
+            'agentUpgradeTaskGroup' => $taskGroup?->is_completed ? null : $taskGroup,
+        ]);
     }
 
     /**
@@ -73,5 +85,18 @@ class NodeController extends Controller
     public function destroy(Node $node)
     {
         //
+    }
+
+    public function upgradeAgent(Node $node, Request $request)
+    {
+        $req = $request->validate([
+            'targetVersion' => ['required', 'exists:agent_releases,tag_name'],
+        ]);
+
+        DB::transaction(function () use ($node, $req) {
+            $node->upgradeAgent($req['targetVersion']);
+        });
+
+        return to_route('nodes.show', ['node' => $node->id]);
     }
 }

@@ -15,7 +15,7 @@ import ActionSection from "@/Components/ActionSection.vue";
 
     <template #content>
         <div class="text-sm text-gray-600 dark:text-gray-400 col-span-full">
-          The Swarm Cluster has been initialized and is in a healthy state.
+          The Swarm Cluster has been initialized and is in a healthy state (not guaranteed, however: no health checks yet).
       </div>
     </template>
   </ActionSection>

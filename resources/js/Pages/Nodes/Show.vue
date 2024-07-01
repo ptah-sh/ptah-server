@@ -6,10 +6,13 @@ import AgentStatus from "@/Pages/Nodes/Partials/AgentStatus.vue";
 import SectionBorder from "@/Components/SectionBorder.vue";
 import InitSwarmProgress from "@/Pages/Nodes/Partials/InitSwarmProgress.vue";
 import SwarmDetails from "@/Pages/Nodes/Partials/SwarmDetails.vue";
+import AgentUpgradeStatus from "@/Pages/Nodes/Partials/AgentUpgradeStatus.vue";
 
 defineProps([
     'node',
     'initTaskGroup',
+    'lastAgentVersion',
+    'agentUpgradeTaskGroup',
 ]);
 </script>
 
@@ -19,7 +22,8 @@ defineProps([
 
       <SectionBorder />
 
-        <AgentStatus :node="$props.node"/>
+      <AgentUpgradeStatus v-if="$props.agentUpgradeTaskGroup" :task-group="$props.agentUpgradeTaskGroup" />
+      <AgentStatus v-else :node="$props.node" :lastAgentVersion="$props.lastAgentVersion"/>
 
       <SectionBorder v-if="$props.node.online" />
 
