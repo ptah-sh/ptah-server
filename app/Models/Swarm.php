@@ -14,7 +14,12 @@ class Swarm extends Model
     use HasOwningTeam;
 
     protected $fillable = [
-        'name'
+        'name',
+        'data'
+    ];
+
+    protected $casts = [
+        'data' => SwarmData::class,
     ];
 
     public function networks(): HasMany

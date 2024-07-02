@@ -15,7 +15,8 @@ import {nextTick, reactive, ref} from "vue";
 import ActionSection from "@/Components/ActionSection.vue";
 
 const props = defineProps({
-  service: Object
+  service: Object,
+  dockerRegistries: Array,
 })
 
 const serviceForm = useForm({
@@ -94,7 +95,7 @@ const closeDeletionModal = () => {
     </FormSection>
 
     <form @submit.prevent="deploy">
-      <DeploymentData v-model="deploymentForm" :errors="deploymentForm.errors" />
+      <DeploymentData v-model="deploymentForm" :errors="deploymentForm.errors" :docker-registries="$props.dockerRegistries" />
 
       <div class="flex justify-end">
         <PrimaryButton :class="{ 'opacity-25': deploymentForm.processing }" :disabled="deploymentForm.processing">

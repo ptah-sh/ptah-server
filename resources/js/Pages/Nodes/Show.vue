@@ -7,12 +7,14 @@ import SectionBorder from "@/Components/SectionBorder.vue";
 import InitSwarmProgress from "@/Pages/Nodes/Partials/InitSwarmProgress.vue";
 import SwarmDetails from "@/Pages/Nodes/Partials/SwarmDetails.vue";
 import AgentUpgradeStatus from "@/Pages/Nodes/Partials/AgentUpgradeStatus.vue";
+import DockerRegistries from "@/Pages/Nodes/Partials/DockerRegistries.vue";
 
 defineProps([
     'node',
     'initTaskGroup',
     'lastAgentVersion',
     'agentUpgradeTaskGroup',
+    'registryUpdateTaskGroup',
 ]);
 </script>
 
@@ -30,7 +32,13 @@ defineProps([
       <template v-if="$props.node.online">
         <NewSwarmCluster v-if="$props.node.swarm_id === null" :node="$props.node"/>
         <InitSwarmProgress v-if="$props.initTaskGroup" :taskGroup="$props.initTaskGroup" />
-        <SwarmDetails v-if="!$props.initTaskGroup && $props.node.swarm_id !== null" :node="$props.node"/>
+        <template v-if="!$props.initTaskGroup && $props.node.swarm_id !== null">
+          <SwarmDetails :node="$props.node"/>
+
+          <SectionBorder />
+
+          <DockerRegistries :swarm="$props.node.swarm" :task-group="$props.registryUpdateTaskGroup" />
+        </template>
       </template>
     </ShowLayout>
 </template>

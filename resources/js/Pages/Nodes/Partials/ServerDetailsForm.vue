@@ -37,7 +37,7 @@ const form = useForm({
             </div>
         </template>
 
-        <template #actions>
+        <template #submit>
             <PrimaryButton :disabled="form.processing">
                 Save
             </PrimaryButton>

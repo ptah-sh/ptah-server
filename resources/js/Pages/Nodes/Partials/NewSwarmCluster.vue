@@ -101,7 +101,7 @@ const submit = () => {
         </template>
 
 
-        <template #actions>
+        <template #submit>
             <PrimaryButton type="submit">Initialize Node</PrimaryButton>
         </template>
     </FormSection>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\NodeTaskGroupController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\SwarmController;
 use App\Http\Controllers\SwarmTaskController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -25,6 +26,8 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
+
+    Route::post('/swarms/{swarm}/update-docker-registries', [SwarmController::class, 'updateDockerRegistries'])->name('swarms.update-docker-registries');
 
     Route::post('/swarm-tasks/init-cluster', [SwarmTaskController::class, 'initCluster'])->name('swarm-tasks.init-cluster');
 

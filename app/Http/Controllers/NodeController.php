@@ -55,11 +55,19 @@ class NodeController extends Controller
 
         $taskGroup = $node->actualTaskGroup(NodeTaskGroupType::SelfUpgrade);
 
+        $node->load('swarm');
+
+        $registryTaskGroup = $node->actualTaskGroup(NodeTaskGroupType::UpdateDockerRegistries);
+        if ($registryTaskGroup?->is_completed) {
+            $registryTaskGroup = null;
+        }
+
         return Inertia::render('Nodes/Show', [
             'node' => $node,
             'initTaskGroup' => $initTaskGroup,
             'lastAgentVersion' => $lastAgentVersion,
             'agentUpgradeTaskGroup' => $taskGroup?->is_completed ? null : $taskGroup,
+            'registryUpdateTaskGroup' => $registryTaskGroup?->is_completed ? null : $registryTaskGroup
         ]);
     }
 

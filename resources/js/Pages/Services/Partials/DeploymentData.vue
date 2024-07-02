@@ -26,6 +26,7 @@ const props = defineProps({
   'networks': Array,
   'nodes': Array,
   'serviceName': String | undefined,
+  'dockerRegistries': Array,
   'errors': Object,
 });
 
@@ -236,16 +237,16 @@ const submitProcessRemoval = () => {
     </template>
 
     <template #content>
-      <FormField class="col-span-3" :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.dockerRegistryId`]">
+      <FormField class="col-span-2" :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.dockerRegistryId`]">
         <template #label>Docker Registry</template>
 
-        <Select v-model="model.processes[state.selectedProcessIndex['processes']].dockerRegistryId">
-          <option :value="null">Docker Hub (or another one with a public access)</option>
-          <!--                <option v-for="registry in $page.props.docker_registries" :value="registry.id">{{ registry.name }}</option>-->
+        <Select v-model="model.processes[state.selectedProcessIndex['processes']].dockerRegistry">
+          <option :value="null">Docker Hub / Anonymous</option>
+          <option v-for="registry in $props.dockerRegistries" :value="registry.dockerName">{{ registry.name }}</option>
         </Select>
       </FormField>
 
-      <FormField class="col-span-3" :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.dockerImage`]">
+      <FormField class="col-span-4" :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.dockerImage`]">
         <template #label>Docker Image</template>
 
         <div class="flex gap-4">

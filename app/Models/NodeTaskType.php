@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use App\Events\NodeTasks\CheckRegistryAuth\CheckRegistryAuthCompleted;
+use App\Events\NodeTasks\CheckRegistryAuth\CheckRegistryAuthFailed;
 use App\Events\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeCompleted;
 use App\Events\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeFailed;
 use App\Events\NodeTasks\CreateConfig\CreateConfigCompleted;
 use App\Events\NodeTasks\CreateConfig\CreateConfigFailed;
 use App\Events\NodeTasks\CreateNetwork\CreateNetworkCompleted;
 use App\Events\NodeTasks\CreateNetwork\CreateNetworkFailed;
+use App\Events\NodeTasks\CreateRegistryAuth\CreateRegistryAuthCompleted;
+use App\Events\NodeTasks\CreateRegistryAuth\CreateRegistryAuthFailed;
 use App\Events\NodeTasks\CreateSecret\CreateSecretCompleted;
 use App\Events\NodeTasks\CreateSecret\CreateSecretFailed;
 use App\Events\NodeTasks\CreateService\CreateServiceCompleted;
@@ -18,6 +22,8 @@ use App\Events\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeCompleted;
 use App\Events\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeFailed;
 use App\Events\NodeTasks\InitSwarm\InitSwarmCompleted;
 use App\Events\NodeTasks\InitSwarm\InitSwarmFailed;
+use App\Events\NodeTasks\PullDockerImage\PullDockerImageCompleted;
+use App\Events\NodeTasks\PullDockerImage\PullDockerImageFailed;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigCompleted;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigFailed;
 use App\Events\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkCompleted;
@@ -26,12 +32,18 @@ use App\Events\NodeTasks\UpdateNode\UpdateCurrentNodeCompleted;
 use App\Events\NodeTasks\UpdateNode\UpdateCurrentNodeFailed;
 use App\Events\NodeTasks\UpdateService\UpdateServiceCompleted;
 use App\Events\NodeTasks\UpdateService\UpdateServiceFailed;
+use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
+use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigResult;
+use App\Models\NodeTasks\CheckRegistryAuth\CheckRegistryAuthMeta;
+use App\Models\NodeTasks\CheckRegistryAuth\CheckRegistryAuthResult;
 use App\Models\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeMeta;
 use App\Models\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeResult;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateConfig\CreateConfigResult;
 use App\Models\NodeTasks\CreateNetwork\CreateNetworkMeta;
 use App\Models\NodeTasks\CreateNetwork\CreateNetworkResult;
+use App\Models\NodeTasks\CreateRegistryAuth\CreateRegistryAuthMeta;
+use App\Models\NodeTasks\CreateRegistryAuth\CreateRegistryAuthResult;
 use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretResult;
 use App\Models\NodeTasks\CreateService\CreateServiceMeta;
@@ -42,8 +54,8 @@ use App\Models\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeMeta;
 use App\Models\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeResult;
 use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmResult;
-use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
-use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigResult;
+use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
+use App\Models\NodeTasks\PullDockerImage\PullDockerImageResult;
 use App\Models\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkMeta;
 use App\Models\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkResult;
 use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeMeta;
@@ -66,6 +78,9 @@ enum NodeTaskType: int
     case DownloadAgentUpgrade = 9;
     case UpdateAgentSymlink = 10;
     case ConfirmAgentUpgrade = 11;
+    case CreateRegistryAuth = 12;
+    case CheckRegistryAuth = 13;
+    case PullDockerImage = 14;
 
     public function meta(): string
     {
@@ -82,6 +97,9 @@ enum NodeTaskType: int
             self::DownloadAgentUpgrade => DownloadAgentUpgradeMeta::class,
             self::UpdateAgentSymlink => UpdateAgentSymlinkMeta::class,
             self::ConfirmAgentUpgrade => ConfirmAgentUpgradeMeta::class,
+            self::CreateRegistryAuth => CreateRegistryAuthMeta::class,
+            self::CheckRegistryAuth => CheckRegistryAuthMeta::class,
+            self::PullDockerImage => PullDockerImageMeta::class,
         };
     }
 
@@ -100,6 +118,9 @@ enum NodeTaskType: int
             self::DownloadAgentUpgrade => DownloadAgentUpgradeResult::class,
             self::UpdateAgentSymlink => UpdateAgentSymlinkResult::class,
             self::ConfirmAgentUpgrade => ConfirmAgentUpgradeResult::class,
+            self::CreateRegistryAuth => CreateRegistryAuthResult::class,
+            self::CheckRegistryAuth => CheckRegistryAuthResult::class,
+            self::PullDockerImage => PullDockerImageResult::class,
         };
     }
 
@@ -118,6 +139,9 @@ enum NodeTaskType: int
             self::DownloadAgentUpgrade => DownloadAgentUpgradeCompleted::class,
             self::UpdateAgentSymlink => UpdateAgentSymlinkCompleted::class,
             self::ConfirmAgentUpgrade => ConfirmAgentUpgradeCompleted::class,
+            self::CreateRegistryAuth => CreateRegistryAuthCompleted::class,
+            self::CheckRegistryAuth => CheckRegistryAuthCompleted::class,
+            self::PullDockerImage => PullDockerImageCompleted::class,
         };
     }
 
@@ -136,6 +160,9 @@ enum NodeTaskType: int
             self::DownloadAgentUpgrade => DownloadAgentUpgradeFailed::class,
             self::UpdateAgentSymlink => UpdateAgentSymlinkFailed::class,
             self::ConfirmAgentUpgrade => ConfirmAgentUpgradeFailed::class,
+            self::CreateRegistryAuth => CreateRegistryAuthFailed::class,
+            self::CheckRegistryAuth => CheckRegistryAuthFailed::class,
+            self::PullDockerImage => PullDockerImageFailed::class,
         };
     }
 }

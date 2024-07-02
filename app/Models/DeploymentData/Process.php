@@ -3,10 +3,10 @@
 namespace App\Models\DeploymentData;
 
 use App\Models\Deployment;
-use App\Models\DeploymentData;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
 use App\Models\NodeTasks\CreateService\CreateServiceMeta;
+use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTaskType;
 use App\Rules\RequiredIfArrayHas;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
@@ -19,7 +19,7 @@ class Process extends Data
     public function __construct(
         public string $name,
         public ?string $dockerName,
-        public ?int   $dockerRegistryId,
+        public ?string   $dockerRegistry,
         public string $dockerImage,
         public ?string $command,
         #[Enum(LaunchMode::class)]
@@ -154,6 +154,22 @@ class Process extends Data
         }
 
         $tasks[] = [
+            'type' => NodeTaskType::PullDockerImage,
+            'meta' => PullDockerImageMeta::from([
+                'deploymentId' => $deployment->id,
+                'processName' => $this->dockerName,
+                'serviceId' => $deployment->service_id,
+                'serviceName' => $deployment->service->name,
+                'dockerImage' => $this->dockerImage,
+            ]),
+            'payload' => [
+                'AuthConfigName' => $this->dockerRegistry,
+                'Image' => $this->dockerImage,
+                'PullOptions' => (object) [],
+            ],
+        ];
+
+        $tasks[] = [
             'type' => $previous ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
             'meta' => CreateServiceMeta::from([
                 'deploymentId' => $deployment->id,
@@ -162,7 +178,7 @@ class Process extends Data
                 'serviceName' => $deployment->service->name,
             ]),
             'payload' => [
-//                    'AuthConfigName' => "",
+                'AuthConfigName' => $this->dockerRegistry,
                 'SecretVars' => (object) $this->getSecretVars($previous, $labels),
                 'SwarmServiceSpec' => [
                     'Name' => $this->dockerName,

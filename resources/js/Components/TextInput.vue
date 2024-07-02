@@ -1,8 +1,9 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import {computed, onMounted, ref} from 'vue';
 
-defineProps({
+const props = defineProps({
     modelValue: String | Number,
+  disabled: Boolean,
 });
 
 defineEmits(['update:modelValue']);
@@ -16,13 +17,20 @@ onMounted(() => {
 });
 
 defineExpose({ focus: () => input.value.focus() });
+
+const classes = computed(() => {
+  const base = 'border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm';
+
+  return props.disabled ? `${base} opacity-50 cursor-not-allowed bg-gray-200` : base;
+})
 </script>
 
 <template>
     <input
         ref="input"
-        class="border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+        :class="classes"
         :value="modelValue"
+        :disabled="props.disabled"
         @input="$emit('update:modelValue', $event.target.value)"
     >
 </template>

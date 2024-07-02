@@ -9,13 +9,12 @@ use App\Models\Network;
 use App\Models\Node;
 use App\Models\NodeTaskGroup;
 use App\Models\NodeTaskGroupType;
-use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateNetwork\CreateNetworkMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeMeta;
 use App\Models\NodeTaskType;
 use App\Models\Swarm;
-use Illuminate\Database\Eloquent\Casts\Json;
+use App\Models\SwarmData;
 use Illuminate\Support\Facades\DB;
 
 class SwarmTaskController extends Controller
@@ -25,6 +24,10 @@ class SwarmTaskController extends Controller
         DB::transaction(function () use ($request) {
             $swarm = Swarm::create([
                 'name' => $request->name,
+                'data' => SwarmData::validateAndCreate([
+                    'registriesRev' => 0,
+                    'registries' => [],
+                ]),
             ]);
 
             $node = Node::find($request->node_id);
@@ -132,7 +135,7 @@ class SwarmTaskController extends Controller
                                 ],
                                 [
                                     'path' => '/start.sh',
-                                    'content' => file_get_contents(resource_path('support/caddy/start.sh')),
+                                    'content' => trim(file_get_contents(resource_path('support/caddy/start.sh'))),
                                 ]
                             ],
                             'secretFiles' => [],

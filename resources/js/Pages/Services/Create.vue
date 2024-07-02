@@ -20,6 +20,7 @@ const props = defineProps({
   'networks': Array,
   'nodes': Array,
   'deploymentData': Object,
+  'dockerRegistries': Array,
 })
 
 const form = useForm({
@@ -66,7 +67,7 @@ const createService = () => {
           </template>
         </ActionSection>
 
-        <DeploymentData v-model="form.deploymentData" :networks="networks" :nodes="nodes" :errors="form.errors" :service-name="form.name" />
+        <DeploymentData v-model="form.deploymentData" :networks="networks" :nodes="nodes" :errors="form.errors" :service-name="form.name" :docker-registries="$props.dockerRegistries" />
 
         <div class="flex justify-end">
           <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">

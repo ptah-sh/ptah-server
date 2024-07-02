@@ -2,26 +2,13 @@
 
 namespace App\Models;
 
-use App\Models\DeploymentData\Caddy;
-use App\Models\DeploymentData\ConfigFile;
-use App\Models\DeploymentData\EnvVar;
-use App\Models\DeploymentData\FastCgi;
 use App\Models\DeploymentData\LaunchMode;
-use App\Models\DeploymentData\NodePort;
 use App\Models\DeploymentData\Process;
 use App\Models\DeploymentData\SecretVars;
-use App\Models\DeploymentData\Volume;
-use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
-use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
-use App\Models\NodeTasks\CreateService\CreateServiceMeta;
-use App\Rules\RequiredIfArrayHas;
 use App\Util\Arrays;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Exists;
-use Spatie\LaravelData\Attributes\Validation\RequiredIf;
-use Spatie\LaravelData\Attributes\Validation\RequiredUnless;
-use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Data;
 
 class DeploymentData extends Data
@@ -44,7 +31,7 @@ class DeploymentData extends Data
     {
         $processDefaults = [
             'name' => 'svc',
-            'dockerRegistryId' => null,
+            'dockerRegistry' => null,
             'dockerImage' => '',
             'command' => '',
             'launchMode' => LaunchMode::Daemon->value,

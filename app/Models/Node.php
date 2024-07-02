@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Traits\HasOwningTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Str;
@@ -31,6 +32,11 @@ class Node extends Model
         self::creating(function (Node $node) {
             $node->agent_token = Str::random(42);
         });
+    }
+
+    public function swarm(): BelongsTo
+    {
+        return $this->belongsTo(Swarm::class);
     }
 
     public function taskGroups(): HasMany
