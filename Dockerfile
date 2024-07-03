@@ -1,5 +1,7 @@
 FROM bitnami/php-fpm:latest
 
+RUN echo "extension=pdo_pgsql.so" >> /opt/bitnami/php/etc/php.ini
+
 RUN install_packages nodejs npm \
     && apt-get clean && rm -rf /var/lib/apt/lists /var/cache/apt/archives
 

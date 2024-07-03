@@ -88,11 +88,13 @@ class SwarmController extends Controller
             $tasks = [];
 
             foreach ($swarmData->registries as $registry) {
-                $previous = $swarm->data->findRegistry($registry->dockerName);
-                if ($registry->sameAs($previous)) {
-                    $registry->dockerName = $previous->dockerName;
+                $previous = $registry->dockerName ? $swarm->data->findRegistry($registry->dockerName) : null;
+                if ($previous) {
+                    if ($registry->sameAs($previous)) {
+                        $registry->dockerName = $previous->dockerName;
 
-                    continue;
+                        continue;
+                    }
                 }
 
                 $registry->dockerName = dockerize_name('registry_r' . $swarmData->registriesRev . '_' . $registry->name);

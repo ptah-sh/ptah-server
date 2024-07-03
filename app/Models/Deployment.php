@@ -133,7 +133,7 @@ class Deployment extends Model
                                                             ],
                                                         ],
                                                     ],
-                                                    'transport' => $this->getTransportOptions($caddy),
+                                                    'transport' => $this->getTransportOptions($caddy, $process),
                                                     'upstreams' => [
                                                         [
                                                             'dial' => "{$process->name}.{$deployment->data->internalDomain}:{$caddy->targetPort}",
@@ -192,7 +192,7 @@ class Deployment extends Model
         ];
     }
 
-    protected function getTransportOptions(Caddy $caddy): array
+    protected function getTransportOptions(Caddy $caddy, Process $process): array
     {
         if ($caddy->targetProtocol === 'http') {
             return [
@@ -203,8 +203,8 @@ class Deployment extends Model
         if ($caddy->targetProtocol === 'fastcgi') {
             return [
                 'protocol' => 'fastcgi',
-                'root' => $caddy->fastCgi->root,
-                'env' => collect($caddy->fastcgiVars)->reduce(fn ($carry, EnvVar $var) => [...$carry, $var->name => $var->value], []),
+                'root' => $process->fastCgi->root,
+                'env' => (object) collect($process->fastCgi->env)->reduce(fn ($carry, EnvVar $var) => [...$carry, $var->name => $var->value], []),
             ];
         }
 

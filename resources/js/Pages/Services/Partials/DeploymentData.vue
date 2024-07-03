@@ -130,12 +130,14 @@ const hasFastCgiHandlers = computed(() => {
   return model.value.processes[state.selectedProcessIndex['caddy']].caddy.some((caddy) => caddy.targetProtocol === 'fastcgi')
 })
 
+const defaultFastCgi = {
+  root: '',
+  env: [],
+};
+
 effect(() => {
   model.value.processes[state.selectedProcessIndex['caddy']].fastCgi = hasFastCgiHandlers.value
-      ? {
-        root: '',
-        env: [],
-      }
+      ? (model.value.processes[state.selectedProcessIndex['caddy']].fastCgi || defaultFastCgi)
       : null;
 });
 

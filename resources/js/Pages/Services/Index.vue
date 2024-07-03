@@ -58,7 +58,7 @@ const props = defineProps({
               >
                 <span v-if="service.latest_deployment.data.processes[0].caddy[0].publishedPort === 80">http://</span>
                 <span v-else-if="service.latest_deployment.data.processes[0].caddy[0].publishedPort === 443">https://</span>
-                <span class="text-black">{{ service.latest_deployment.processes[0].data.caddy[0].domain }}</span>
+                <span class="text-black">{{ service.latest_deployment.data.processes[0].caddy[0].domain }}</span>
                 <span>{{ service.latest_deployment.data.processes[0].caddy[0].path }}</span>
               </span>
               <span v-if="service.latest_deployment.data.processes[0].caddy.length > 1"
