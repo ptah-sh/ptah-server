@@ -69,6 +69,11 @@ class Service extends Model
         return $this->hasOne(Deployment::class)->latest();
     }
 
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(NodeTask::class, 'meta__service_id', 'id');
+    }
+
     public function makeResourceName($name): string
     {
         return dockerize_name("svc_" . $this->id . '_'. $name);

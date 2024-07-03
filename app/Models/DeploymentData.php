@@ -18,7 +18,7 @@ class DeploymentData extends Data
 //        #[Exists(Network::class, 'networkName')]
         public string    $networkName,
         public string $internalDomain,
-        #[Exists(Node::class)]
+        #[Exists(Node::class, 'id')]
         public ?int   $placementNodeId,
         #[DataCollectionOf(Process::class)]
         /* @var Process[] */

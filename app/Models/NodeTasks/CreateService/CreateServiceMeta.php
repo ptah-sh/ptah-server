@@ -8,9 +8,9 @@ class CreateServiceMeta extends AbstractTaskMeta
 {
     public function __construct(
         public int $deploymentId,
-        public string $processName,
         public int $serviceId,
-        public string $serviceName
+        public string $serviceName,
+        public string $processName
     )
     {
         //

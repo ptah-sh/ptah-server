@@ -3,10 +3,12 @@
 namespace App\Models\DeploymentData;
 
 use App\Models\Deployment;
+use App\Models\NodeTask;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
 use App\Models\NodeTasks\CreateService\CreateServiceMeta;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
+use App\Models\NodeTasks\UpdateService\UpdateServiceMeta;
 use App\Models\NodeTaskType;
 use App\Rules\RequiredIfArrayHas;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
@@ -169,14 +171,19 @@ class Process extends Data
             ],
         ];
 
+        $serviceTaskMeta = [
+            'deploymentId' => $deployment->id,
+            'processName' => $this->dockerName,
+            'serviceId' => $deployment->service_id,
+            'serviceName' => $deployment->service->name,
+        ];
+
+        // FIXME: this is going to work wrong if the initial deployment is pending.
+        $actionUpdate = $deployment->service->tasks()->ofType(NodeTaskType::CreateService)->completed()->exists();
+
         $tasks[] = [
-            'type' => $previous ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
-            'meta' => CreateServiceMeta::from([
-                'deploymentId' => $deployment->id,
-                'processName' => $this->dockerName,
-                'serviceId' => $deployment->service_id,
-                'serviceName' => $deployment->service->name,
-            ]),
+            'type' => $actionUpdate ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
+            'meta' => $actionUpdate ? UpdateServiceMeta::from($serviceTaskMeta) : CreateServiceMeta::from($serviceTaskMeta),
             'payload' => [
                 'AuthConfigName' => $this->dockerRegistry,
                 'SecretVars' => (object) $this->getSecretVars($previous, $labels),
@@ -185,7 +192,6 @@ class Process extends Data
                     'Labels' => $labels,
                     'TaskTemplate' => [
                         'ContainerSpec' => [
-                            // TODO: !!!!!!!!!!!!!!!!!!!!! add CMD from $this->command
                             'Image' => $this->dockerImage,
                             'Labels' => $labels,
                             'Command' => $command,

@@ -96,7 +96,7 @@ const addProcess = () => {
   model.value.processes.push({
     id: makeId('process'),
     name: 'worker' + newIndex,
-      'dockerRegistryId': null,
+      'dockerRegistry': null,
       'dockerImage': '',
       'command': '',
       'launchMode': 'daemon',
@@ -272,10 +272,12 @@ const submitProcessRemoval = () => {
         </div>
       </FormField>
 
-      <FormField class="col-span-2" :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.name`]">
+      <FormField class="col-span-2 relative" :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.name`]">
         <template #label>Name</template>
 
         <TextInput v-model="model.processes[state.selectedProcessIndex['processes']].name" class="block w-full" placeholder="queue-worker"/>
+
+      <span class="text-gray-500 text-xs">{{ model.processes[state.selectedProcessIndex['processes']].name }}.{{ model.internalDomain }}</span>
       </FormField>
 
       <FormField class="col-span-2" :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.launchMode`]">
@@ -288,7 +290,7 @@ const submitProcessRemoval = () => {
         </Select>
       </FormField>
 
-      <FormField v-if="model.processes[state.selectedProcessIndex['processes']].launchMode === 'scheduled'" class="col-span-2"
+      <FormField v-if="model.processes[state.selectedProcessIndex['processes']].launchMode === 'scheduled'" class="col-span-1"
                  :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.interval`]"
       >
         <template #label>Interval</template>
@@ -818,7 +820,7 @@ const submitProcessRemoval = () => {
     </template>
 
     <template #content>
-      Are you sure you want to delete <b><code>{{ model.processes[state.selectedProcessIndex['processes']].name }}</code></b>? Once the process is deleted, all of its resources and data will be permanently deleted. Please enter the process name password to confirm you would like to permanently delete it.
+      Are you sure you want to delete <b><code>{{ model.processes[state.selectedProcessIndex['processes']].name }}</code></b>? Once the process is deleted, all of its resources and data will be permanently deleted. Please enter the process name to confirm you would like to permanently delete it.
 
       <div class="mt-4" v-auto-animate>
         <TextInput

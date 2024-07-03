@@ -87,7 +87,7 @@ const closeDeletionModal = () => {
         <ServiceDetailsForm v-model="serviceForm" :team="$props.service.team" :swarms="[$props.service.swarm]" />
       </template>
 
-      <template #actions>
+      <template #submit>
         <PrimaryButton :class="{ 'opacity-25': serviceForm.processing }" :disabled="serviceForm.processing">
           Save
         </PrimaryButton>
@@ -131,7 +131,7 @@ const closeDeletionModal = () => {
             </template>
 
             <template #content>
-              Are you sure you want to delete <b><code>{{ service.name }}</code></b>? Once the service is deleted, all of its resources and data will be permanently deleted. Please enter the service name password to confirm you would like to permanently delete it.
+              Are you sure you want to delete <b><code>{{ service.name }}</code></b>? Once the service is deleted, all of its resources and data will be permanently deleted. Please enter the service name to confirm you would like to permanently delete it.
 
               <div class="mt-4" v-auto-animate>
                 <TextInput

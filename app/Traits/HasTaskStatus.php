@@ -38,6 +38,11 @@ trait HasTaskStatus
         return $builder->where($builder->qualifyColumn('status'), TaskStatus::Failed);
     }
 
+    public function scopeCompleted(Builder $builder): Builder
+    {
+        return $builder->where($builder->qualifyColumn('status'), TaskStatus::Completed);
+    }
+
     public function scopeUnsuccessful(Builder $builder): Builder
     {
         return $builder->whereIn($builder->qualifyColumn('status'), [TaskStatus::Failed, TaskStatus::Canceled]);
