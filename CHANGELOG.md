@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.0](https://github.com/ptah-sh/ptah-server/compare/v0.0.1...v0.1.0) (2024-07-03)
+
+
+### Features
+
+* [#30](https://github.com/ptah-sh/ptah-server/issues/30) enable pdo_pgsql ext ([a10c846](https://github.com/ptah-sh/ptah-server/commit/a10c84623291ad3a9f36d3284a5d25da719b1f6d))
+
+
+### Bug Fixes
+
+* [#38](https://github.com/ptah-sh/ptah-server/issues/38) retry service creation if the initial deployment failed ([ca5065d](https://github.com/ptah-sh/ptah-server/commit/ca5065de8cbeb396908a8255957fee3029210ab4))
+
 ## 0.0.1 (2024-07-02)
 
 
