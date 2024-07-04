@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/ptah-sh/ptah-server/compare/v0.9.0...v0.10.0) (2024-07-04)
+
+
+### Features
+
+* [#54](https://github.com/ptah-sh/ptah-server/issues/54) fix laravel-data caching ([0b8edc1](https://github.com/ptah-sh/ptah-server/commit/0b8edc16431f698c6a3054538fa68e4d984c14f3))
+
 ## [0.9.0](https://github.com/ptah-sh/ptah-server/compare/v0.8.0...v0.9.0) (2024-07-04)
 
 
