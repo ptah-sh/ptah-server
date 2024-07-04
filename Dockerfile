@@ -25,4 +25,8 @@ RUN composer install
 
 RUN npm run build \
     && apt-get -y remove npm \
+    && apt-get -y clean \
     && apt-get -y autoremove \
+    && rm -rf /var/lib/apt/lists /var/cache/apt/archives \
+    && rm -rf node_modules/ \
+    && chown -R daemon:daemon .
