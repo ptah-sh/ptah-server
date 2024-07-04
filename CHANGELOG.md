@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/ptah-sh/ptah-server/compare/v0.4.0...v0.5.0) (2024-07-04)
+
+
+### Features
+
+* [#30](https://github.com/ptah-sh/ptah-server/issues/30) bundle pdo_pgsql ([6dbbe93](https://github.com/ptah-sh/ptah-server/commit/6dbbe937a41e8e67fef4fb49f52d5eb9879e1b2c))
+
 ## [0.4.0](https://github.com/ptah-sh/ptah-server/compare/v0.3.0...v0.4.0) (2024-07-04)
 
 
