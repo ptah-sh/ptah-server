@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/ptah-sh/ptah-server/compare/v0.2.0...v0.3.0) (2024-07-04)
+
+
+### Features
+
+* [#30](https://github.com/ptah-sh/ptah-server/issues/30) try frankenphp to serve the php app and static files ([f2ecb99](https://github.com/ptah-sh/ptah-server/commit/f2ecb9984c0928b45c024e1cb8a2a18e977c9dd1))
+
 ## [0.2.0](https://github.com/ptah-sh/ptah-server/compare/v0.1.0...v0.2.0) (2024-07-04)
 
 
