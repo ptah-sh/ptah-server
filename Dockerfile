@@ -7,8 +7,7 @@ RUN apt-get update \
     && docker-php-ext-configure pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql \
     && docker-php-source delete \
-    && awk 'NR==1 {print; print "\tservers {\n\t\ttrusted_proxies static private_ranges\n\t}\n"; next} 1' /etc/caddy/Caddyfile > /etc/caddy/Caddyfile.tmp \
-    && mv /etc/caddy/Caddyfile.tmp /etc/caddy/Caddyfile
+    && awk 'NR==1 {print; print "\tservers {\n\t\ttrusted_proxies static private_ranges\n\t}\n"; next} 1' /etc/caddy/Caddyfile > /etc/caddy/Caddyfile
 
 WORKDIR /app
 
@@ -27,9 +26,10 @@ RUN php composer.phar install --no-scripts
 
 COPY . .
 
-RUN php composer.phar install
-
-RUN npm run build \
+RUN php composer.phar install \
+    && npm run build \
+    && php artisan optimize \
+    && php artisan data:cache-structures \
     && apt-get -y remove npm unzip \
     && apt-get -y clean \
     && apt-get -y autoremove \

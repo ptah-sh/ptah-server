@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\DeploymentData\LaunchMode;
 use App\Models\DeploymentData\Process;
+use App\Models\DeploymentData\ReleaseCommand;
 use App\Models\DeploymentData\SecretVars;
 use App\Util\Arrays;
 use Illuminate\Validation\ValidationException;
@@ -33,6 +34,9 @@ class DeploymentData extends Data
             'name' => 'svc',
             'dockerRegistry' => null,
             'dockerImage' => '',
+            'releaseCommand' => ReleaseCommand::from([
+                'command' => null,
+            ]),
             'command' => '',
             'launchMode' => LaunchMode::Daemon->value,
             'envVars' => [],

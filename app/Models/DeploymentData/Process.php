@@ -23,6 +23,7 @@ class Process extends Data
         public ?string $dockerName,
         public ?string   $dockerRegistry,
         public string $dockerImage,
+        public ReleaseCommand $releaseCommand,
         public ?string $command,
         #[Enum(LaunchMode::class)]
         public string $launchMode,
@@ -186,6 +187,7 @@ class Process extends Data
             'meta' => $actionUpdate ? UpdateServiceMeta::from($serviceTaskMeta) : CreateServiceMeta::from($serviceTaskMeta),
             'payload' => [
                 'AuthConfigName' => $this->dockerRegistry,
+                'ReleaseCommand' => $this->getReleaseCommandPayload($deployment, $labels),
                 'SecretVars' => (object) $this->getSecretVars($previous, $labels),
                 'SwarmServiceSpec' => [
                     'Name' => $this->dockerName,
@@ -297,5 +299,27 @@ class Process extends Data
     public function makeResourceName(string $name): string
     {
         return dockerize_name($this->dockerName . '_' . $name);
+    }
+
+    private function getReleaseCommandPayload(Deployment $deployment, array $labels): array
+    {
+        if (!$this->releaseCommand->command) {
+            return [
+                'ConfigName' => '',
+                'ConfigLabels' => (object) [],
+                'Command' => '',
+            ];
+        }
+
+        // Always create a new config, as the command may be the same, but the image/entrypoint may be different.
+        $this->releaseCommand->dockerName = $deployment->makeResourceName('release_command');
+        return [
+            'ConfigName' => $this->releaseCommand->dockerName,
+            'ConfigLabels' => dockerize_labels([
+                ...$labels,
+                'kind' => 'release-command',
+            ]),
+            'Command' => $this->releaseCommand->command,
+        ];
     }
 }

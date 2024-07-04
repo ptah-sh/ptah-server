@@ -46,7 +46,7 @@ function upgradeAgent() {
       </div>
     </template>
 
-    <template v-if="$props.lastAgentVersion !== $props.node.data.version && $props.node.online" #submit>
+    <template v-if="$props.node.online && $props.lastAgentVersion !== $props.node.data.version" #submit>
       <a class="text-sm text-blue-700 hover:underline px-8" :href="'https://github.com/ptah-sh/ptah-agent/compare/' + $props.node.data.version + '...' + $props.lastAgentVersion" target="_blank">Compare {{$props.node.data.version}}...{{$props.lastAgentVersion}}</a>
       <PrimaryButton type="button" @click="upgradeAgent">Upgrade to {{$props.lastAgentVersion}}</PrimaryButton>
     </template>

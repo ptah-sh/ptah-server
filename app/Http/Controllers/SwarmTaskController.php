@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\NodeTask\InitClusterFormRequest;
 use App\Models\DeploymentData;
 use App\Models\DeploymentData\LaunchMode;
+use App\Models\DeploymentData\ReleaseCommand;
 use App\Models\Network;
 use App\Models\Node;
 use App\Models\NodeTaskGroup;
@@ -118,6 +119,9 @@ class SwarmTaskController extends Controller
                             'launchMode' => LaunchMode::Daemon->value,
                             'dockerRegistryId' => null,
                             'dockerImage' => 'caddy:2.8-alpine',
+                            'releaseCommand' => [
+                                'command' => null,
+                            ],
                             'command' => 'sh /start.sh',
                             'envVars' => [
                                 [
