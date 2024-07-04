@@ -12,6 +12,7 @@ WORKDIR /app
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV SERVER_NAME=":8080"
+ENV CADDY_SERVER_EXTRA_DIRECTIVES="trusted_proxies private_ranges"
 
 COPY package.json .
 COPY package-lock.json .
