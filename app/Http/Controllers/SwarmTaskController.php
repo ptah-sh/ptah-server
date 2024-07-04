@@ -99,6 +99,8 @@ class SwarmTaskController extends Controller
                             'Labels' => dockerize_labels([
                                 'network.id' => $network->id
                             ]),
+                            'Scope' => 'swarm',
+                            'Attachable' => true
                         ],
                     ],
                 ],
@@ -115,7 +117,7 @@ class SwarmTaskController extends Controller
                     'placementNodeId' => null,
                     'processes' => [
                         [
-                            'name' => 'caddy',
+                            'name' => 'svc',
                             'launchMode' => LaunchMode::Daemon->value,
                             'dockerRegistryId' => null,
                             'dockerImage' => 'caddy:2.8-alpine',
@@ -123,6 +125,7 @@ class SwarmTaskController extends Controller
                                 'command' => null,
                             ],
                             'command' => 'sh /start.sh',
+                            'workers' => [],
                             'envVars' => [
                                 [
                                     'name' => 'CADDY_ADMIN',

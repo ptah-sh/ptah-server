@@ -10,7 +10,7 @@ class UpdateServiceMeta extends AbstractTaskMeta
         public int $deploymentId,
         public int $serviceId,
         public string $serviceName,
-        public string $processName
+        public string $dockerName
     )
     {
         //
@@ -18,6 +18,6 @@ class UpdateServiceMeta extends AbstractTaskMeta
 
     public function formattedHtml(): string
     {
-        return "Update Docker process <code>{$this->processName}</code> in <code>$this->serviceName</code>";
+        return "Update Docker Service <code>{$this->dockerName}</code> of <code>$this->serviceName</code>";
     }
 }

@@ -10,7 +10,7 @@ class CreateServiceMeta extends AbstractTaskMeta
         public int $deploymentId,
         public int $serviceId,
         public string $serviceName,
-        public string $processName
+        public string $dockerName
     )
     {
         //
@@ -18,6 +18,6 @@ class CreateServiceMeta extends AbstractTaskMeta
 
     public function formattedHtml(): string
     {
-        return "Create Docker Service <code>$this->serviceName</code> for process <code>{$this->processName}</code>";
+        return "Create Docker Service <code>$this->dockerName</code> of <code>{$this->serviceName}</code>";
     }
 }

@@ -7,8 +7,8 @@ use App\Models\NodeTasks\AbstractTaskMeta;
 class DeleteServiceMeta extends AbstractTaskMeta
 {
     public function __construct(
-        public int $serviceId,
-        public string $processName,
+        public int    $serviceId,
+        public string $dockerName,
         public string $serviceName,
     )
     {
@@ -17,6 +17,6 @@ class DeleteServiceMeta extends AbstractTaskMeta
 
     public function formattedHtml(): string
     {
-        return "Delete process <code>{$this->processName}</code> of <code>{$this->serviceName}</code>";
+        return "Delete Docker Service <code>{$this->dockerName}</code> of <code>{$this->serviceName}</code>";
     }
 }

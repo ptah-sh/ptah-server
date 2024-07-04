@@ -7,10 +7,12 @@ use App\Models\NodeTask;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
 use App\Models\NodeTasks\CreateService\CreateServiceMeta;
+use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTasks\UpdateService\UpdateServiceMeta;
 use App\Models\NodeTaskType;
 use App\Rules\RequiredIfArrayHas;
+use Illuminate\Support\Str;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Enum;
 use Spatie\LaravelData\Attributes\Validation\Rule;
@@ -25,6 +27,9 @@ class Process extends Data
         public string $dockerImage,
         public ReleaseCommand $releaseCommand,
         public ?string $command,
+        #[DataCollectionOf(Worker::class)]
+                           /* @var Worker[] */
+        public array $workers,
         #[Enum(LaunchMode::class)]
         public string $launchMode,
         #[DataCollectionOf(EnvVar::class)]
@@ -73,6 +78,26 @@ class Process extends Data
         $previous = $deployment->previousDeployment()?->findProcess($this->dockerName);
 
         $tasks = [];
+
+        $previousWorkers = $previous?->workers ?? [];
+        foreach ($previousWorkers as $worker) {
+            if ($this->findWorker($worker->dockerName) === null) {
+                $tasks[] = [
+                    'type' => NodeTaskType::DeleteService,
+                    'meta' => new DeleteServiceMeta($deployment->service_id, $worker->dockerName, $deployment->service->name),
+                    'payload' => [
+                        'ServiceName' => $worker->dockerName,
+                    ],
+                ];
+            }
+        }
+
+        foreach ($this->workers as $worker) {
+            if (!$worker->dockerName) {
+                // TODO: add validation - allow only unique worker commands
+                $worker->dockerName = $this->makeResourceName('wkr_' . $worker->name);
+            }
+        }
 
         foreach ($this->configFiles as $configFile) {
             $previousConfig = $previous?->findConfigFile($configFile->path);
@@ -174,13 +199,15 @@ class Process extends Data
 
         $serviceTaskMeta = [
             'deploymentId' => $deployment->id,
-            'processName' => $this->dockerName,
+            'dockerName' => $this->dockerName,
             'serviceId' => $deployment->service_id,
             'serviceName' => $deployment->service->name,
         ];
 
         // FIXME: this is going to work wrong if the initial deployment is pending.
-        $actionUpdate = $deployment->service->tasks()->ofType(NodeTaskType::CreateService)->completed()->exists();
+        //   Don't allow to schedule deployments if the service has not been created yet?
+        //   This code is duplicated in the next block
+        $actionUpdate = $deployment->service->tasks()->ofType(NodeTaskType::CreateService)->where('meta__docker_name', $this->dockerName)->completed()->exists();
 
         $tasks[] = [
             'type' => $actionUpdate ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
@@ -261,6 +288,83 @@ class Process extends Data
             ],
         ];
 
+        foreach ($this->workers as $worker) {
+            $actionUpdate = $deployment->service->tasks()->ofType(NodeTaskType::CreateService)->where('meta__docker_name', $worker->dockerName)->completed()->exists();
+
+            $workerTaskMeta = [
+                ...$serviceTaskMeta,
+                'dockerName' => $worker->dockerName,
+            ];
+
+            $tasks[] = [
+                'type' => $actionUpdate ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
+                'meta' => $actionUpdate ? UpdateServiceMeta::from($workerTaskMeta) : CreateServiceMeta::from($workerTaskMeta),
+                'payload' => [
+                    'AuthConfigName' => $this->dockerRegistry,
+                    'ReleaseCommand' => (object) [],
+                    'SecretVars' => (object) $this->getWorkerSecretVars($worker, $labels),
+                    'SwarmServiceSpec' => [
+                        'Name' => $worker->dockerName,
+                        'Labels' => $labels,
+                        'TaskTemplate' => [
+                            'ContainerSpec' => [
+                                'Image' => $this->dockerImage,
+                                'Labels' => $labels,
+//                                'Command' => ['sh -c "' . Str::replace('"', '\\"', $worker->command) . '"'],
+                                'Command' => ['sh', '-c'],
+                                'Args' => [
+                                    $worker->command,
+                                ],
+                                'Hostname' => "dpl-{$deployment->id}.{$worker->name}.{$internalDomain}",
+                                'Env' => collect($this->envVars)->map(fn(EnvVar $var) => "{$var->name}={$var->value}")->toArray(),
+                                'Mounts' => [],
+                                'Hosts' => [
+                                    "{$worker->name}.{$internalDomain}",
+                                ],
+                                'Secrets' => collect($this->secretFiles)->map(fn(ConfigFile $secretFile) => [
+                                    'File' => [
+                                        'Name' => $secretFile->path,
+                                        // TODO: figure out better permissions settings (if any)
+                                        'UID' => "0",
+                                        "GID" => "0",
+                                        "Mode" => 0777
+                                    ],
+                                    'SecretName' => $secretFile->dockerName,
+                                ])->values()->toArray(),
+                                'Configs' => collect($this->configFiles)->map(fn(ConfigFile $configFile) => [
+                                    'File' => [
+                                        'Name' => $configFile->path,
+                                        // TODO: figure out better permissions settings (if any)
+                                        'UID' => "0",
+                                        "GID" => "0",
+                                        "Mode" => 0777
+                                    ],
+                                    'ConfigName' => $configFile->dockerName,
+                                ])->values()->toArray(),
+                                'Placement' => [],
+                            ],
+                            'Networks' => [
+                                [
+                                    'Target' => $deployment->data->networkName,
+                                    'Aliases' => [
+                                        "{$worker->name}.{$internalDomain}",
+                                    ],
+                                ]
+                            ],
+                        ],
+                        'Mode' => [
+                            'Replicated' => [
+                                'Replicas' => $worker->replicas,
+                            ],
+                        ],
+                        'EndpointSpec' => [
+                            'Ports' => []
+                        ]
+                    ]
+                ],
+            ];
+        }
+
         return $tasks;
     }
 
@@ -295,6 +399,24 @@ class Process extends Data
         return $data;
     }
 
+    private function getWorkerSecretVars(Worker $worker, array $labels): array|object
+    {
+        if (empty($this->data->secretVars->vars)) {
+            return (object) [];
+        }
+
+        return [
+            'ConfigName' => $this->data->secretVars->dockerName . '_wkr_' . $worker->name,
+            'ConfigLabels' => dockerize_labels([
+                ...$labels,
+                'kind' => 'secret-env-vars',
+            ]),
+            'Values' => [],
+            'Preserve' => collect($this->data->secretVars->vars)->map(fn(EnvVar $var) => $var->name)->toArray(),
+            'PreserveFromConfig' => $this->secretVars->dockerName,
+        ];
+    }
+
 
     public function makeResourceName(string $name): string
     {
@@ -321,5 +443,14 @@ class Process extends Data
             ]),
             'Command' => $this->releaseCommand->command,
         ];
+    }
+
+    private function findWorker(?string $dockerName): ?Worker
+    {
+        if (!$dockerName) {
+            return null;
+        }
+
+        return collect($this->workers)->first(fn(Worker $worker) => $worker->dockerName === $dockerName);
     }
 }
