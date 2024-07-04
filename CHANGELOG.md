@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/ptah-sh/ptah-server/compare/v0.5.0...v0.6.0) (2024-07-04)
+
+
+### Features
+
+* [#30](https://github.com/ptah-sh/ptah-server/issues/30) try add trusted proxies ([87a488e](https://github.com/ptah-sh/ptah-server/commit/87a488e6addb473700ee5dfddffc77d4ae5c2f8e))
+
 ## [0.5.0](https://github.com/ptah-sh/ptah-server/compare/v0.4.0...v0.5.0) (2024-07-04)
 
 
