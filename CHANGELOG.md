@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/ptah-sh/ptah-server/compare/v0.1.0...v0.2.0) (2024-07-04)
+
+
+### Features
+
+* [#30](https://github.com/ptah-sh/ptah-server/issues/30) try better files permissions ([230c07c](https://github.com/ptah-sh/ptah-server/commit/230c07c3386929fcadef060e820dff558822d5e5))
+
 ## [0.1.0](https://github.com/ptah-sh/ptah-server/compare/v0.0.1...v0.1.0) (2024-07-03)
 
 
