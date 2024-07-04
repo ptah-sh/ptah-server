@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.0](https://github.com/ptah-sh/ptah-server/compare/v0.8.0...v0.9.0) (2024-07-04)
+
+
+### Features
+
+* [#52](https://github.com/ptah-sh/ptah-server/issues/52) support the 'release' step ([03d7ae9](https://github.com/ptah-sh/ptah-server/commit/03d7ae934ae63b4af4aa2911b2990cddcf058d65))
+* [#54](https://github.com/ptah-sh/ptah-server/issues/54) allow to add simplified workers to services ([a164d47](https://github.com/ptah-sh/ptah-server/commit/a164d476e7c021608eb3d60f9c6ce3a6385d94c2))
+
 ## [0.8.0](https://github.com/ptah-sh/ptah-server/compare/v0.7.0...v0.8.0) (2024-07-04)
 
 
