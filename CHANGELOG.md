@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/ptah-sh/ptah-server/compare/v0.3.0...v0.4.0) (2024-07-04)
+
+
+### Features
+
+* [#30](https://github.com/ptah-sh/ptah-server/issues/30) try frankenphp 2 ([1f63a5a](https://github.com/ptah-sh/ptah-server/commit/1f63a5a519175b25a2d2b231ffb002424c03c643))
+
 ## [0.3.0](https://github.com/ptah-sh/ptah-server/compare/v0.2.0...v0.3.0) (2024-07-04)
 
 
