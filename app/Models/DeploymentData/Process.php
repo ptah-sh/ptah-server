@@ -310,7 +310,6 @@ class Process extends Data
                             'ContainerSpec' => [
                                 'Image' => $this->dockerImage,
                                 'Labels' => $labels,
-//                                'Command' => ['sh -c "' . Str::replace('"', '\\"', $worker->command) . '"'],
                                 'Command' => ['sh', '-c'],
                                 'Args' => [
                                     $worker->command,
