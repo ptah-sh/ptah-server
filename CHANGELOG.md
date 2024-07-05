@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.3](https://github.com/ptah-sh/ptah-server/compare/v0.10.2...v0.10.3) (2024-07-05)
+
+
+### Bug Fixes
+
+* run node auth middleware before everything else ([3602de0](https://github.com/ptah-sh/ptah-server/commit/3602de07009cad0c58b4c9aa1e4fa4fc0c557573))
+* try preload team ([baa93ec](https://github.com/ptah-sh/ptah-server/commit/baa93ece5caafc30db539714071e39d7d4de6f2f))
+
 ## [0.10.2](https://github.com/ptah-sh/ptah-server/compare/v0.10.1...v0.10.2) (2024-07-05)
 
 
