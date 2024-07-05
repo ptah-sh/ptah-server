@@ -57,4 +57,4 @@ jobs:
             -H 'Accept: application/json' \
             -H 'X-Ptah-Token: ${{ secrets.PTAH_TOKEN }}' \
             -d '{"processes":[{"name":"svc","dockerImage":"ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}"}]}' \
-            https://app.ptah.sh/api/v0/services/2/deploy
+            https://ctl.ptah.sh/api/v0/services/3/deploy
