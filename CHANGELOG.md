@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/ptah-sh/ptah-server/compare/v0.10.0...v0.10.1) (2024-07-05)
+
+
+### Bug Fixes
+
+* [#30](https://github.com/ptah-sh/ptah-server/issues/30) remove pdo_pgsql from php.ini ([42eca94](https://github.com/ptah-sh/ptah-server/commit/42eca94ed286fd301e9c88a3884983e841029da5))
+
 ## [0.10.0](https://github.com/ptah-sh/ptah-server/compare/v0.9.0...v0.10.0) (2024-07-04)
 
 
