@@ -344,7 +344,7 @@ const submitProcessRemoval = () => {
           </fwb-tooltip>
         </template>
 
-        <TextInput v-model="model.processes[state.selectedProcessIndex['processes']].releaseCommand.command" class="block w-full" placeholder="php artisan migrate --no-interaction --verbose --ansi --step --force"/>
+        <TextInput v-model="model.processes[state.selectedProcessIndex['processes']].releaseCommand.command" class="block w-full" placeholder="php artisan config:cache && php artisan migrate --no-interaction --verbose --ansi --force" />
       </FormField>
 
       <FormField class="col-span-6" :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.command`]">
@@ -413,7 +413,7 @@ const submitProcessRemoval = () => {
             Command
           </template>
 
-          <TextInput v-model="model.processes[state.selectedProcessIndex['processes']].workers[index].command" class="block w-full" placeholder="php artisan queue:work"/>
+          <TextInput v-model="model.processes[state.selectedProcessIndex['processes']].workers[index].command" class="block w-full" placeholder="php artisan config:cache && php artisan queue:work"/>
         </FormField>
       </template>
     </template>
