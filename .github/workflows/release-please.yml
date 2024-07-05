@@ -55,6 +55,6 @@ jobs:
           curl --fail-with-body -X POST \
             -H 'Content-Type: application/json' \
             -H 'Accept: application/json' \
-            -H 'X-Ptah-Token: ${{ secrets.PTAH_TOKEN }}' \
+            -H 'Authorization: Bearer ${{ secrets.PTAH_API_TOKEN }}' \
             -d '{"processes":[{"name":"svc","dockerImage":"ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}"}]}' \
             https://ctl.ptah.sh/api/v0/services/3/deploy
