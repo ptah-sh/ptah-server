@@ -1,5 +1,6 @@
 <?php
 
+use ApiNodes\Http\Middleware\AgentTokenAuth;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\CheckAgentUpdates;
 use Illuminate\Console\Scheduling\Schedule;
@@ -21,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies('*');
 
         $middleware
+            ->api(prepend: [
+                AgentTokenAuth::class,
+            ])
             ->web(append: [
                 HandleInertiaRequests::class,
                 AddLinkHeadersForPreloadedAssets::class,

@@ -7,7 +7,7 @@ use ApiNodes\Http\Middleware\AgentTokenAuth;
 use App\Api\Controllers\ServiceController;
 use Illuminate\Support\Facades\Route;
 
-Route::group(['prefix' => '/_nodes/v1', 'middleware' => [AgentTokenAuth::class]], function () {
+Route::group(['prefix' => '/_nodes/v1'], function () {
     Route::group(['prefix' => '/events'], function () {
         Route::post('/started', [EventController::class, 'started']);
     });

@@ -24,9 +24,13 @@ class AgentTokenAuth
         $token = $request->header(self::AUTH_HEADER);
 
         if (!$token) {
+            if ($request->bearerToken()) {
+                return $next($request);
+            }
+
             return response()->json([
                 'message' => 'Unauthorized'
-            ], 401);
+            ], 403);
         }
 
         $node = Node::withoutGlobalScope(TeamScope::class)->with('team')->whereAgentToken($token)->firstOrFail();
