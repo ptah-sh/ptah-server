@@ -235,9 +235,6 @@ class Process extends Data
                                     'Labels' => $labels,
                                 ]
                             ])->toArray(),
-                            'HealthCheck' => [
-                                'Test' => ['NONE']
-                            ],
                             'Hosts' => [
                                 $internalDomain,
                             ],
@@ -320,6 +317,9 @@ class Process extends Data
                                 'Hostname' => "dpl-{$deployment->id}.{$worker->name}.{$internalDomain}",
                                 'Env' => collect($this->envVars)->map(fn(EnvVar $var) => "{$var->name}={$var->value}")->toArray(),
                                 'Mounts' => [],
+                                'HealthCheck' => [
+                                    'Test' => ['NONE']
+                                ],
                                 'Hosts' => [
                                     "{$worker->name}.{$internalDomain}",
                                 ],
