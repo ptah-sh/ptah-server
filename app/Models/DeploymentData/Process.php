@@ -235,7 +235,9 @@ class Process extends Data
                                     'Labels' => $labels,
                                 ]
                             ])->toArray(),
-                            'HealthCheck' => ['NONE'],
+                            'HealthCheck' => [
+                                'Test' => ['NONE']
+                            ],
                             'Hosts' => [
                                 $internalDomain,
                             ],
