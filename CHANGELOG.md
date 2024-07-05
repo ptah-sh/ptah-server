@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.5](https://github.com/ptah-sh/ptah-server/compare/v0.10.4...v0.10.5) (2024-07-05)
+
+
+### Bug Fixes
+
+* emulate prepares for postgres ([9751a84](https://github.com/ptah-sh/ptah-server/commit/9751a8476f1e5b9ecd712b0c403690eaee8b56d2))
+
 ## [0.10.4](https://github.com/ptah-sh/ptah-server/compare/v0.10.3...v0.10.4) (2024-07-05)
 
 
