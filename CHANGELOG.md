@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.4](https://github.com/ptah-sh/ptah-server/compare/v0.10.3...v0.10.4) (2024-07-05)
+
+
+### Bug Fixes
+
+* healthcheck test command ([bb379f4](https://github.com/ptah-sh/ptah-server/commit/bb379f442c96c961e81b8d98587b0825c5c54b2a))
+* remove healthcheck from workers ([f7a5e2c](https://github.com/ptah-sh/ptah-server/commit/f7a5e2c3e3f1f6f6fa1fc24962355c2564fd95ad))
+
 ## [0.10.3](https://github.com/ptah-sh/ptah-server/compare/v0.10.2...v0.10.3) (2024-07-05)
 
 
