@@ -29,7 +29,7 @@ class AgentTokenAuth
             ], 401);
         }
 
-        $node = Node::withoutGlobalScope(TeamScope::class)->whereAgentToken($token)->firstOrFail();
+        $node = Node::withoutGlobalScope(TeamScope::class)->with('team')->whereAgentToken($token)->firstOrFail();
 
         $node->last_seen_at = now();
 
