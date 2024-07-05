@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.10.2](https://github.com/ptah-sh/ptah-server/compare/v0.10.1...v0.10.2) (2024-07-05)
+
+
+### Bug Fixes
+
+* [#54](https://github.com/ptah-sh/ptah-server/issues/54) disable healthchecks for workers ([e4bfc09](https://github.com/ptah-sh/ptah-server/commit/e4bfc09e1fbc48d5f15f3c20c577c99dcef2f29a))
+* authorization header for api ([d32ca14](https://github.com/ptah-sh/ptah-server/commit/d32ca14d1e164efba969da9da8aa026fa5ab4617))
+* correct service id to deploy ([2c05087](https://github.com/ptah-sh/ptah-server/commit/2c05087dd1afecf855efa058188ee81d5bfa4379))
+* uncomment global team scope ([0063073](https://github.com/ptah-sh/ptah-server/commit/00630732ad3bc576fdce61044e9dae8b138559e6))
+
 ## [0.10.1](https://github.com/ptah-sh/ptah-server/compare/v0.10.0...v0.10.1) (2024-07-05)
 
 
