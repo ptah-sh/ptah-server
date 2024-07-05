@@ -7,7 +7,8 @@ RUN apt-get update \
     && docker-php-ext-configure pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql \
     && docker-php-source delete \
-    && awk 'NR==1 {print; print "\tservers {\n\t\ttrusted_proxies static private_ranges\n\t}\n"; next} 1' /etc/caddy/Caddyfile > /etc/caddy/Caddyfile
+    && awk 'NR==1 {print; print "\tservers {\n\t\ttrusted_proxies static private_ranges\n\t}\n"; next} 1' /etc/caddy/Caddyfile > /etc/caddy/Caddyfile.tmp \
+    && mv /etc/caddy/Caddyfile.tmp /etc/caddy/Caddyfile
 
 WORKDIR /app
 
@@ -33,5 +34,4 @@ RUN php composer.phar install \
     && apt-get -y remove npm unzip \
     && apt-get -y clean \
     && apt-get -y autoremove \
-    && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
-    && echo "extension=pdo_pgsql.so" > $PHP_INI_DIR/conf.d/pdo_pgsql.ini
+    && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
