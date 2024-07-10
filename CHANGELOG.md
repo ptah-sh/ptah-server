@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.0](https://github.com/ptah-sh/ptah-server/compare/v0.10.5...v0.11.0) (2024-07-10)
+
+
+### Features
+
+* [#28](https://github.com/ptah-sh/ptah-server/issues/28) allow to add redirect rules ([212b6e0](https://github.com/ptah-sh/ptah-server/commit/212b6e0d0f100838b046715b8cc6dcd70841c474))
+
+
+### Bug Fixes
+
+* emulate prepares for postgres ([bad4e73](https://github.com/ptah-sh/ptah-server/commit/bad4e73a5e1283f7526fe4fc91fa63d31f33a11a))
+
 ## [0.10.5](https://github.com/ptah-sh/ptah-server/compare/v0.10.4...v0.10.5) (2024-07-05)
 
 
