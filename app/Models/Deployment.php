@@ -104,50 +104,82 @@ class Deployment extends Model
 
         $this->latestDeployments()->each(function ($deployment) use (&$caddyHandlers) {
             foreach ($deployment->data->processes as $process) {
-                $caddyHandlers[] = collect($process->caddy)->map(fn(Caddy $caddy) => [
-                    'apps' =>[
-                        'http' => [
-                            'servers' => [
-                                "listen_{$caddy->publishedPort}" => [
-                                    'listen' => [
-                                        "0.0.0.0:{$caddy->publishedPort}",
+                $caddyHandlers[] = collect($process->caddy)->map(function(Caddy $caddy) use ($deployment, $process) {
+                    $routes = [];
+
+                    $routes[] = [
+                        'match' => [
+                            [
+                                'host' => [$caddy->domain],
+                                'path' => [$caddy->path],
+                            ],
+                        ],
+                        'handle' => [
+                            [
+                                'handler' => 'reverse_proxy',
+                                'headers' => [
+                                    'request' => [
+                                        'set' => $this->getForwardedHeaders($caddy),
                                     ],
-                                    'routes' => [
-                                        [
-                                            'match' => [
-                                                [
-                                                    'host' => [$caddy->domain],
-                                                    'path' => [$caddy->path],
-                                                ],
-                                            ],
-                                            'handle' => [
-                                                [
-                                                    'handler' => 'reverse_proxy',
-                                                    'headers' => [
-                                                        'request' => [
-                                                            'set' => $this->getForwardedHeaders($caddy),
-                                                        ],
-                                                        'response' => [
-                                                            'set' => [
-                                                                'X-Powered-By' => ['https://ptah.sh'],
-                                                            ],
-                                                        ],
-                                                    ],
-                                                    'transport' => $this->getTransportOptions($caddy, $process),
-                                                    'upstreams' => [
-                                                        [
-                                                            'dial' => "{$process->name}.{$deployment->data->internalDomain}:{$caddy->targetPort}",
-                                                        ]
-                                                    ]
-                                                ]
-                                            ]
+                                    'response' => [
+                                        'set' => [
+                                            'X-Powered-By' => ['https://ptah.sh'],
                                         ],
+                                    ],
+                                ],
+                                'transport' => $this->getTransportOptions($caddy, $process),
+                                'upstreams' => [
+                                    [
+                                        'dial' => "{$process->name}.{$deployment->data->internalDomain}:{$caddy->targetPort}",
                                     ]
                                 ]
                             ]
                         ]
-                    ]
-                ])->toArray();
+                    ];
+
+                    foreach ($process->redirectRules as $redirectRule) {
+                        $regexpName = dockerize_name($redirectRule->id);
+
+                        $pathTo = preg_replace("/\\$(\d+)/", "{http.regexp.$regexpName.$1}", $redirectRule->pathTo);
+
+                        $routes[] = [
+                            'match' => [
+                                [
+                                    'host' => [$redirectRule->domainFrom],
+                                    'path_regexp' => [
+                                        'name' => $regexpName,
+                                        'pattern' => $redirectRule->pathFrom
+                                    ],
+                                ]
+                            ],
+                            'handle' => [
+                                [
+                                    'handler' => 'static_response',
+                                    'status_code' => (string) $redirectRule->statusCode,
+                                    'headers' => [
+                                        'X-Powered-By' => ['https://ptah.sh'],
+                                        'Location' => ["{http.request.scheme}://{$redirectRule->domainTo}{$pathTo}"],
+                                    ],
+                                ]
+                            ]
+                        ];
+                    }
+
+                    return [
+                        'apps' => [
+                            'http' => [
+                                'servers' => [
+                                    "listen_{$caddy->publishedPort}" => [
+                                        'listen' => [
+                                            "0.0.0.0:{$caddy->publishedPort}",
+                                        ],
+                                        'routes' => $routes,
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ];
+                })->toArray();
             }
         });
 
@@ -250,6 +282,14 @@ class Deployment extends Model
 
     protected function getRouteWeights($route): array
     {
+        // Let's prioritize regexp routes to be first to execute
+        if (isset($route['match'][0]['path_regexp'])) {
+            return [
+                'segments' => 0,
+                'wildcards' => -100,
+            ];
+        }
+
         $path = $route['match'][0]['path'][0];
 
         $pathSegments = count(explode('/', $path)) * -1;

@@ -15,8 +15,6 @@ use Spatie\LaravelData\Data;
 class DeploymentData extends Data
 {
     public function __construct(
-//        #[Exists(DockerRegistry::class)]
-//        #[Exists(Network::class, 'networkName')]
         public string    $networkName,
         public string $internalDomain,
         #[Exists(Node::class, 'id')]
@@ -51,6 +49,7 @@ class DeploymentData extends Data
             'replicas' => 1,
             'caddy' => [],
             'fastCgi' => null,
+            'redirectRules' => [],
         ];
 
         $defaults = [

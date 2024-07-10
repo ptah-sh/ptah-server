@@ -18,8 +18,10 @@ import {FwbTooltip} from "flowbite-vue";
 import ProcessTabs from "@/Pages/Services/Partials/ProcessTabs.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import DialogModal from "@/Components/DialogModal.vue";
-import AddComponentButton from "@/Components/AddComponentButton.vue";
-import RemoveComponentButton from "@/Components/RemoveComponentButton.vue";
+import AddComponentButton from "@/Components/Service/AddComponentButton.vue";
+import RemoveComponentButton from "@/Components/Service/RemoveComponentButton.vue";
+import ComponentBlock from "@/Components/Service/ComponentBlock.vue";
+import FormFieldGrid from "@/Components/FormFieldGrid.vue";
 
 const model = defineModel()
 
@@ -85,6 +87,17 @@ const addCaddy = () => {
     publishedPort: "443",
     domain: '',
     path: '',
+  });
+}
+
+const addRedirectRule = () => {
+  model.value.processes[state.selectedProcessIndex['caddy']].redirectRules.push({
+    id: makeId('redirect-rule'),
+    domainFrom: '',
+    domainTo: '',
+    pathFrom: '',
+    pathTo: '',
+    statusCode: 301,
   });
 }
 
@@ -818,6 +831,68 @@ const submitProcessRemoval = () => {
               <template #label>Path</template>
               <TextInput v-model="caddy.path" class="w-full" placeholder="/*"/>
             </FormField>
+
+            <ComponentBlock
+                v-model="model.processes[state.selectedProcessIndex['caddy']].redirectRules"
+                v-slot="{ item }"
+                label="Redirect Rules"
+                @remove="model.processes[state.selectedProcessIndex['caddy']].redirectRules.splice($event, 1)"
+            >
+              <FormField
+                  :error="props.errors[`processes.${state.selectedProcessIndex['caddy']}.redirectRules.${item.$index}.domainFrom`]"
+                  class="col-span-2"
+              >
+                <template #label>Domain From</template>
+
+                <TextInput v-model="item.domainFrom" class="w-full" placeholder="wp.example.com"/>
+              </FormField>
+
+              <FormField
+                  :error="props.errors[`processes.${state.selectedProcessIndex['caddy']}.redirectRules.${item.$index}.domainTo`]"
+                  class="col-span-2"
+              >
+                <template #label>Domain To</template>
+
+                <TextInput v-model="item.domainTo" class="w-full" placeholder="example.com" />
+              </FormField>
+
+              <FormField
+                  :error="props.errors[`processes.${state.selectedProcessIndex['caddy']}.redirectRules.${item.$index}.statusCode`]"
+                  class="col-span-2"
+              >
+                <template #label>Status Code</template>
+
+                <!-- TODO: link to MDN https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections -->
+                <Select v-model="item.statusCode">
+                  <optgroup label="Permanent Redirects">
+                    <option value="301">301 Moved Permanently</option>
+                    <option value="308">308 Permanent Redirect</option>
+                  </optgroup>
+                  <optgroup label="Temporary Redirects">
+                    <option value="302">302 Found</option>
+                    <option value="307">307 Temporary Redirect</option>
+                  </optgroup>
+                </Select>
+              </FormField>
+
+              <FormField
+                  :error="props.errors[`processes.${state.selectedProcessIndex['caddy']}.redirectRules.${item.$index}.pathFrom`]"
+                  class="col-span-3"
+              >
+                <template #label>Path From</template>
+
+                <TextInput v-model="item.pathFrom" class="w-full" placeholder="/(.*)"/>
+              </FormField>
+
+              <FormField
+                  :error="props.errors[`processes.${state.selectedProcessIndex['caddy']}.redirectRules.${item.$index}.pathTo`]"
+                  class="col-span-3"
+              >
+                <template #label>Path To</template>
+
+                <TextInput v-model="item.pathTo" class="w-full" placeholder="/blog/$1"/>
+              </FormField>
+            </ComponentBlock>
           </div>
 
       <template v-if="hasFastCgiHandlers">
@@ -886,6 +961,10 @@ const submitProcessRemoval = () => {
         </svg>
         HTTP(S)
       </SecondaryButton>
+
+      <AddComponentButton v-if="model.processes[state.selectedProcessIndex['caddy']].caddy.length > 0" @click="addRedirectRule">
+        Redirect Rule
+      </AddComponentButton>
 <!--      <SecondaryButton>-->
 <!--        <svg class="w-4 h-4 me-2 -ms-1 text-gray-800 dark:text-white" aria-hidden="true"-->
 <!--             xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">-->

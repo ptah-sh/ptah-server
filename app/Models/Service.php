@@ -29,8 +29,10 @@ class Service extends Model
     protected static function booted()
     {
         self::saved(function (Service $service) {
-            $service->docker_name = $service->makeResourceName($service->name);
-            $service->saveQuietly();
+            if (!$service->docker_name) {
+                $service->docker_name = $service->makeResourceName($service->name);
+                $service->saveQuietly();
+            }
         });
 
         self::deleting(function (Service $service) {

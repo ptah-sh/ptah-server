@@ -1,6 +1,6 @@
 <script setup>
 import FormSection from "@/Components/FormSection.vue";
-import AddComponentButton from "@/Components/AddComponentButton.vue";
+import AddComponentButton from "@/Components/Service/AddComponentButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import {useForm} from "@inertiajs/vue3";
 import FormField from "@/Components/FormField.vue";

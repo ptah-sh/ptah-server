@@ -3,7 +3,6 @@
 namespace App\Models\DeploymentData;
 
 use App\Models\Deployment;
-use App\Models\NodeTask;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
 use App\Models\NodeTasks\CreateService\CreateServiceMeta;
@@ -12,7 +11,6 @@ use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTasks\UpdateService\UpdateServiceMeta;
 use App\Models\NodeTaskType;
 use App\Rules\RequiredIfArrayHas;
-use Illuminate\Support\Str;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Enum;
 use Spatie\LaravelData\Attributes\Validation\Rule;
@@ -54,6 +52,9 @@ class Process extends Data
         public array  $caddy,
         #[Rule(new RequiredIfArrayHas('caddy.*.targetProtocol', 'fastcgi'))]
         public ?FastCgi $fastCgi,
+        #[DataCollectionOf(RedirectRule::class)]
+                           /* @var RedirectRule[] */
+        public array $redirectRules
     )
     {
 
