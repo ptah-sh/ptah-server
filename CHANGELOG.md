@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.1](https://github.com/ptah-sh/ptah-server/compare/v0.11.0...v0.11.1) (2024-07-11)
+
+
+### Bug Fixes
+
+* [#27](https://github.com/ptah-sh/ptah-server/issues/27) access all available teams' resources via api ([9dc3616](https://github.com/ptah-sh/ptah-server/commit/9dc3616b876f364ebc69c5c6ee49d258b4467da0))
+
 ## [0.11.0](https://github.com/ptah-sh/ptah-server/compare/v0.10.5...v0.11.0) (2024-07-10)
 
 
