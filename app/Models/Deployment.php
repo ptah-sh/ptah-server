@@ -285,8 +285,8 @@ class Deployment extends Model
         // Let's prioritize regexp routes to be first to execute
         if (isset($route['match'][0]['path_regexp'])) {
             return [
-                'segments' => 0,
-                'wildcards' => -100,
+                'segments' => -100,
+                'wildcards' => 100,
             ];
         }
 
