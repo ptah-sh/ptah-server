@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.2](https://github.com/ptah-sh/ptah-server/compare/v0.11.1...v0.11.2) (2024-07-11)
+
+
+### Bug Fixes
+
+* [#28](https://github.com/ptah-sh/ptah-server/issues/28) re-order rules ([aa57f3b](https://github.com/ptah-sh/ptah-server/commit/aa57f3b60b1216c537a52ddcd415677794a41a2a))
+
 ## [0.11.1](https://github.com/ptah-sh/ptah-server/compare/v0.11.0...v0.11.1) (2024-07-11)
 
 
