@@ -82,6 +82,15 @@ class DeploymentData extends Data
 
                 foreach ($result['processes'] as $existingIdx => $existingProcess) {
                     if ($existingProcess['name'] === $process['name']) {
+                        if (isset($process['envVars'])) {
+                            $updatedVars = collect($process['envVars'])->pluck('name')->toArray();
+
+                            $existingProcess['envVars'] = collect($result['processes'][$existingIdx]['envVars'])
+                                ->reject(fn($var) => in_array($var['name'], $updatedVars))
+                                ->values()
+                                ->toArray();
+                        }
+
                         $result['processes'][$existingIdx] = Arrays::niceMerge($existingProcess, $process);
 
                         $processExists = true;
