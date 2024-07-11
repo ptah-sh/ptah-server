@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.3](https://github.com/ptah-sh/ptah-server/compare/v0.11.2...v0.11.3) (2024-07-11)
+
+
+### Bug Fixes
+
+* [#72](https://github.com/ptah-sh/ptah-server/issues/72) assign correct team when the service is accessed via api ([0e7cfe4](https://github.com/ptah-sh/ptah-server/commit/0e7cfe4de6d2e2ca2f825e6d254fb7af6a85894f))
+
 ## [0.11.2](https://github.com/ptah-sh/ptah-server/compare/v0.11.1...v0.11.2) (2024-07-11)
 
 
