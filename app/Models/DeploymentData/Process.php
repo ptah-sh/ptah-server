@@ -360,6 +360,9 @@ class Process extends Data
                                 'Replicas' => $worker->replicas,
                             ],
                         ],
+                        'UpdateConfig' => [
+                            'Parallelism' => 1,
+                        ],
                         'EndpointSpec' => [
                             'Ports' => []
                         ]
