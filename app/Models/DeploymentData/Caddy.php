@@ -10,6 +10,7 @@ use Spatie\LaravelData\Attributes\Validation\In;
 class Caddy extends Data
 {
     public function __construct(
+        public string $id,
         #[In(['http', 'fastcgi'])]
         public string $targetProtocol,
         #[Between(1, 65535)]

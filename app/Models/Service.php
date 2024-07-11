@@ -24,6 +24,7 @@ class Service extends Model
     protected $fillable = [
         'name',
         'swarm_id',
+        'team_id',
     ];
 
     protected static function booted()
@@ -87,11 +88,13 @@ class Service extends Model
 
         $taskGroup = NodeTaskGroup::create([
             'swarm_id' => $this->swarm_id,
+            'team_id' => $this->team_id,
             'invoker_id' => auth()->id(),
             'type' => $this->deployments()->exists() ? NodeTaskGroupType::UpdateService : NodeTaskGroupType::CreateService,
         ]);
 
         $deployment = $this->deployments()->create([
+            'team_id' => $this->team_id,
             'data' => $deploymentData,
         ]);
 

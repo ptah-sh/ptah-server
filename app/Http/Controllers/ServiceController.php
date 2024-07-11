@@ -62,6 +62,7 @@ class ServiceController extends Controller
         $deploymentData = DeploymentData::validateAndCreate($request->get('deploymentData'));
 
         $service = Service::make($request->validated());
+        $service->team_id = auth()->user()->current_team_id;
         DB::transaction(function () use ($service, $deploymentData) {
             $service->save();
 

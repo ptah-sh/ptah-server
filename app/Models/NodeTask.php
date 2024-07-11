@@ -35,6 +35,13 @@ class NodeTask extends Model
         'formatted_result',
     ];
 
+    protected static function booted(): void
+    {
+        self::creating(function (NodeTask $nodeTask) {
+            $nodeTask->team_id = $nodeTask->taskGroup->team_id;
+        });
+    }
+
     public function taskGroup(): BelongsTo
     {
         return $this->belongsTo(NodeTaskGroup::class);

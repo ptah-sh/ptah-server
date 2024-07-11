@@ -140,12 +140,11 @@ class SwarmController extends Controller
                     'type' => NodeTaskGroupType::UpdateDockerRegistries,
                     'swarm_id' => $swarm->id,
                     'invoker_id' => auth()->user()->id,
+                    'team_id' => auth()->user()->current_team_id,
                 ]);
 
                 $taskGroup->tasks()->createMany($tasks);
             }
         });
-
-//        return back();
     }
 }

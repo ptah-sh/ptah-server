@@ -15,7 +15,8 @@ class Swarm extends Model
 
     protected $fillable = [
         'name',
-        'data'
+        'data',
+        'team_id',
     ];
 
     protected $casts = [

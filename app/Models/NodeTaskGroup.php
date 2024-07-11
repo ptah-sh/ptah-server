@@ -25,6 +25,7 @@ class NodeTaskGroup extends Model
         'swarm_id',
         'node_id',
         'invoker_id',
+        'team_id',
     ];
 
     public function swarm(): BelongsTo
@@ -75,6 +76,7 @@ class NodeTaskGroup extends Model
         $taskGroup->forceFill(collect($this->attributes)->only([
             'swarm_id',
             'invoker_id',
+            'team_id',
         ])->toArray());
         $taskGroup->save();
 

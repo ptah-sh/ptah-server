@@ -21,13 +21,14 @@ class Node extends Model
 
     protected $fillable = [
         'name',
+        'team_id',
     ];
 
     protected $appends = [
         'online',
     ];
 
-    protected static function booted()
+    protected static function booted(): void
     {
         self::creating(function (Node $node) {
             $node->agent_token = Str::random(42);
@@ -75,6 +76,7 @@ class Node extends Model
             'node_id' => $this->id,
             'type' => NodeTaskGroupType::SelfUpgrade,
             'invoker_id' => auth()->user()->id,
+            'team_id' => auth()->user()->current_team_id,
         ]);
 
         $taskGroup->tasks()->createMany([

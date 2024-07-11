@@ -23,6 +23,8 @@ class Deployment extends Model
     use HasOwningTeam;
 
     protected $fillable = [
+        'service_id',
+        'team_id',
         'task_group_id',
         'data',
     ];
@@ -124,6 +126,7 @@ class Deployment extends Model
                                     'response' => [
                                         'set' => [
                                             'X-Powered-By' => ['https://ptah.sh'],
+                                            'X-Ptah-Rule-Id' => [$caddy->id],
                                         ],
                                     ],
                                 ],
@@ -158,6 +161,7 @@ class Deployment extends Model
                                     'status_code' => (string) $redirectRule->statusCode,
                                     'headers' => [
                                         'X-Powered-By' => ['https://ptah.sh'],
+                                        'X-Ptah-Rule-Id' => [$redirectRule->id],
                                         'Location' => ["{http.request.scheme}://{$redirectRule->domainTo}{$pathTo}"],
                                     ],
                                 ]

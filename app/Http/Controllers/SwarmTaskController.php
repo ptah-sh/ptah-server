@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\NodeTask\InitClusterFormRequest;
+use App\Models\Deployment;
 use App\Models\DeploymentData;
 use App\Models\DeploymentData\LaunchMode;
 use App\Models\DeploymentData\ReleaseCommand;
@@ -14,6 +15,7 @@ use App\Models\NodeTasks\CreateNetwork\CreateNetworkMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeMeta;
 use App\Models\NodeTaskType;
+use App\Models\Service;
 use App\Models\Swarm;
 use App\Models\SwarmData;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +27,7 @@ class SwarmTaskController extends Controller
         DB::transaction(function () use ($request) {
             $swarm = Swarm::create([
                 'name' => $request->name,
+                'team_id' => auth()->user()->current_team_id,
                 'data' => SwarmData::validateAndCreate([
                     'registriesRev' => 0,
                     'registries' => [],
@@ -38,6 +41,7 @@ class SwarmTaskController extends Controller
 
             $network = Network::create([
                 'swarm_id' => $swarm->id,
+                'team_id' => auth()->user()->current_team_id,
                 'name' => dockerize_name('ptah-net'),
             ]);
 
@@ -46,6 +50,7 @@ class SwarmTaskController extends Controller
                 'swarm_id' => $swarm->id,
                 'node_id' => $request->node_id,
                 'invoker_id' => auth()->user()->id,
+                'team_id' => auth()->user()->current_team_id,
             ]);
 
             $tasks = [
@@ -108,9 +113,11 @@ class SwarmTaskController extends Controller
 
             $caddyService = $swarm->services()->create([
                 'name' => 'caddy',
+                'team_id' => auth()->user()->current_team_id,
             ]);
 
             $deployment = $caddyService->deployments()->create([
+                'team_id' => auth()->user()->current_team_id,
                 'data' => DeploymentData::validateAndCreate([
                     'networkName' => $network->docker_name,
                     'internalDomain' => 'caddy.ptah.local',
@@ -173,10 +180,13 @@ class SwarmTaskController extends Controller
                             'replicas' => 1,
                             'caddy' => [],
                             'fastcgiVars' => null,
+                            'redirectRules' => [],
                         ],
                     ],
                 ]),
             ]);
+            $deployment->team_id = auth()->user()->current_team_id;
+            $deployment->save();
 
             foreach ($deployment->asNodeTasks() as $task) {
                 $tasks[] = $task;

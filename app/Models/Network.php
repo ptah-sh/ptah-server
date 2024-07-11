@@ -14,6 +14,7 @@ class Network extends Model
     protected $fillable = [
         'swarm_id',
         'name',
+        'team_id',
     ];
 
     protected static function booted(): void
