@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Support\Facades\Blade;
 use InvalidArgumentException;
 
 class Deployment extends Model
@@ -208,6 +209,26 @@ class Deployment extends Model
             foreach ($caddy['apps']['http']['servers'] as $name => $value) {
                 $caddy['apps']['http']['servers'][$name]['listen'] = array_unique($value['listen']);
                 $caddy['apps']['http']['servers'][$name]['routes'] = $this->sortRoutes($value['routes']);
+
+                $caddy['apps']['http']['servers'][$name]['routes'][] = [
+                    'match' => [
+                        [
+                            'host' => ['*'],
+                            'path' => ['/*'],
+                        ]
+                    ],
+                    'handle' => [
+                        [
+                            'handler' => 'static_response',
+                            'status_code' => '404',
+                            'headers' => [
+                                'X-Powered-By' => ['https://ptah.sh'],
+                                'Content-Type' => ['text/html; charset=utf-8'],
+                            ],
+                            'body' => file_get_contents(resource_path('support/caddy/404.html')),
+                        ]
+                    ]
+                ];
             }
 
             $caddyTask[] = [
