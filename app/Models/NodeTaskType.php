@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Events\NodeTasks\CheckRegistryAuth\CheckRegistryAuthCompleted;
 use App\Events\NodeTasks\CheckRegistryAuth\CheckRegistryAuthFailed;
+use App\Events\NodeTasks\CheckS3Storage\CheckS3StorageCompleted;
+use App\Events\NodeTasks\CheckS3Storage\CheckS3StorageFailed;
 use App\Events\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeCompleted;
 use App\Events\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeFailed;
 use App\Events\NodeTasks\CreateConfig\CreateConfigCompleted;
@@ -12,6 +14,8 @@ use App\Events\NodeTasks\CreateNetwork\CreateNetworkCompleted;
 use App\Events\NodeTasks\CreateNetwork\CreateNetworkFailed;
 use App\Events\NodeTasks\CreateRegistryAuth\CreateRegistryAuthCompleted;
 use App\Events\NodeTasks\CreateRegistryAuth\CreateRegistryAuthFailed;
+use App\Events\NodeTasks\CreateS3Storage\CreateS3StorageCompleted;
+use App\Events\NodeTasks\CreateS3Storage\CreateS3StorageFailed;
 use App\Events\NodeTasks\CreateSecret\CreateSecretCompleted;
 use App\Events\NodeTasks\CreateSecret\CreateSecretFailed;
 use App\Events\NodeTasks\CreateService\CreateServiceCompleted;
@@ -36,6 +40,8 @@ use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigResult;
 use App\Models\NodeTasks\CheckRegistryAuth\CheckRegistryAuthMeta;
 use App\Models\NodeTasks\CheckRegistryAuth\CheckRegistryAuthResult;
+use App\Models\NodeTasks\CheckS3Storage\CheckS3StorageMeta;
+use App\Models\NodeTasks\CheckS3Storage\CheckS3StorageResult;
 use App\Models\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeMeta;
 use App\Models\NodeTasks\ConfirmAgentUpgrade\ConfirmAgentUpgradeResult;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
@@ -44,6 +50,8 @@ use App\Models\NodeTasks\CreateNetwork\CreateNetworkMeta;
 use App\Models\NodeTasks\CreateNetwork\CreateNetworkResult;
 use App\Models\NodeTasks\CreateRegistryAuth\CreateRegistryAuthMeta;
 use App\Models\NodeTasks\CreateRegistryAuth\CreateRegistryAuthResult;
+use App\Models\NodeTasks\CreateS3Storage\CreateS3StorageMeta;
+use App\Models\NodeTasks\CreateS3Storage\CreateS3StorageResult;
 use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretResult;
 use App\Models\NodeTasks\CreateService\CreateServiceMeta;
@@ -81,6 +89,8 @@ enum NodeTaskType: int
     case CreateRegistryAuth = 12;
     case CheckRegistryAuth = 13;
     case PullDockerImage = 14;
+    case CreateS3Storage = 15;
+    case CheckS3Storage = 16;
 
     public function meta(): string
     {
@@ -100,6 +110,8 @@ enum NodeTaskType: int
             self::CreateRegistryAuth => CreateRegistryAuthMeta::class,
             self::CheckRegistryAuth => CheckRegistryAuthMeta::class,
             self::PullDockerImage => PullDockerImageMeta::class,
+            self::CreateS3Storage => CreateS3StorageMeta::class,
+            self::CheckS3Storage => CheckS3StorageMeta::class,
         };
     }
 
@@ -121,6 +133,8 @@ enum NodeTaskType: int
             self::CreateRegistryAuth => CreateRegistryAuthResult::class,
             self::CheckRegistryAuth => CheckRegistryAuthResult::class,
             self::PullDockerImage => PullDockerImageResult::class,
+            self::CreateS3Storage => CreateS3StorageResult::class,
+            self::CheckS3Storage => CheckS3StorageResult::class,
         };
     }
 
@@ -142,6 +156,8 @@ enum NodeTaskType: int
             self::CreateRegistryAuth => CreateRegistryAuthCompleted::class,
             self::CheckRegistryAuth => CheckRegistryAuthCompleted::class,
             self::PullDockerImage => PullDockerImageCompleted::class,
+            self::CreateS3Storage => CreateS3StorageCompleted::class,
+            self::CheckS3Storage => CheckS3StorageCompleted::class,
         };
     }
 
@@ -163,6 +179,8 @@ enum NodeTaskType: int
             self::CreateRegistryAuth => CreateRegistryAuthFailed::class,
             self::CheckRegistryAuth => CheckRegistryAuthFailed::class,
             self::PullDockerImage => PullDockerImageFailed::class,
+            self::CreateS3Storage => CreateS3StorageFailed::class,
+            self::CheckS3Storage => CheckS3StorageFailed::class,
         };
     }
 }

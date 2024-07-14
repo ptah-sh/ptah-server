@@ -13,6 +13,8 @@ defineModel();
     <h3 v-if="modelValue.length > 0" class="my-2">{{ label }}</h3>
 
     <div v-for="(item, index) in modelValue">
+      <hr class="my-2" v-if="index > 0" />
+
       <div class="grid grid-cols-6 gap-4">
         <slot :item="modelValue[index]" :$index="index" />
       </div>

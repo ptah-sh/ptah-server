@@ -8,8 +8,10 @@ use App\Models\DockerConfigKind;
 use App\Models\NodeTaskGroup;
 use App\Models\NodeTaskGroupType;
 use App\Models\NodeTasks\CheckRegistryAuth\CheckRegistryAuthMeta;
+use App\Models\NodeTasks\CheckS3Storage\CheckS3StorageMeta;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateRegistryAuth\CreateRegistryAuthMeta;
+use App\Models\NodeTasks\CreateS3Storage\CreateS3StorageMeta;
 use App\Models\NodeTaskType;
 use App\Models\Swarm;
 use App\Models\SwarmData;
@@ -138,6 +140,84 @@ class SwarmController extends Controller
             if (!empty($tasks)) {
                 $taskGroup = NodeTaskGroup::create([
                     'type' => NodeTaskGroupType::UpdateDockerRegistries,
+                    'swarm_id' => $swarm->id,
+                    'invoker_id' => auth()->user()->id,
+                    'team_id' => auth()->user()->current_team_id,
+                ]);
+
+                $taskGroup->tasks()->createMany($tasks);
+            }
+        });
+    }
+
+    public function updateS3Storages(Swarm $swarm, Request $request)
+    {
+        DB::transaction(function () use ($swarm, $request) {
+            $swarmData = SwarmData::validateAndCreate([
+                ...$swarm->data->toArray(),
+                's3Storages' => $request->get('s3Storages'),
+            ]);
+
+            $swarmData->s3StoragesRev += 1;
+
+            $tasks = [];
+
+            foreach ($swarmData->s3Storages as $s3Storage) {
+                $previous = $s3Storage->dockerName ? $swarm->data->findS3Storage($s3Storage->dockerName) : null;
+                if ($previous) {
+                    if ($s3Storage->sameAs($previous)) {
+                        $s3Storage->dockerName = $previous->dockerName;
+
+                        continue;
+                    }
+                }
+
+                $s3Storage->dockerName = dockerize_name('s3_r' . $swarmData->s3StoragesRev . '_' . $s3Storage->name);
+
+                $taskMeta = [
+                    's3StorageId' => $s3Storage->id,
+                    's3StorageName' => $s3Storage->name,
+                ];
+
+                $tasks[] = [
+                    'type' => NodeTaskType::CreateS3Storage,
+                    'meta' => CreateS3StorageMeta::validateAndCreate($taskMeta),
+                    'payload' => [
+                        'PrevConfigName' => $previous?->dockerName,
+                        'S3StorageSpec' => [
+                            'Endpoint' => $s3Storage->endpoint,
+                            'AccessKey' => $s3Storage->accessKey,
+                            'SecretKey' => $s3Storage->secretKey,
+                            'Region' => $s3Storage->region,
+                            'Bucket' => $s3Storage->bucket,
+                            'PathPrefix' => $s3Storage->pathPrefix,
+                        ],
+                        'SwarmConfigSpec' => [
+                            'Name' => $s3Storage->dockerName,
+                            'Labels' => dockerize_labels([
+                                'id' => $s3Storage->id,
+                                'kind' => DockerConfigKind::S3Storage->value,
+                                'revision' => $swarmData->s3StoragesRev,
+                            ]),
+                        ],
+                    ]
+                ];
+
+                $tasks[] = [
+                    'type' => NodeTaskType::CheckS3Storage,
+                    'meta' => CheckS3StorageMeta::validateAndCreate($taskMeta),
+                    'payload' => [
+                        'S3StorageConfigName' => $s3Storage->dockerName,
+                    ]
+                ];
+            }
+
+            $swarm->data = $swarmData;
+            $swarm->save();
+
+            if (!empty($tasks)) {
+                $taskGroup = NodeTaskGroup::create([
+                    'type' => NodeTaskGroupType::UpdateS3Storages,
                     'swarm_id' => $swarm->id,
                     'invoker_id' => auth()->user()->id,
                     'team_id' => auth()->user()->current_team_id,
