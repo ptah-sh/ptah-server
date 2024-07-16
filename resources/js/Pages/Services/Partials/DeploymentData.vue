@@ -181,12 +181,23 @@ const toggleVolumeBackups = (volume) => {
   if (volume.backupSchedule === null) {
     volume.backupSchedule = {
       preset: 'daily',
-      s3StorageName: props.s3Storages[0].dockerName,
+      s3StorageId: props.s3Storages[0].id,
       expr: '0 0 * * *',
     }
   } else {
     volume.backupSchedule = null;
   }
+}
+
+const addProcessBackup = () => {
+  model.value.processes[state.selectedProcessIndex['processes']].backups.push({
+    id: makeId('backup-cmd'),
+    backupSchedule: {
+      preset: 'daily',
+      s3StorageId: props.s3Storages[0].id,
+      expr: '0 0 * * *',
+    }
+  })
 }
 
 const processRemoveInput = ref();
@@ -454,12 +465,47 @@ const extractFieldErrors = (basePath) => {
           <TextInput v-model="model.processes[state.selectedProcessIndex['processes']].workers[index].command" class="block w-full" placeholder="php artisan config:cache && php artisan queue:work"/>
         </FormField>
       </template>
+
+      <ComponentBlock label="Backups" v-model="model.processes[state.selectedProcessIndex['processes']].backups"
+                      v-slot="{ item, $index }"
+                      @remove="model.processes[state.selectedProcessIndex['processes']].backups.splice($event, 1)">
+        <FormField class="col-span-2" :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.backups.${$index}.name`]">
+          <template #label>
+            Name
+          </template>
+
+          <TextInput v-model="model.processes[state.selectedProcessIndex['processes']].backups[$index].name" class="block w-full" placeholder="daily"/>
+        </FormField>
+
+        <FormField class="col-span-full" :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.backups.${$index}.name`]">
+          <template #label>
+            Command
+          </template>
+
+          <TextInput v-model="model.processes[state.selectedProcessIndex['processes']].backups[$index].command"
+                     class="w-full"
+                     placeholder="PGPASSWORD=$POSTGRESQL_PASSWORD pg_dump -Fc -h $PTAH_HOSTNAME -U $POSTGRESQL_USER -d $POSTGRESQL_DATABASE > daily_backup.dump"/>
+        </FormField>
+
+        <BackupSchedule :s3-storages="props.s3Storages" v-model="model.processes[state.selectedProcessIndex['processes']].backups[$index].backupSchedule" />
+      </ComponentBlock>
     </template>
 
     <template #actions>
       <AddComponentButton @click="addWorker">
         Worker
       </AddComponentButton>
+      <AddComponentButton v-if="props.s3Storages.length > 0" @click="addProcessBackup">
+        Backup
+      </AddComponentButton>
+
+      <FwbTooltip  v-else>
+        <template #trigger>
+          <AddComponentButton disabled>Backup</AddComponentButton>
+        </template>
+
+        <template #content>Backups can't be enabled - no S3 Storages configured</template>
+      </FwbTooltip>
     </template>
   </ActionSection>
 

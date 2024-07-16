@@ -3,23 +3,21 @@
 namespace App\Console\Commands;
 
 use App\Models\Node;
-use App\Models\NodeTask;
 use App\Models\NodeTaskGroupType;
-use App\Models\NodeTasks\ServiceExec\ServiceExecMeta;
 use App\Models\NodeTaskType;
 use App\Models\Service;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-class DispatchBackupTask extends Command
+class DispatchProcessBackupTask extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:dispatch-backup-task {--service-id=} {--process=} {--volume=}';
+    protected $signature = 'app:backups:processes:create {--service-id=} {--process=} {--backup-cmd-id=}';
 
     /**
      * The console command description.
@@ -53,9 +51,9 @@ class DispatchBackupTask extends Command
             throw new Exception("Could not find process {$this->option('process')} in deployment {$deployment->id}.");
         }
 
-        $volume = $process->findVolume($this->option('volume'));
-        if ($volume === null) {
-            throw new Exception("Could not find volume {$this->option('volume')} in process {$process->name}.");
+        $backupCmd = $process->findProcessBackup($this->option('backup-cmd-id'));
+        if ($backupCmd === null) {
+            throw new Exception("Could not find backup command {$this->option('backup-cmd-id')} in process {$process->name}.");
         }
 
         $node = Node::findOrFail($deployment->data->placementNodeId);
@@ -69,13 +67,13 @@ class DispatchBackupTask extends Command
         ]);
 
         $date = now()->format('Y-m-d_His');
-        $backupFileName = dockerize_name("svc-{$service->id}-{$process->name}-{$volume->name}-{$date}") . '.tar.gz';
+        $backupFileName = dockerize_name("svc-{$service->id}-{$process->name}_backup-{$backupCmd->name}-{$date}") . '.tar.gz';
         $archivePath = "{$process->backupVolume->path}/$backupFileName";
-        $backupCommand = "tar czfv $archivePath -C {$volume->path} .";
+        $backupCommand = "mkdir -p /tmp/{$backupCmd->id} && cd /tmp/{$backupCmd->id} && {$backupCmd->command} && tar czfv $archivePath -C /tmp/{$backupCmd->id} . && rm -rf /tmp/{$backupCmd->id}";
 
-        $s3Storage = $node->swarm->data->findS3Storage($volume->backupSchedule->s3StorageId);
+        $s3Storage = $node->swarm->data->findS3Storage($backupCmd->backupSchedule->s3StorageId);
         if ($s3Storage === null) {
-            throw new Exception("Could not find S3 storage {$volume->backupSchedule->s3StorageId} in swarm {$node->swarm_id}.");
+            throw new Exception("Could not find S3 storage {$backupCmd->backupSchedule->s3StorageId} in swarm {$node->swarm_id}.");
         }
 
         $taskGroup->tasks()->createMany([

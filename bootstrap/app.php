@@ -1,7 +1,8 @@
 <?php
 
 use ApiNodes\Http\Middleware\AgentTokenAuth;
-use App\Console\Commands\DispatchBackupTask;
+use App\Console\Commands\DispatchProcessBackupTask;
+use App\Console\Commands\DispatchVolumeBackupTask;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\CheckAgentUpdates;
 use App\Models\DeploymentData\CronPreset;
@@ -52,6 +53,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ) use ($schedule) {
             foreach ($services as $service) {
                 foreach ($service->latestDeployment->data->processes as $process) {
+                    // FIXME: this is an array when running migrations
+                    if (is_array($process)) {
+                        continue;
+                    }
                     if ($process->replicas === 0) {
                         continue;
                     }
@@ -62,11 +67,24 @@ return Application::configure(basePath: dirname(__DIR__))
                         }
 
                         $schedule
-                            ->command(DispatchBackupTask::class, [
-                                'serviceId' => $service->id,
-                                'volumeId' => $volume->id,
+                            ->command(DispatchVolumeBackupTask::class, [
+                                '--service-id' => $service->id,
+                                '--process' => $process->dockerName,
+                                '--volume-id' => $volume->id,
                             ])
                             ->cron($backupSchedule->expr)
+                            ->onOneServer()
+                            ->withoutOverlapping();
+                    }
+
+                    foreach ($process->backups as $backup) {
+                        $schedule
+                            ->command(DispatchProcessBackupTask::class, [
+                                '--service-id' => $service->id,
+                                '--process' => $process->dockerName,
+                                '--backup-cmd-id' => $backup->id,
+                            ])
+                            ->cron($backup->backupSchedule->expr)
                             ->onOneServer()
                             ->withoutOverlapping();
                     }

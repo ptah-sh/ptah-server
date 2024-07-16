@@ -135,6 +135,7 @@ class SwarmTaskController extends Controller
                                 'command' => null,
                             ],
                             'command' => 'sh /start.sh',
+                            'backups' => [],
                             'workers' => [],
                             'envVars' => [
                                 [

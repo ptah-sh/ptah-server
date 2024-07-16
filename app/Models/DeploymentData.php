@@ -36,6 +36,7 @@ class DeploymentData extends Data
                 'command' => null,
             ]),
             'command' => '',
+            'backups' => [],
             'workers' => [],
             'launchMode' => LaunchMode::Daemon->value,
             'envVars' => [],

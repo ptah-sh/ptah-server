@@ -26,6 +26,9 @@ class Process extends Data
         public string $dockerImage,
         public ReleaseCommand $releaseCommand,
         public ?string $command,
+        #[DataCollectionOf(ProcessBackup::class)]
+                           /* @var ProcessBackup[] */
+        public array $backups,
         #[DataCollectionOf(Worker::class)]
                            /* @var Worker[] */
         public array $workers,
@@ -62,9 +65,14 @@ class Process extends Data
 
     }
 
-    public function findVolume(string $dockerName): ?Volume
+    public function findVolume(string $id): ?Volume
     {
-        return collect($this->volumes)->first(fn(Volume $volume) => $volume->dockerName === $dockerName);
+        return collect($this->volumes)->first(fn(Volume $volume) => $volume->id === $id);
+    }
+
+    public function findProcessBackup(string $id): ?ProcessBackup
+    {
+        return collect($this->backups)->first(fn(ProcessBackup $backup) => $backup->id === $id);
     }
 
     public function findConfigFile(string $path): ?ConfigFile
@@ -253,6 +261,12 @@ class Process extends Data
             ];
         }
 
+        $envVars = $this->envVars;
+        $envVars[] = EnvVar::validateAndCreate([
+            'name' => "PTAH_HOSTNAME",
+            'value' => $internalDomain,
+        ]);
+
         // FIXME: this is going to work wrong if the initial deployment is pending.
         //   Don't allow to schedule deployments if the service has not been created yet?
         //   This code is duplicated in the next block
@@ -275,7 +289,7 @@ class Process extends Data
                             'Command' => $command,
                             'Args' => $args,
                             'Hostname' => "dpl-{$deployment->id}.{$internalDomain}",
-                            'Env' => collect($this->envVars)->map(fn(EnvVar $var) => "{$var->name}={$var->value}")->toArray(),
+                            'Env' => collect($envVars)->map(fn(EnvVar $var) => "{$var->name}={$var->value}")->toArray(),
                             'Mounts' => $mounts,
                             'Hosts' => [
                                 $internalDomain,
