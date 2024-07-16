@@ -120,7 +120,7 @@ const addProcess = () => {
   model.value.processes.push({
     id: makeId('process'),
     name: 'process_' + newIndex,
-      'dockerRegistry': null,
+      'dockerRegistryId': null,
       'dockerImage': '',
       'releaseCommand': {
         'command': '',
@@ -305,9 +305,9 @@ const extractFieldErrors = (basePath) => {
       <FormField class="col-span-2" :error="props.errors[`processes.${state.selectedProcessIndex['processes']}.dockerRegistryId`]">
         <template #label>Docker Registry</template>
 
-        <Select v-model="model.processes[state.selectedProcessIndex['processes']].dockerRegistry">
+        <Select v-model="model.processes[state.selectedProcessIndex['processes']].dockerRegistryId">
           <option :value="null">Docker Hub / Anonymous</option>
-          <option v-for="registry in $props.dockerRegistries" :value="registry.dockerName">{{ registry.name }}</option>
+          <option v-for="registry in $props.dockerRegistries" :value="registry.id">{{ registry.name }}</option>
         </Select>
       </FormField>
 

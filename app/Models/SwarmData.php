@@ -23,10 +23,10 @@ class SwarmData extends Data
 
     }
 
-    public function findRegistry(string $dockerName): ?DockerRegistry
+    public function findRegistry(string $id): ?DockerRegistry
     {
         return collect($this->registries)
-            ->filter(fn (DockerRegistry $registry) => $registry->dockerName === $dockerName)
+            ->filter(fn (DockerRegistry $registry) => $registry->id === $id)
             ->first();
     }
 

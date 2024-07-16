@@ -30,7 +30,7 @@ class DeploymentData extends Data
     {
         $processDefaults = [
             'name' => 'svc',
-            'dockerRegistry' => null,
+            'dockerRegistryId' => null,
             'dockerImage' => '',
             'releaseCommand' => ReleaseCommand::from([
                 'command' => null,

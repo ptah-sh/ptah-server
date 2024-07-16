@@ -11,6 +11,7 @@ use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTasks\UpdateService\UpdateServiceMeta;
 use App\Models\NodeTaskType;
 use App\Rules\RequiredIfArrayHas;
+use Exception;
 use Illuminate\Support\Str;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Enum;
@@ -22,7 +23,7 @@ class Process extends Data
     public function __construct(
         public string $name,
         public ?string $dockerName,
-        public ?string   $dockerRegistry,
+        public ?string   $dockerRegistryId,
         public string $dockerImage,
         public ReleaseCommand $releaseCommand,
         public ?string $command,
@@ -85,6 +86,9 @@ class Process extends Data
         return collect($this->secretFiles)->first(fn(ConfigFile $file) => $file->path === $path);
     }
 
+    /**
+     * @throws Exception
+     */
     public function asNodeTasks(Deployment $deployment): array
     {
         if (empty($this->dockerName)) {
@@ -198,6 +202,11 @@ class Process extends Data
             $args = array_slice($splitCmd, 1);
         }
 
+        $dockerRegistry = $deployment->service->swarm->data->findRegistry($this->dockerRegistryId);
+        if ($dockerRegistry === null) {
+            throw new Exception("Docker registry '{$this->dockerRegistryId}' not found");
+        }
+
         $tasks[] = [
             'type' => NodeTaskType::PullDockerImage,
             'meta' => PullDockerImageMeta::from([
@@ -208,7 +217,7 @@ class Process extends Data
                 'dockerImage' => $this->dockerImage,
             ]),
             'payload' => [
-                'AuthConfigName' => $this->dockerRegistry,
+                'AuthConfigName' => $dockerRegistry->dockerName,
                 'Image' => $this->dockerImage,
                 'PullOptions' => (object) [],
             ],
@@ -276,7 +285,7 @@ class Process extends Data
             'type' => $actionUpdate ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
             'meta' => $actionUpdate ? UpdateServiceMeta::from($serviceTaskMeta) : CreateServiceMeta::from($serviceTaskMeta),
             'payload' => [
-                'AuthConfigName' => $this->dockerRegistry,
+                'AuthConfigName' => $dockerRegistry->dockerName,
                 'ReleaseCommand' => $this->getReleaseCommandPayload($deployment, $labels),
                 'SecretVars' => (object) $this->getSecretVars($previous, $labels),
                 'SwarmServiceSpec' => [
@@ -356,7 +365,7 @@ class Process extends Data
                 'type' => $actionUpdate ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
                 'meta' => $actionUpdate ? UpdateServiceMeta::from($workerTaskMeta) : CreateServiceMeta::from($workerTaskMeta),
                 'payload' => [
-                    'AuthConfigName' => $this->dockerRegistry,
+                    'AuthConfigName' => $dockerRegistry->dockerName,
                     'ReleaseCommand' => (object) [],
                     'SecretVars' => (object) $this->getWorkerSecretVars($worker, $labels),
                     'SwarmServiceSpec' => [

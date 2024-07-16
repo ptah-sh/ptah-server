@@ -12,6 +12,7 @@ use Symfony\Contracts\Service\Attribute\Required;
 class DockerRegistry extends Data
 {
     public function __construct(
+        public string $id,
         public string $name,
         public ?string $dockerName,
         public string $serverAddress,
@@ -30,8 +31,7 @@ class DockerRegistry extends Data
             return false;
         }
 
-        return $this->dockerName === $other->dockerName
-            && $this->serverAddress === $other->serverAddress
+        return $this->serverAddress === $other->serverAddress
             && empty($this->username)
             && empty($this->password);
     }
