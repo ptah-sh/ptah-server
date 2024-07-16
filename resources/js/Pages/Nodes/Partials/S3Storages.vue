@@ -58,7 +58,7 @@ const submitForm = () => {
             Endpoint
           </template>
 
-          <TextInput v-model="item.endpoint" class="w-full" placeholder="https://backups.nyc3.digitaloceanspaces.com" />
+          <TextInput v-model="item.endpoint" class="w-full" placeholder="nyc3.digitaloceanspaces.com" />
         </FormField>
 
         <FormField class="col-span-2" :error="form.errors[`s3Storages.${$index}.region`]">

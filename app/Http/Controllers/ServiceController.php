@@ -40,6 +40,7 @@ class ServiceController extends Controller
         $networks = count($swarms) ? $swarms[0]->networks : [];
         $nodes = count($swarms) ? $swarms[0]->nodes : [];
         $dockerRegistries = count($swarms) ? $swarms[0]->data->registries : [];
+        $s3Storages = count($swarms) ? $swarms[0]->data->s3Storages : [];
 
         $deploymentData = DeploymentData::make([
             'networkName' => count($networks) ? $networks[0]->name : null,
@@ -50,7 +51,8 @@ class ServiceController extends Controller
             'networks' => $networks,
             'nodes' => $nodes,
             'deploymentData' => $deploymentData,
-            'dockerRegistries' => $dockerRegistries
+            'dockerRegistries' => $dockerRegistries,
+            's3Storages' => $s3Storages,
         ]);
     }
 
@@ -82,13 +84,15 @@ class ServiceController extends Controller
 
         $networks = $service->swarm->networks;
         $nodes = $service->swarm->nodes;
-        $dockerRegistries = $service->swarm->data->registries ;
+        $dockerRegistries = $service->swarm->data->registries;
+        $s3Storages = $service->swarm->data->s3Storages;
 
         return Inertia::render('Services/Show', [
             'service' => $service,
             'networks' => $networks,
             'nodes' => $nodes,
-            'dockerRegistries' => $dockerRegistries
+            'dockerRegistries' => $dockerRegistries,
+            's3Storages' => $s3Storages,
         ]);
     }
 

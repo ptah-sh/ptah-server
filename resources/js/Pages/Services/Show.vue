@@ -17,6 +17,7 @@ import ActionSection from "@/Components/ActionSection.vue";
 const props = defineProps({
   service: Object,
   dockerRegistries: Array,
+  s3Storages: Array,
 })
 
 const serviceForm = useForm({
@@ -95,7 +96,7 @@ const closeDeletionModal = () => {
     </FormSection>
 
     <form @submit.prevent="deploy">
-      <DeploymentData v-model="deploymentForm" :errors="deploymentForm.errors" :docker-registries="$props.dockerRegistries" />
+      <DeploymentData v-model="deploymentForm" :errors="deploymentForm.errors" :docker-registries="props.dockerRegistries" :s3-storages="props.s3Storages" />
 
       <div class="flex justify-end">
         <PrimaryButton :class="{ 'opacity-25': deploymentForm.processing }" :disabled="deploymentForm.processing">

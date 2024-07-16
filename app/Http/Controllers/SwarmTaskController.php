@@ -19,6 +19,7 @@ use App\Models\Service;
 use App\Models\Swarm;
 use App\Models\SwarmData;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class SwarmTaskController extends Controller
 {
@@ -31,6 +32,8 @@ class SwarmTaskController extends Controller
                 'data' => SwarmData::validateAndCreate([
                     'registriesRev' => 0,
                     'registries' => [],
+                    's3StoragesRev' => 0,
+                    's3Storages' => [],
                 ]),
             ]);
 
@@ -121,7 +124,7 @@ class SwarmTaskController extends Controller
                 'data' => DeploymentData::validateAndCreate([
                     'networkName' => $network->docker_name,
                     'internalDomain' => 'caddy.ptah.local',
-                    'placementNodeId' => null,
+                    'placementNodeId' => $node->id,
                     'processes' => [
                         [
                             'name' => 'svc',
@@ -155,10 +158,12 @@ class SwarmTaskController extends Controller
                             'secretFiles' => [],
                             'volumes' => [
                                 [
+                                    'id' => 'volume-' . Str::random(11),
                                     'name' => 'data',
                                     'path' => '/data',
                                 ],
                                 [
+                                    'id' => 'volume-' . Str::random(11),
                                     'name' => 'config',
                                     'path' => '/config',
                                 ]

@@ -30,12 +30,16 @@ use App\Events\NodeTasks\PullDockerImage\PullDockerImageCompleted;
 use App\Events\NodeTasks\PullDockerImage\PullDockerImageFailed;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigCompleted;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigFailed;
+use App\Events\NodeTasks\ServiceExec\ServiceExecCompleted;
+use App\Events\NodeTasks\ServiceExec\ServiceExecFailed;
 use App\Events\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkCompleted;
 use App\Events\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkFailed;
 use App\Events\NodeTasks\UpdateNode\UpdateCurrentNodeCompleted;
 use App\Events\NodeTasks\UpdateNode\UpdateCurrentNodeFailed;
 use App\Events\NodeTasks\UpdateService\UpdateServiceCompleted;
 use App\Events\NodeTasks\UpdateService\UpdateServiceFailed;
+use App\Events\NodeTasks\UploadS3File\UploadS3FileCompleted;
+use App\Events\NodeTasks\UploadS3File\UploadS3FileFailed;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigResult;
 use App\Models\NodeTasks\CheckRegistryAuth\CheckRegistryAuthMeta;
@@ -64,12 +68,16 @@ use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmResult;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageResult;
+use App\Models\NodeTasks\ServiceExec\ServiceExecMeta;
+use App\Models\NodeTasks\ServiceExec\ServiceExecResult;
 use App\Models\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkMeta;
 use App\Models\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkResult;
 use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeMeta;
 use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeResult;
 use App\Models\NodeTasks\UpdateService\UpdateServiceMeta;
 use App\Models\NodeTasks\UpdateService\UpdateServiceResult;
+use App\Models\NodeTasks\UploadS3File\UploadS3FileMeta;
+use App\Models\NodeTasks\UploadS3File\UploadS3FileResult;
 
 // Mb use dynamic class names? $class = "{$this->name}Payload"; ??
 enum NodeTaskType: int
@@ -91,6 +99,8 @@ enum NodeTaskType: int
     case PullDockerImage = 14;
     case CreateS3Storage = 15;
     case CheckS3Storage = 16;
+    case ServiceExec = 17;
+    case UploadS3File = 18;
 
     public function meta(): string
     {
@@ -112,6 +122,8 @@ enum NodeTaskType: int
             self::PullDockerImage => PullDockerImageMeta::class,
             self::CreateS3Storage => CreateS3StorageMeta::class,
             self::CheckS3Storage => CheckS3StorageMeta::class,
+            self::ServiceExec => ServiceExecMeta::class,
+            self::UploadS3File => UploadS3FileMeta::class
         };
     }
 
@@ -135,6 +147,8 @@ enum NodeTaskType: int
             self::PullDockerImage => PullDockerImageResult::class,
             self::CreateS3Storage => CreateS3StorageResult::class,
             self::CheckS3Storage => CheckS3StorageResult::class,
+            self::ServiceExec => ServiceExecResult::class,
+            self::UploadS3File => UploadS3FileResult::class
         };
     }
 
@@ -158,6 +172,8 @@ enum NodeTaskType: int
             self::PullDockerImage => PullDockerImageCompleted::class,
             self::CreateS3Storage => CreateS3StorageCompleted::class,
             self::CheckS3Storage => CheckS3StorageCompleted::class,
+            self::ServiceExec => ServiceExecCompleted::class,
+            self::UploadS3File => UploadS3FileCompleted::class
         };
     }
 
@@ -181,6 +197,8 @@ enum NodeTaskType: int
             self::PullDockerImage => PullDockerImageFailed::class,
             self::CreateS3Storage => CreateS3StorageFailed::class,
             self::CheckS3Storage => CheckS3StorageFailed::class,
+            self::ServiceExec => ServiceExecFailed::class,
+            self::UploadS3File => UploadS3FileFailed::class
         };
     }
 }

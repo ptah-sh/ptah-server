@@ -163,11 +163,9 @@ class SwarmController extends Controller
             $tasks = [];
 
             foreach ($swarmData->s3Storages as $s3Storage) {
-                $previous = $s3Storage->dockerName ? $swarm->data->findS3Storage($s3Storage->dockerName) : null;
+                $previous = $swarm->data->findS3Storage($s3Storage->id);
                 if ($previous) {
                     if ($s3Storage->sameAs($previous)) {
-                        $s3Storage->dockerName = $previous->dockerName;
-
                         continue;
                     }
                 }

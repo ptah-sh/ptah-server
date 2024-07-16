@@ -11,6 +11,7 @@ use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTasks\UpdateService\UpdateServiceMeta;
 use App\Models\NodeTaskType;
 use App\Rules\RequiredIfArrayHas;
+use Illuminate\Support\Str;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Enum;
 use Spatie\LaravelData\Attributes\Validation\Rule;
@@ -43,6 +44,7 @@ class Process extends Data
         #[DataCollectionOf(Volume::class)]
                            /* @var Volume[] */
         public array  $volumes,
+        public ?BackupVolume $backupVolume,
         public int    $replicas,
         #[DataCollectionOf(NodePort::class)]
         /* @var NodePort[] */
@@ -59,6 +61,12 @@ class Process extends Data
     {
 
     }
+
+    public function findVolume(string $dockerName): ?Volume
+    {
+        return collect($this->volumes)->first(fn(Volume $volume) => $volume->dockerName === $dockerName);
+    }
+
     public function findConfigFile(string $path): ?ConfigFile
     {
         return collect($this->configFiles)->first(fn(ConfigFile $file) => $file->path === $path);
@@ -205,6 +213,46 @@ class Process extends Data
             'serviceName' => $deployment->service->name,
         ];
 
+        $volumes = $this->volumes;
+
+        $mounts = collect($volumes)
+            ->map(fn(Volume $volume) => [
+                'Type' => 'volume',
+                'Source' => $volume->dockerName,
+                'Target' => $volume->path,
+                'VolumeOptions' => [
+                    'Labels' => dockerize_labels([
+                        'id' => $volume->id,
+                        ...$labels,
+                    ]),
+                ]
+            ])
+            ->toArray();
+
+        // TODO: if (has volumes with backups enabled OR has a Backup Script defined)
+        if (count($this->volumes)) {
+            if ($this->backupVolume == null) {
+                $this->backupVolume = BackupVolume::validateAndCreate([
+                    'id' => 'backups-' . Str::random(11),
+                    'name' => 'backups',
+                    'dockerName' => $this->makeResourceName('/ptah/backups'),
+                    'path' => '/ptah/backups',
+                ]);
+            }
+
+            $mounts[] = [
+                'Type' => 'volume',
+                'Source' => $this->backupVolume->dockerName,
+                'Target' => $this->backupVolume->path,
+                'VolumeOptions' => [
+                    'Labels' => dockerize_labels([
+                        'id' => $this->backupVolume->id,
+                        ...$labels,
+                    ]),
+                ]
+            ];
+        }
+
         // FIXME: this is going to work wrong if the initial deployment is pending.
         //   Don't allow to schedule deployments if the service has not been created yet?
         //   This code is duplicated in the next block
@@ -228,14 +276,7 @@ class Process extends Data
                             'Args' => $args,
                             'Hostname' => "dpl-{$deployment->id}.{$internalDomain}",
                             'Env' => collect($this->envVars)->map(fn(EnvVar $var) => "{$var->name}={$var->value}")->toArray(),
-                            'Mounts' => collect($this->volumes)->map(fn(Volume $volume) => [
-                                'Type' => 'volume',
-                                'Source' => $volume->dockerName,
-                                'Target' => $volume->path,
-                                'VolumeOptions' => [
-                                    'Labels' => $labels,
-                                ]
-                            ])->toArray(),
+                            'Mounts' => $mounts,
                             'Hosts' => [
                                 $internalDomain,
                             ],

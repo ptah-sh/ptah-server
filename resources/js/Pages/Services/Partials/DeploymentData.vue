@@ -14,7 +14,7 @@ import TextArea from "@/Components/TextArea.vue";
 import {computed, effect, nextTick, reactive, ref} from "vue";
 import ServiceDetailsForm from "@/Pages/Services/Partials/ServiceDetailsForm.vue";
 import TabItem from "@/Components/Tabs/TabItem.vue";
-import {FwbTooltip} from "flowbite-vue";
+import {FwbToggle, FwbTooltip} from "flowbite-vue";
 import ProcessTabs from "@/Pages/Services/Partials/ProcessTabs.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import DialogModal from "@/Components/DialogModal.vue";
@@ -22,6 +22,7 @@ import AddComponentButton from "@/Components/Service/AddComponentButton.vue";
 import RemoveComponentButton from "@/Components/Service/RemoveComponentButton.vue";
 import ComponentBlock from "@/Components/Service/ComponentBlock.vue";
 import FormFieldGrid from "@/Components/FormFieldGrid.vue";
+import BackupSchedule from "@/Components/BackupSchedule.vue";
 
 const model = defineModel()
 
@@ -31,6 +32,7 @@ const props = defineProps({
   'nodes': Array,
   'serviceName': String | undefined,
   'dockerRegistries': Array,
+  's3Storages': Array,
   'errors': Object,
 });
 
@@ -72,7 +74,14 @@ const addSecretFile = () => {
 }
 
 const addVolume = () => {
-  model.value.processes[state.selectedProcessIndex['volumes']].volumes.push({id: makeId('volume'), name: '', path: ''});
+  model.value.processes[state.selectedProcessIndex['volumes']].volumes.push({
+    id: makeId('volume'),
+    name: '',
+    path: '',
+    backupSchedule: {
+      preset: 'cron-disabled',
+    }
+  });
 }
 
 const addPort = () => {
@@ -168,6 +177,18 @@ effect(() => {
       : null;
 });
 
+const toggleVolumeBackups = (volume) => {
+  if (volume.backupSchedule === null) {
+    volume.backupSchedule = {
+      preset: 'daily',
+      s3StorageName: props.s3Storages[0].dockerName,
+      expr: '0 0 * * *',
+    }
+  } else {
+    volume.backupSchedule = null;
+  }
+}
+
 const processRemoveInput = ref();
 
 const processRemoval = reactive({
@@ -199,6 +220,10 @@ const submitProcessRemoval = () => {
     removeProcess(state.selectedProcessIndex['processes']);
     closeProcessRemovalModal();
   }
+}
+
+const extractFieldErrors = (basePath) => {
+  return Object.fromEntries(Object.keys(props.errors).filter((key) => key.startsWith(basePath)).map((key) => [key.substring(basePath.length + 1), props.errors[key]]));
 }
 </script>
 
@@ -698,6 +723,58 @@ const submitProcessRemoval = () => {
           </SecondaryButton>
         </div>
       </FormField>
+      <ComponentBlock v-else v-model="model.processes[state.selectedProcessIndex['volumes']].volumes" v-slot="{ item, $index }" @remove="model.processes[state.selectedProcessIndex['volumes']].volumes.splice($event, 1)">
+        <FormField
+                   :error="props.errors[`processes.${state.selectedProcessIndex['volumes']}.volumes.${$index}.name`] || props.errors[`processes.${state.selectedProcessIndex['volumes']}.volumes.${$index}.path`]"
+                   class="col-span-2">
+
+            <template #label>Volume Name</template>
+
+            <TextInput v-model="item.name" class="w-full" placeholder="Name"/>
+        </FormField>
+
+        <FormField
+                   :error="props.errors[`processes.${state.selectedProcessIndex['volumes']}.volumes.${$index}.path`]"
+                   class="col-span-3">
+
+          <template #label>Mount Path</template>
+
+          <TextInput v-model="item.path" class="w-full" placeholder="Path"/>
+        </FormField>
+
+        <FormField class="col-span-1">
+          <template #label v-if="props.s3Storages.length > 0">Enable Backups</template>
+
+          <template #label v-else>
+            <FwbTooltip trigger="hover">
+              <template #trigger>
+                <div class="flex">
+                  Backup
+
+                  <svg class="ms-1 w-4 h-4 text-blue-600 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+                  </svg>
+                </div>
+              </template>
+
+              <template #content>
+                Backups can't be enabled - no S3 Storages configured
+              </template>
+            </FwbTooltip>
+          </template>
+
+          <div class="pt-2 select-none">
+            <FwbToggle :model-value="item.backupSchedule !== null" :disabled="props.s3Storages.length === 0" :class="props.s3Storages.length === 0 ? 'cursor-not-allowed opacity-40' : ''" @change="toggleVolumeBackups(item)" />
+          </div>
+        </FormField>
+
+        <BackupSchedule
+            v-if="item.backupSchedule"
+            v-model="item.backupSchedule"
+            :errors="extractFieldErrors(`processes.${state.selectedProcessIndex['volumes']}.volumes.${$index}.backupSchedule`)"
+            :s3-storages="props.s3Storages"
+        />
+      </ComponentBlock>
     </template>
 
     <template #actions>

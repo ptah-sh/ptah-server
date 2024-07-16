@@ -30,10 +30,10 @@ class SwarmData extends Data
             ->first();
     }
 
-    public function findS3Storage(string $dockerName): ?S3Storage
+    public function findS3Storage(string $id): ?S3Storage
     {
         return collect($this->s3Storages)
-            ->filter(fn (S3Storage $s3Storage) => $s3Storage->dockerName === $dockerName)
+            ->filter(fn (S3Storage $s3Storage) => $s3Storage->id === $id)
             ->first();
     }
 }
