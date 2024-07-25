@@ -3,14 +3,17 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Laravel\Jetstream\Events\TeamCreated;
 use Laravel\Jetstream\Events\TeamDeleted;
 use Laravel\Jetstream\Events\TeamUpdated;
 use Laravel\Jetstream\Team as JetstreamTeam;
+use Laravel\Paddle\Billable;
 
 class Team extends JetstreamTeam
 {
     use HasFactory;
+    use Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -20,6 +23,12 @@ class Team extends JetstreamTeam
     protected $fillable = [
         'name',
         'personal_team',
+        'billing_name',
+        'billing_email',
+    ];
+
+    protected $appends = [
+        'billing'
     ];
 
     /**
@@ -43,5 +52,39 @@ class Team extends JetstreamTeam
         return [
             'personal_team' => 'boolean',
         ];
+    }
+
+    protected function nodes(): HasMany
+    {
+        return $this->hasMany(Node::class);
+    }
+
+    /**
+     * Get the name of the team.
+     *
+     * @return string
+     */
+    protected function paddleName(): string
+    {
+        return $this->owner->name;
+    }
+
+    /**
+     * Get the email address of the team.
+     *
+     * @return string
+     */
+    protected function paddleEmail(): string
+    {
+        return $this->owner->email;
+    }
+
+    protected function getBillingAttribute(): array
+    {
+        return collect($this->subscription()->toArray())->only([
+            'status',
+            'trial_ends_at',
+            'ends_at',
+        ])->toArray();
     }
 }

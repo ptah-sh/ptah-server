@@ -33,11 +33,50 @@ class Node extends Model
         self::creating(function (Node $node) {
             $node->agent_token = Str::random(42);
         });
+
+        self::created(function (Node $node) {
+            $team = $node->team;
+
+            $nodesCount = $team->nodes->count();
+            $subscription = $team->subscription();
+            if ($subscription->onTrial()) {
+                $subscription->doNotBill()->updateQuantity($nodesCount);
+            } else {
+                if ($subscription->ends_at) {
+                    $subscription->stopCancelation();
+                }
+
+                $subscription->updateQuantity($nodesCount);
+            }
+        });
+
+        self::deleted(function (Node $node) {
+            $team = $node->team;
+
+            $nodesCount = $team->nodes->count();
+            $subscription = $team->subscription();
+            if ($nodesCount === 0) {
+                if (! $subscription->canceled()) {
+                    $subscription->cancel();
+                }
+            } else {
+                if ($subscription->ends_at) {
+                    $subscription->stopCancelation();
+                }
+
+                $subscription->updateQuantity($nodesCount);
+            }
+        });
     }
 
     public function swarm(): BelongsTo
     {
         return $this->belongsTo(Swarm::class);
+    }
+
+    public function boundServices(): HasMany
+    {
+        return $this->hasMany(Service::class, 'placement_node_id', 'id');
     }
 
     public function taskGroups(): HasMany

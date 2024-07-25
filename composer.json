@@ -9,14 +9,15 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "ext-pdo": "*",
         "inertiajs/inertia-laravel": "^1.0",
+        "laravel/cashier-paddle": "^2.5",
         "laravel/framework": "^11.9",
         "laravel/jetstream": "^5.1",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "spatie/laravel-data": "^4.7",
-        "tightenco/ziggy": "^2.0",
-        "ext-pdo": "*"
+        "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.13",

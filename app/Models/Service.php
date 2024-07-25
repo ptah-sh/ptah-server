@@ -39,6 +39,7 @@ class Service extends Model
         self::deleting(function (Service $service) {
             $taskGroup = $service->swarm->taskGroups()->create([
                 'type' => NodeTaskGroupType::DeleteService,
+                'team_id' => auth()->user()->current_team_id,
                 'invoker_id' => auth()->id(),
             ]);
 
@@ -85,6 +86,8 @@ class Service extends Model
     public function deploy(DeploymentData $deploymentData): Deployment
     {
         Gate::authorize('deploy', $this);
+
+        $this->placement_node_id = $deploymentData->placementNodeId;
 
         $taskGroup = NodeTaskGroup::create([
             'swarm_id' => $this->swarm_id,

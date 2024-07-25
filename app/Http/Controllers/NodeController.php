@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateNodeRequest;
 use App\Models\AgentRelease;
 use App\Models\Node;
 use App\Models\NodeTaskGroupType;
+use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -66,6 +67,7 @@ class NodeController extends Controller
 
         return Inertia::render('Nodes/Show', [
             'node' => $node,
+            'isLastNode' => $node->team->nodes->count() === 1,
             'initTaskGroup' => $initTaskGroup,
             'lastAgentVersion' => $lastAgentVersion,
             'agentUpgradeTaskGroup' => $taskGroup?->is_completed ? null : $taskGroup,
@@ -94,7 +96,15 @@ class NodeController extends Controller
      */
     public function destroy(Node $node)
     {
-        //
+        DB::transaction(function () use ($node) {
+            Service::withoutEvents(function () use ($node) {
+                $node->boundServices()->each(fn (Service $service) => $service->delete());
+            });
+
+            $node->delete();
+        });
+
+        return to_route('nodes.index');
     }
 
     public function upgradeAgent(Node $node, Request $request)

@@ -9,6 +9,11 @@ import {router, useForm} from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import FormSection from "@/Components/FormSection.vue";
 import TeamCard from "@/Components/TeamCard.vue";
+import PaddleButton from "@/Components/PaddleButton.vue";
+
+const props = defineProps({
+  checkout: Object,
+})
 
 const form = useForm({
     name: '',
@@ -66,7 +71,9 @@ const createNode = () => {
                         </div>
                     </template>
 
-                    <template #actions>
+                    <template #submit>
+                      <span v-if="$page.props.auth.user.current_team.billing.ends_at" class="text-xs px-4 italic">We will need to stop subscription cancellation to make changes.</span>
+                      <span v-else class="text-xs px-4 italic">Your card will be charged with a price of a single server prorated to your billing period.</span>
                         <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                             Create Node
                         </PrimaryButton>

@@ -5,6 +5,7 @@ use App\Http\Controllers\NodeTaskGroupController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SwarmController;
 use App\Http\Controllers\SwarmTaskController;
+use App\Http\Controllers\TeamBillingController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -40,4 +41,8 @@ Route::middleware([
     Route::resource("services", ServiceController::class);
     Route::get('/services/{service}/deployments', [ServiceController::class, 'deployments'])->name('services.deployments');
     Route::post('/services/{service}/deployments', [ServiceController::class, 'deploy'])->name('services.deploy');
+
+    Route::get('/teams/{team}/billing', [TeamBillingController::class, 'show'])->name('teams.billing.show');
+    Route::patch('/teams/{team}/billing/update-customer', [TeamBillingController::class, 'updateCustomer'])->name('teams.billing.update-customer');
+    Route::get('/teams/{team}/billing/download-invoice', [TeamBillingController::class, 'downloadInvoice'])->name('teams.billing.download-invoice');
 });

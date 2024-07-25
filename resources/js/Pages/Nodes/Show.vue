@@ -9,14 +9,20 @@ import SwarmDetails from "@/Pages/Nodes/Partials/SwarmDetails.vue";
 import AgentUpgradeStatus from "@/Pages/Nodes/Partials/AgentUpgradeStatus.vue";
 import DockerRegistries from "@/Pages/Nodes/Partials/DockerRegistries.vue";
 import S3Storages from "@/Pages/Nodes/Partials/S3Storages.vue";
+import ActionSection from "@/Components/ActionSection.vue";
+import DeleteResourceSection from "@/Components/DeleteResourceSection.vue";
+import {router} from "@inertiajs/vue3";
 
-defineProps([
+const props = defineProps([
     'node',
+    'isLastNode',
     'initTaskGroup',
     'lastAgentVersion',
     'agentUpgradeTaskGroup',
     'registryUpdateTaskGroup',
 ]);
+
+const destroyNode = () => router.delete(route('nodes.destroy', props.node.id));
 </script>
 
 <template>
@@ -45,5 +51,18 @@ defineProps([
           <DockerRegistries :swarm="$props.node.swarm" :task-group="$props.registryUpdateTaskGroup" />
         </template>
       </template>
+
+      <SectionBorder />
+
+      <DeleteResourceSection resource-kind="Node" :resource-name="node.name" :destroy="destroyNode">
+        <template v-if="isLastNode">
+          Your <strong>subscription will be cancelled</strong> once you delete the last node (this is the last node).
+        </template>
+        <template v-else>
+          Your <strong>next payment will be credited</strong> with the cost of the node (prorated to the end of the billing period).
+        </template>
+
+        <div v-if="$page.props.auth.user.current_team.billing.ends_at" class="text-xs mt-2 italic">We will need to stop subscription cancellation to make changes.</div>
+      </DeleteResourceSection>
     </ShowLayout>
 </template>

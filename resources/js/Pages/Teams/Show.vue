@@ -4,8 +4,10 @@ import DeleteTeamForm from '@/Pages/Teams/Partials/DeleteTeamForm.vue';
 import SectionBorder from '@/Components/SectionBorder.vue';
 import TeamMemberManager from '@/Pages/Teams/Partials/TeamMemberManager.vue';
 import UpdateTeamNameForm from '@/Pages/Teams/Partials/UpdateTeamNameForm.vue';
+import LayoutTab from "@/Components/LayoutTab.vue";
+import TeamsLayout from "@/Pages/Teams/TeamsLayout.vue";
 
-defineProps({
+const props = defineProps({
     team: Object,
     availableRoles: Array,
     permissions: Object,
@@ -13,15 +15,7 @@ defineProps({
 </script>
 
 <template>
-    <AppLayout title="Team Settings">
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                Team Settings
-            </h2>
-        </template>
-
-        <div>
-            <div class="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
+    <TeamsLayout :team="props.team">
                 <UpdateTeamNameForm :team="team" :permissions="permissions" />
 
                 <TeamMemberManager
@@ -36,7 +30,5 @@ defineProps({
 
                     <DeleteTeamForm class="mt-10 sm:mt-0" :team="team" />
                 </template>
-            </div>
-        </div>
-    </AppLayout>
+    </TeamsLayout>
 </template>
