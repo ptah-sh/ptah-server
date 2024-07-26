@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Notifications\Notification;
 use Laravel\Jetstream\Events\TeamCreated;
 use Laravel\Jetstream\Events\TeamDeleted;
 use Laravel\Jetstream\Events\TeamUpdated;
@@ -14,6 +16,7 @@ class Team extends JetstreamTeam
 {
     use HasFactory;
     use Billable;
+    use Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -79,12 +82,21 @@ class Team extends JetstreamTeam
         return $this->owner->email;
     }
 
-    protected function getBillingAttribute(): array
+    protected function getBillingAttribute(): array | null
     {
+        if ($this->subscription() === null) {
+            return null;
+        }
+
         return collect($this->subscription()->toArray())->only([
             'status',
             'trial_ends_at',
             'ends_at',
         ])->toArray();
+    }
+
+    public function routeNotificationForMail(Notification $notification): array | string
+    {
+        return [$this->customer->email => $this->customer->name];
     }
 }

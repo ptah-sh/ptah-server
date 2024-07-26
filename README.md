@@ -33,3 +33,7 @@ If you discover a security vulnerability within Ptah.sh services, please send an
 ## License
 
 The Ptah.sh service suite is open-sourced software licensed under the [Functional Source License, Version 1.1, Apache 2.0 Future License](https://github.com/ptah-sh/ptah-server/blob/main/LICENSE.md).
+
+## Star History ★
+
+[![Star History Chart](https://api.star-history.com/svg?repos=ptah-sh/ptah-server&type=Date)](https://star-history.com/#ptah-sh/ptah-server&Date)

@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Ptah.sh'),
 
+    'email' => env('APP_EMAIL', 'contact@ptah.sh'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
