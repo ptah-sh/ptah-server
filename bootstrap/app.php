@@ -3,6 +3,7 @@
 use ApiNodes\Http\Middleware\AgentTokenAuth;
 use App\Console\Commands\DispatchProcessBackupTask;
 use App\Console\Commands\DispatchVolumeBackupTask;
+use App\Http\Middleware\EnsureTeamSubscription;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\CheckAgentUpdates;
 use App\Models\DeploymentData\CronPreset;
@@ -32,10 +33,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware
             ->api(prepend: [
                 AgentTokenAuth::class,
+                EnsureTeamSubscription::class
             ])
             ->web(append: [
                 HandleInertiaRequests::class,
                 AddLinkHeadersForPreloadedAssets::class,
+                EnsureTeamSubscription::class
             ])
             ->alias([
                 'abilities' => CheckAbilities::class,
