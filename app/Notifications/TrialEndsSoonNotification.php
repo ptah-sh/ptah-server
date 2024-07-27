@@ -43,10 +43,13 @@ class TrialEndsSoonNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $nextPayment = $this->team->subscription()->nextPayment();
+        $dateDiff = $nextPayment->date->longRelativeToNowDiffForHumans();
 
         return (new MailMessage)
-                    ->line('Your trial ends soon.')
-                    ->line("You will be charged {$nextPayment->amount()} on {$nextPayment->date->toDateTimeString()} ({$nextPayment->date->longRelativeToNowDiffForHumans()}).")
+                    ->subject("Your trial ends in {$dateDiff}")
+                    ->greeting("Hello {$this->team->customer->name}!")
+                    ->line('Your trial for team '.$this->team->name.' ends soon.')
+                    ->line("You will be charged {$nextPayment->amount()} on {$nextPayment->date->toDateTimeString()} ({$dateDiff}).")
                     ->action('Manage Subscription', url(route('teams.billing.show', $this->team)))
                     ->line('Any other questions? Contact us at '.config('app.email'));
     }

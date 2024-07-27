@@ -71,7 +71,7 @@ const logout = () => {
                                             <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-700 active:bg-gray-50 dark:active:bg-gray-700 transition ease-in-out duration-150">
                                               <span class="flex flex-col">
                                                 <span>{{ $page.props.auth.user.current_team.name }}</span>
-                                                <span v-if="$page.props.auth.user.current_team.billing.status === 'trialing'" class="text-xs text-amber-600">Trial ends {{dayjs($page.props.auth.user.current_team.billing.trial_ends_at).fromNow()}}</span>
+                                                <span v-if="$page.props.auth.user.current_team.billing?.status === 'trialing'" class="text-xs text-amber-600">Trial ends {{dayjs($page.props.auth.user.current_team.billing.trial_ends_at).fromNow()}}</span>
 <!--                                                                                                <span class="text-xs text-red-600">Payment Due</span>-->
                                               </span>
 

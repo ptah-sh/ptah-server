@@ -25,11 +25,11 @@ class TeamBillingController extends Controller
             'team' => $team,
             'customer' => $customer,
             'nextPayment' => $nextPayment,
-            'subscription' => $team->subscription()->canceled() ? null : $team->subscription(),
+            'subscription' => $team->subscription()?->canceled() ? null : $team->subscription(),
             'checkout' => $checkout->options(),
             'transactions' => $team->transactions,
-            'updatePaymentMethodUrl' => $team->subscription()->paymentMethodUpdateUrl(),
-            'cancelSubscriptionUrl' => $team->subscription()->cancelUrl(),
+            'updatePaymentMethodUrl' => $team->subscription()?->paymentMethodUpdateUrl(),
+            'cancelSubscriptionUrl' => $team->subscription()?->cancelUrl(),
         ]);
     }
 
