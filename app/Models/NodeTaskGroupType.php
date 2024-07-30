@@ -12,4 +12,5 @@ enum NodeTaskGroupType: int
     case UpdateDockerRegistries = 5;
     case UpdateS3Storages = 6;
     case CreateBackup = 7;
+    case JoinSwarm = 8;
 }

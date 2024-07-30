@@ -202,10 +202,17 @@ class Process extends Data
             $args = array_slice($splitCmd, 1);
         }
 
-        $dockerRegistry = $deployment->service->swarm->data->findRegistry($this->dockerRegistryId);
-        if ($dockerRegistry === null) {
+        $dockerRegistry = $this->dockerRegistryId
+            ? $deployment->service->swarm->data->findRegistry($this->dockerRegistryId)
+            : null;
+
+        if ($this->dockerRegistryId && is_null($dockerRegistry)) {
             throw new Exception("Docker registry '{$this->dockerRegistryId}' not found");
         }
+
+        $authConfigName = $dockerRegistry
+            ? $dockerRegistry->dockerName
+            : "";
 
         $tasks[] = [
             'type' => NodeTaskType::PullDockerImage,
@@ -217,7 +224,7 @@ class Process extends Data
                 'dockerImage' => $this->dockerImage,
             ]),
             'payload' => [
-                'AuthConfigName' => $dockerRegistry->dockerName,
+                'AuthConfigName' => $authConfigName,
                 'Image' => $this->dockerImage,
                 'PullOptions' => (object) [],
             ],
@@ -285,7 +292,7 @@ class Process extends Data
             'type' => $actionUpdate ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
             'meta' => $actionUpdate ? UpdateServiceMeta::from($serviceTaskMeta) : CreateServiceMeta::from($serviceTaskMeta),
             'payload' => [
-                'AuthConfigName' => $dockerRegistry->dockerName,
+                'AuthConfigName' => $authConfigName,
                 'ReleaseCommand' => $this->getReleaseCommandPayload($deployment, $labels),
                 'SecretVars' => (object) $this->getSecretVars($previous, $labels),
                 'SwarmServiceSpec' => [
@@ -365,7 +372,7 @@ class Process extends Data
                 'type' => $actionUpdate ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
                 'meta' => $actionUpdate ? UpdateServiceMeta::from($workerTaskMeta) : CreateServiceMeta::from($workerTaskMeta),
                 'payload' => [
-                    'AuthConfigName' => $dockerRegistry->dockerName,
+                    'AuthConfigName' => $authConfigName,
                     'ReleaseCommand' => (object) [],
                     'SecretVars' => (object) $this->getWorkerSecretVars($worker, $labels),
                     'SwarmServiceSpec' => [

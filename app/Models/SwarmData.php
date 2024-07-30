@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\SwarmData\DockerRegistry;
+use App\Models\SwarmData\JoinTokens;
+use App\Models\SwarmData\ManagerNode;
 use App\Models\SwarmData\S3Storage;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Data;
@@ -18,6 +20,10 @@ class SwarmData extends Data
         #[DataCollectionOf(S3Storage::class)]
         /* @var S3Storage[] */
         public array $s3Storages,
+        public JoinTokens $joinTokens,
+        #[DataCollectionOf(ManagerNode::class)]
+        /* @var ManagerNode[] */
+        public array $managerNodes,
     )
     {
 

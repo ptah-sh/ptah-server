@@ -26,6 +26,8 @@ use App\Events\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeCompleted;
 use App\Events\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeFailed;
 use App\Events\NodeTasks\InitSwarm\InitSwarmCompleted;
 use App\Events\NodeTasks\InitSwarm\InitSwarmFailed;
+use App\Events\NodeTasks\JoinSwarm\JoinSwarmCompleted;
+use App\Events\NodeTasks\JoinSwarm\JoinSwarmFailed;
 use App\Events\NodeTasks\PullDockerImage\PullDockerImageCompleted;
 use App\Events\NodeTasks\PullDockerImage\PullDockerImageFailed;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigCompleted;
@@ -66,6 +68,8 @@ use App\Models\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeMeta;
 use App\Models\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeResult;
 use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmResult;
+use App\Models\NodeTasks\JoinSwarm\JoinSwarmMeta;
+use App\Models\NodeTasks\JoinSwarm\JoinSwarmResult;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageResult;
 use App\Models\NodeTasks\ServiceExec\ServiceExecMeta;
@@ -101,6 +105,7 @@ enum NodeTaskType: int
     case CheckS3Storage = 16;
     case ServiceExec = 17;
     case UploadS3File = 18;
+    case JoinSwarm = 19;
 
     public function meta(): string
     {
@@ -123,7 +128,8 @@ enum NodeTaskType: int
             self::CreateS3Storage => CreateS3StorageMeta::class,
             self::CheckS3Storage => CheckS3StorageMeta::class,
             self::ServiceExec => ServiceExecMeta::class,
-            self::UploadS3File => UploadS3FileMeta::class
+            self::UploadS3File => UploadS3FileMeta::class,
+            self::JoinSwarm => JoinSwarmMeta::class,
         };
     }
 
@@ -148,7 +154,8 @@ enum NodeTaskType: int
             self::CreateS3Storage => CreateS3StorageResult::class,
             self::CheckS3Storage => CheckS3StorageResult::class,
             self::ServiceExec => ServiceExecResult::class,
-            self::UploadS3File => UploadS3FileResult::class
+            self::UploadS3File => UploadS3FileResult::class,
+            self::JoinSwarm => JoinSwarmResult::class,
         };
     }
 
@@ -173,7 +180,8 @@ enum NodeTaskType: int
             self::CreateS3Storage => CreateS3StorageCompleted::class,
             self::CheckS3Storage => CheckS3StorageCompleted::class,
             self::ServiceExec => ServiceExecCompleted::class,
-            self::UploadS3File => UploadS3FileCompleted::class
+            self::UploadS3File => UploadS3FileCompleted::class,
+            self::JoinSwarm => JoinSwarmCompleted::class,
         };
     }
 
@@ -198,7 +206,8 @@ enum NodeTaskType: int
             self::CreateS3Storage => CreateS3StorageFailed::class,
             self::CheckS3Storage => CheckS3StorageFailed::class,
             self::ServiceExec => ServiceExecFailed::class,
-            self::UploadS3File => UploadS3FileFailed::class
+            self::UploadS3File => UploadS3FileFailed::class,
+            self::JoinSwarm => JoinSwarmFailed::class,
         };
     }
 }

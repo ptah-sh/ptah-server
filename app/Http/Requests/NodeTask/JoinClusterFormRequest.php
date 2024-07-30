@@ -4,7 +4,7 @@ namespace App\Http\Requests\NodeTask;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class InitClusterFormRequest extends FormRequest
+class JoinClusterFormRequest extends FormRequest
 {
     public function authorize(): bool
     {
@@ -15,9 +15,9 @@ class InitClusterFormRequest extends FormRequest
     {
         return [
             'node_id' => ['required', 'exists:nodes,id'],
-            'name' => ['required', 'string', 'max:255'],
-            'advertise_addr' => ['required', 'ipv4'],
-            'force_new_cluster' => ['boolean'],
+            'swarm_id' => ['required', 'exists:swarms,id'],
+            'role' => ['required', 'in:manager,worker'],
+            'advertise_addr' => ['exclude_if:role,worker', 'required', 'ipv4'],
         ];
     }
 }

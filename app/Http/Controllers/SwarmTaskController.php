@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\NodeTask\InitClusterFormRequest;
+use App\Http\Requests\NodeTask\JoinClusterFormRequest;
 use App\Models\Deployment;
 use App\Models\DeploymentData;
 use App\Models\DeploymentData\LaunchMode;
@@ -13,6 +14,7 @@ use App\Models\NodeTaskGroup;
 use App\Models\NodeTaskGroupType;
 use App\Models\NodeTasks\CreateNetwork\CreateNetworkMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
+use App\Models\NodeTasks\JoinSwarm\JoinSwarmMeta;
 use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeMeta;
 use App\Models\NodeTaskType;
 use App\Models\Service;
@@ -199,6 +201,45 @@ class SwarmTaskController extends Controller
             }
 
             $taskGroup->tasks()->createMany($tasks);
+        });
+    }
+
+    public function joinCluster(JoinClusterFormRequest $request)
+    {
+        DB::transaction(function () use ($request) {
+            $taskGroup = NodeTaskGroup::create([
+                'type' => NodeTaskGroupType::JoinSwarm,
+                'swarm_id' => $request->swarm_id,
+                'team_id' => auth()->user()->current_team_id,
+                'node_id' => $request->node_id,
+                'invoker_id' => auth()->user()->id,
+            ]);
+
+            $node = Node::findOrFail($request->node_id);
+            $node->swarm_id = $request->swarm_id;
+            $node->save();
+
+            $remoteAddrs = collect($taskGroup->swarm->data->managerNodes)->map(fn(SwarmData\ManagerNode $node) => $node->addr)->toArray();
+
+            $joinToken = match ($request->role) {
+                'manager' => $taskGroup->swarm->data->joinTokens->manager,
+                'worker' => $taskGroup->swarm->data->joinTokens->worker,
+            };
+
+            $taskGroup->tasks()->create([
+                'type' => NodeTaskType::JoinSwarm,
+                'meta' => JoinSwarmMeta::from(['swarmId' => $request->swarm_id, 'role' => $request->role]),
+                'payload' => [
+                    'JoinSpec' => [
+                        'ListenAddr' => '0.0.0.0:2377',
+                        'AdvertiseAddr' => $request->advertise_addr,
+                        'DataPathAddr' => $request->advertise_addr,
+                        'RemoteAddrs' => $remoteAddrs,
+                        'JoinToken' => $joinToken,
+                        'Availability' => 'active',
+                    ],
+                ]
+            ]);
         });
     }
 }

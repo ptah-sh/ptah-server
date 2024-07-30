@@ -64,7 +64,11 @@ class Node extends Model
                     $subscription->stopCancelation();
                 }
 
-                $subscription->updateQuantity($nodesCount);
+                if ($subscription->onTrial()) {
+                    $subscription->doNotBill()->updateQuantity($nodesCount);
+                } else {
+                    $subscription->updateQuantity($nodesCount);
+                }
             }
         });
     }

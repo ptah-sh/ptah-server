@@ -7,12 +7,13 @@ import TextInput from "@/Components/TextInput.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import Dropdown from "@/Components/Dropdown.vue";
-import {FwbCheckbox, FwbSelect} from "flowbite-vue";
+import {FwbCheckbox, FwbRadio, FwbSelect} from "flowbite-vue";
 import Select from "@/Components/Select.vue";
 import FormField from "@/Components/FormField.vue";
 
 const props = defineProps({
-  node: Object
+  node: Object,
+  swarms: Array,
 });
 
 const swarmOption = reactive({
@@ -26,12 +27,25 @@ const initForm = useForm({
         force_new_cluster: false
 })
 
+const joinForm = useForm({
+  node_id: props.node.id,
+  swarm_id: props.swarms[0]?.id ?? '',
+  role: 'worker',
+  advertise_addr: '',
+})
+
 const submit = () => {
   // TODO: if option is 'init' -> initCluster()
   // TODO: if option is 'join' -> joinCluster()
-  initForm.post(route('swarm-tasks.init-cluster'), {
-    preserveScroll: 'errors'
-  });
+  if (swarmOption.form === 'init') {
+    initForm.post(route('swarm-tasks.init-cluster'), {
+      preserveScroll: 'errors'
+    });
+  } else if (swarmOption.form === 'join') {
+    joinForm.post(route('swarm-tasks.join-cluster'), {
+      preserveScroll: 'errors'
+    });
+  }
 }
 </script>
 
@@ -61,12 +75,10 @@ const submit = () => {
                         </div>
                     </li>
                 </ul>
-
-
             </div>
 
           <div v-auto-animate class="col-span-6 sm:col-span-4">
-          <template v-if="swarmOption.form === 'init'">
+          <div v-if="swarmOption.form === 'init'" class="grid gap-4">
             <template v-if="$props.node.data.host.networks.length > 0" >
               <FormField :error="initForm.errors.name">
                 <template #label>Swarm Name</template>
@@ -75,8 +87,7 @@ const submit = () => {
               </FormField>
               <FormField :error="initForm.errors.advertise_addr">
                 <template #label>Advertisement Address</template>
-                <Select id="advertise_addr" v-model="initForm.advertise_addr">
-                  <option>Select Advertise Address</option>
+                <Select id="advertise_addr" v-model="initForm.advertise_addr" placeholder="Select Advertise Address">
                   <optgroup v-for="network in $props.node.data.host.networks" :label="network.if_name">
                     <option v-for="ip in network.ips" :value="ip.ip">{{ ip.ip }}</option>
                   </optgroup>
@@ -92,14 +103,41 @@ const submit = () => {
             <template v-else>
               No IP found
             </template>
-          </template>
+          </div>
 
-          <div v-if="swarmOption.form === 'join'">
-            Unfortunately, this feature is not implemented yet.
+          <div v-if="swarmOption.form === 'join'" v-auto-animate class="grid gap-4">
+            <FormField :error="joinForm.errors.swarm_id">
+              <template #label>
+                Swarm Cluster
+              </template>
+
+              <Select v-model="joinForm.swarm_id">
+                <option v-for="swarm in $page.props.swarms" :value="swarm.id">{{ swarm.name }}</option>
+              </Select>
+            </FormField>
+
+            <FormField :error="joinForm.errors.role">
+              <template #label>
+                Role
+              </template>
+
+              <Select v-model="joinForm.role">
+                <option value="manager">Manager</option>
+                <option value="worker">Worker</option>
+              </Select>
+            </FormField>
+
+            <FormField :error="joinForm.errors.advertise_addr">
+              <template #label>Advertisement Address</template>
+              <Select id="advertise_addr" v-model="joinForm.advertise_addr" placeholder="Select Advertise Address">
+                <optgroup v-for="network in $props.node.data.host.networks" :label="network.if_name">
+                  <option v-for="ip in network.ips" :value="ip.ip">{{ ip.ip }}</option>
+                </optgroup>
+              </Select>
+            </FormField>
           </div>
           </div>
         </template>
-
 
         <template #submit>
             <PrimaryButton type="submit">Initialize Node</PrimaryButton>
