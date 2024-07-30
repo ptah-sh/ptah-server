@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.12.0](https://github.com/ptah-sh/ptah-server/compare/v0.11.3...v0.12.0) (2024-07-30)
+
+
+### Features
+
+* [#35](https://github.com/ptah-sh/ptah-server/issues/35) add 404 handler to caddy ([ee773d9](https://github.com/ptah-sh/ptah-server/commit/ee773d91ad468ce743c035305312cdb1c3dc3946))
+* [#63](https://github.com/ptah-sh/ptah-server/issues/63) allow to manage storages for large files ([487ace4](https://github.com/ptah-sh/ptah-server/commit/487ace41a4e03ff4d28d7b73795b5af47fa253f4))
+* [#64](https://github.com/ptah-sh/ptah-server/issues/64) allow to run arbitrary backup commands for processes ([698905f](https://github.com/ptah-sh/ptah-server/commit/698905f3076e6d5f39fcc818f68172f1ccd119e3))
+* [#65](https://github.com/ptah-sh/ptah-server/issues/65) allow to backup volumes ([3aba5f1](https://github.com/ptah-sh/ptah-server/commit/3aba5f12fca034be82425124bcf0c01591ac91c1))
+* [#75](https://github.com/ptah-sh/ptah-server/issues/75) prevent full service shutdown during update ([16fdf9b](https://github.com/ptah-sh/ptah-server/commit/16fdf9b8e03fb46d45f4ed840bc797c9410822e1))
+* [#78](https://github.com/ptah-sh/ptah-server/issues/78) add subscriptions with Paddle ([ad0586b](https://github.com/ptah-sh/ptah-server/commit/ad0586b85072d540e58433919f2224b7b83c9310))
+* [#79](https://github.com/ptah-sh/ptah-server/issues/79) enable e-mail verification ([d836bb1](https://github.com/ptah-sh/ptah-server/commit/d836bb1dc2e891af8c7964395d51567ef5e711b0))
+* [#81](https://github.com/ptah-sh/ptah-server/issues/81) send e-mail notifications regarding ending trial ([00ec406](https://github.com/ptah-sh/ptah-server/commit/00ec40613cf2dad5bf001f14c517f7cfea04bc33))
+* [#82](https://github.com/ptah-sh/ptah-server/issues/82) restrict access to the service when a user doesn't have an active subscription ([012785c](https://github.com/ptah-sh/ptah-server/commit/012785cb8997b9a1bf20559d5b669a1c579c9580))
+* [#83](https://github.com/ptah-sh/ptah-server/issues/83) allow a node to join an existing cluster ([373e15d](https://github.com/ptah-sh/ptah-server/commit/373e15d82ffab531e5f3fe943fc16a645f4d6931))
+
+
+### Bug Fixes
+
+* [#74](https://github.com/ptah-sh/ptah-server/issues/74) de-duplicate updated env vars ([22182f8](https://github.com/ptah-sh/ptah-server/commit/22182f8f46d021a4999618d49a34352da9c4ca83))
+* [#77](https://github.com/ptah-sh/ptah-server/issues/77) broken docker registry link in the service if the registry is renamed ([ce811ef](https://github.com/ptah-sh/ptah-server/commit/ce811efd4d352743ded723db6b9a0e1c6cd02eb1))
+
 ## [0.11.3](https://github.com/ptah-sh/ptah-server/compare/v0.11.2...v0.11.3) (2024-07-11)
 
 
