@@ -6,7 +6,6 @@ use App\Console\Commands\DispatchVolumeBackupTask;
 use App\Http\Middleware\EnsureTeamSubscription;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\CheckAgentUpdates;
-use App\Models\DeploymentData\CronPreset;
 use App\Models\Service;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
@@ -49,6 +48,10 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withSchedule(function (Schedule $schedule) {
+        if (app()->runningInConsole()) {
+            return;
+        }
+
         $schedule->job(CheckAgentUpdates::class)
             ->everyMinute()
             ->onOneServer()
