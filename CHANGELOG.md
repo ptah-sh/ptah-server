@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.13.0](https://github.com/ptah-sh/ptah-server/compare/v0.12.0...v0.13.0) (2024-07-30)
+
+
+### Features
+
+* [#78](https://github.com/ptah-sh/ptah-server/issues/78) add bcmath ([0884fc9](https://github.com/ptah-sh/ptah-server/commit/0884fc9c2ce2e91cd1f3fe621500a9a63ae42990))
+
+
+### Bug Fixes
+
+* [#78](https://github.com/ptah-sh/ptah-server/issues/78) dont ask db for jobs if running in console ([de00336](https://github.com/ptah-sh/ptah-server/commit/de00336e12ea8329b0bd6f061ca3f083833b11e4))
+
 ## [0.12.0](https://github.com/ptah-sh/ptah-server/compare/v0.11.3...v0.12.0) (2024-07-30)
 
 
