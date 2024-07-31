@@ -7,8 +7,7 @@ use App\Models\NodeTasks\AbstractTaskMeta;
 class UpdateCurrentNodeMeta extends AbstractTaskMeta
 {
     public function __construct(
-    )
-    {
+    ) {
         //
     }
 

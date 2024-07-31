@@ -2,10 +2,9 @@
 
 namespace App\Models\DeploymentData;
 
-use Spatie\LaravelData\Data;
 use Spatie\LaravelData\Attributes\Validation\Between;
 use Spatie\LaravelData\Attributes\Validation\In;
-
+use Spatie\LaravelData\Data;
 
 class Caddy extends Data
 {
@@ -19,8 +18,5 @@ class Caddy extends Data
         public int $publishedPort,
         public string $domain,
         public string $path,
-    )
-    {
-
-    }
+    ) {}
 }

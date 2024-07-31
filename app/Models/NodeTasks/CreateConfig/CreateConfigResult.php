@@ -7,16 +7,14 @@ use App\Models\NodeTasks\DockerId;
 
 class CreateConfigResult extends AbstractTaskResult
 {
-
     public function __construct(
         public DockerId $docker
-    )
-    {
+    ) {
         //
     }
 
     public function formattedHtml(): string
     {
-        return 'Config ID: <code>' . $this->docker->id . '</code>';
+        return 'Config ID: <code>'.$this->docker->id.'</code>';
     }
 }

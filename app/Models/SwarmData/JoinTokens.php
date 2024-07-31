@@ -9,8 +9,5 @@ class JoinTokens extends Data
     public function __construct(
         public string $worker,
         public string $manager
-    )
-    {
-
-    }
+    ) {}
 }

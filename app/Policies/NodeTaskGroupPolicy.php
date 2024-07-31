@@ -1,12 +1,9 @@
 <?php
 
-
 namespace App\Policies;
 
-use App\Models\Node;
 use App\Models\NodeTaskGroup;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class NodeTaskGroupPolicy
 {

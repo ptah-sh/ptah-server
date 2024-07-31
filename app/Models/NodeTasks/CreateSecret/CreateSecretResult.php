@@ -9,13 +9,12 @@ class CreateSecretResult extends AbstractTaskResult
 {
     public function __construct(
         public DockerId $docker
-    )
-    {
+    ) {
         //
     }
 
     public function formattedHtml(): string
     {
-        return 'Secret ID: <code>' . $this->docker->id . '</code>';
+        return 'Secret ID: <code>'.$this->docker->id.'</code>';
     }
 }

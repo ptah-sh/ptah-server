@@ -9,8 +9,8 @@ trait HasOwningTeam
 {
     protected static function bootHasOwningTeam(): void
     {
-        if (!app()->runningInConsole()) {
-            static::addGlobalScope(new TeamScope());
+        if (! app()->runningInConsole()) {
+            static::addGlobalScope(new TeamScope);
         }
     }
 

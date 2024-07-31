@@ -7,14 +7,11 @@ use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Override;
 
-class RequiredIfArrayHas implements ValidationRule, DataAwareRule
+class RequiredIfArrayHas implements DataAwareRule, ValidationRule
 {
     protected array $data;
 
-    public function __construct(protected string $targetArrayPath, protected string $targetValue)
-    {
-
-    }
+    public function __construct(protected string $targetArrayPath, protected string $targetValue) {}
 
     /**
      * Run the validation rule.

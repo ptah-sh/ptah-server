@@ -9,7 +9,6 @@ use App\Models\NodeTaskGroup;
 use App\Models\NodeTaskGroupType;
 use App\Models\NodeTasks\CheckRegistryAuth\CheckRegistryAuthMeta;
 use App\Models\NodeTasks\CheckS3Storage\CheckS3StorageMeta;
-use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateRegistryAuth\CreateRegistryAuthMeta;
 use App\Models\NodeTasks\CreateS3Storage\CreateS3StorageMeta;
 use App\Models\NodeTaskType;
@@ -99,7 +98,7 @@ class SwarmController extends Controller
                     }
                 }
 
-                $registry->dockerName = dockerize_name('registry_r' . $swarmData->registriesRev . '_' . $registry->name);
+                $registry->dockerName = dockerize_name('registry_r'.$swarmData->registriesRev.'_'.$registry->name);
 
                 $taskMeta = [
                     'registryName' => $registry->name,
@@ -122,7 +121,7 @@ class SwarmController extends Controller
                                 'revision' => $swarmData->registriesRev,
                             ]),
                         ],
-                    ]
+                    ],
                 ];
 
                 $tasks[] = [
@@ -130,14 +129,14 @@ class SwarmController extends Controller
                     'meta' => CheckRegistryAuthMeta::validateAndCreate($taskMeta),
                     'payload' => [
                         'RegistryConfigName' => $registry->dockerName,
-                    ]
+                    ],
                 ];
             }
 
             $swarm->data = $swarmData;
             $swarm->save();
 
-            if (!empty($tasks)) {
+            if (! empty($tasks)) {
                 $taskGroup = NodeTaskGroup::create([
                     'type' => NodeTaskGroupType::UpdateDockerRegistries,
                     'swarm_id' => $swarm->id,
@@ -170,7 +169,7 @@ class SwarmController extends Controller
                     }
                 }
 
-                $s3Storage->dockerName = dockerize_name('s3_r' . $swarmData->s3StoragesRev . '_' . $s3Storage->name);
+                $s3Storage->dockerName = dockerize_name('s3_r'.$swarmData->s3StoragesRev.'_'.$s3Storage->name);
 
                 $taskMeta = [
                     's3StorageId' => $s3Storage->id,
@@ -198,7 +197,7 @@ class SwarmController extends Controller
                                 'revision' => $swarmData->s3StoragesRev,
                             ]),
                         ],
-                    ]
+                    ],
                 ];
 
                 $tasks[] = [
@@ -206,14 +205,14 @@ class SwarmController extends Controller
                     'meta' => CheckS3StorageMeta::validateAndCreate($taskMeta),
                     'payload' => [
                         'S3StorageConfigName' => $s3Storage->dockerName,
-                    ]
+                    ],
                 ];
             }
 
             $swarm->data = $swarmData;
             $swarm->save();
 
-            if (!empty($tasks)) {
+            if (! empty($tasks)) {
                 $taskGroup = NodeTaskGroup::create([
                     'type' => NodeTaskGroupType::UpdateS3Storages,
                     'swarm_id' => $swarm->id,

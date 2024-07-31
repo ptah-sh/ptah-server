@@ -15,16 +15,14 @@ use Spatie\LaravelData\Data;
 class DeploymentData extends Data
 {
     public function __construct(
-        public string    $networkName,
+        public string $networkName,
         public string $internalDomain,
         #[Exists(Node::class, 'id')]
-        public ?int   $placementNodeId,
+        public ?int $placementNodeId,
         #[DataCollectionOf(Process::class)]
         /* @var Process[] */
-        public array  $processes
-    )
-    {
-    }
+        public array $processes
+    ) {}
 
     public static function make(array $attributes): static
     {
@@ -62,7 +60,7 @@ class DeploymentData extends Data
 
         return self::from([
             ...$defaults,
-            ...$attributes
+            ...$attributes,
         ]);
     }
 
@@ -73,8 +71,8 @@ class DeploymentData extends Data
 
         if (isset($attributes['processes'])) {
             foreach ($attributes['processes'] as $idx => $process) {
-                if (!isset($process['name'])) {
-                    $errors["processes.{$idx}.name"] = "Process name is required";
+                if (! isset($process['name'])) {
+                    $errors["processes.{$idx}.name"] = 'Process name is required';
 
                     continue;
                 }
@@ -87,7 +85,7 @@ class DeploymentData extends Data
                             $updatedVars = collect($process['envVars'])->pluck('name')->toArray();
 
                             $existingProcess['envVars'] = collect($result['processes'][$existingIdx]['envVars'])
-                                ->reject(fn($var) => in_array($var['name'], $updatedVars))
+                                ->reject(fn ($var) => in_array($var['name'], $updatedVars))
                                 ->values()
                                 ->toArray();
                         }
@@ -98,13 +96,13 @@ class DeploymentData extends Data
                     }
                 }
 
-                if (!$processExists) {
+                if (! $processExists) {
                     $errors["processes.{$idx}.name"] = "Process {$process['name']} does not exist";
                 }
             }
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             throw ValidationException::withMessages($errors);
         }
 
@@ -113,6 +111,6 @@ class DeploymentData extends Data
 
     public function findProcess(string $dockerName): ?Process
     {
-        return collect($this->processes)->first(fn(Process $process) => $process->dockerName === $dockerName);
+        return collect($this->processes)->first(fn (Process $process) => $process->dockerName === $dockerName);
     }
 }

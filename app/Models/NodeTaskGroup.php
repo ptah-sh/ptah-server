@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\NodeTasks\AbstractTaskResult;
 use App\Models\NodeTasks\TaskStatus;
 use App\Traits\HasOwningTeam;
 use App\Traits\HasTaskStatus;
@@ -11,8 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Symfony\Component\VarDumper\VarDumper;
-use function Psy\debug;
 
 class NodeTaskGroup extends Model
 {
@@ -43,7 +40,7 @@ class NodeTaskGroup extends Model
         return $this->hasOne(NodeTask::class, 'task_group_id')->latest();
     }
 
-    public function allTasksEnded() :bool
+    public function allTasksEnded(): bool
     {
         return ! $this->tasks()->whereNull('ended_at')->exists();
     }
@@ -66,11 +63,11 @@ class NodeTaskGroup extends Model
         $this->save();
     }
 
-    public function retry(Node|null $node): void
+    public function retry(?Node $node): void
     {
         $nodeId = is_null($node) ? null : $node->id;
 
-        $taskGroup = new NodeTaskGroup();
+        $taskGroup = new NodeTaskGroup;
         $taskGroup->type = $this->type;
         $taskGroup->node_id = $nodeId;
         $taskGroup->forceFill(collect($this->attributes)->only([
@@ -80,26 +77,25 @@ class NodeTaskGroup extends Model
         ])->toArray());
         $taskGroup->save();
 
-
-      $taskGroup->tasks()->saveMany($this->tasks->map(function (NodeTask $task) use ($node) {
+        $taskGroup->tasks()->saveMany($this->tasks->map(function (NodeTask $task) {
             $dataAttrs = $task->is_completed
                 ? [
                     'status',
                     'started_at',
                     'ended_at',
-                    'result'
+                    'result',
                 ]
                 : [
                 ];
 
-          $attrs = collect($task->attributes);
+            $attrs = collect($task->attributes);
 
-          $attributes = $attrs
+            $attributes = $attrs
                 ->only($dataAttrs)
                 ->merge($attrs->only(['type', 'meta', 'payload']))
                 ->toArray();
 
-          return (new NodeTask($attributes))->forceFill($attributes);
-       }));
+            return (new NodeTask($attributes))->forceFill($attributes);
+        }));
     }
 }

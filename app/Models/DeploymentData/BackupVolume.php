@@ -11,8 +11,5 @@ class BackupVolume extends Data
         public string $name,
         public ?string $dockerName,
         public string $path,
-    )
-    {
-
-    }
+    ) {}
 }

@@ -11,8 +11,7 @@ class UpdateServiceMeta extends AbstractTaskMeta
         public int $serviceId,
         public string $serviceName,
         public string $dockerName
-    )
-    {
+    ) {
         //
     }
 

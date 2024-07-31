@@ -7,7 +7,6 @@ use App\Models\Swarm;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Casts\Json;
 
-
 describe('Secret Vars', function () {
     describe('Deployment Data', function () {
         beforeEach(function () {
@@ -69,8 +68,8 @@ describe('Secret Vars', function () {
                 'secretVars' => DeploymentData\SecretVars::from([
                     'vars' => [
                         new DeploymentData\EnvVar('foo', 'var'),
-                    ]
-                ])
+                    ],
+                ]),
             ]));
 
             $deployment = $this->service->deploy(DeploymentData::make([
@@ -78,8 +77,8 @@ describe('Secret Vars', function () {
                     'vars' => [
                         new DeploymentData\EnvVar('foo', 'var'),
                         new DeploymentData\EnvVar('bar', 'var'),
-                    ]
-                ])
+                    ],
+                ]),
             ]));
 
             expect($deployment->data->secretVars->dockerName)->toEqual("svc_{$this->service->id}_dpl_{$deployment->id}_secret_vars");
@@ -148,8 +147,8 @@ describe('Secret Vars', function () {
                 'secretVars' => DeploymentData\SecretVars::from([
                     'vars' => [
                         new DeploymentData\EnvVar('foo', null),
-                    ]
-                ])
+                    ],
+                ]),
             ]));
 
             $task = $deployment->taskGroup->tasks()->where('type', NodeTaskType::UpdateService)->sole();

@@ -11,8 +11,7 @@ class CreateServiceMeta extends AbstractTaskMeta
         public int $serviceId,
         public string $serviceName,
         public string $dockerName
-    )
-    {
+    ) {
         //
     }
 

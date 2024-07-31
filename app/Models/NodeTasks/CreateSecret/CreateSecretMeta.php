@@ -11,8 +11,7 @@ class CreateSecretMeta extends AbstractTaskMeta
         public string $processName,
         public string $path,
         public string $hash
-    )
-    {
+    ) {
         //
     }
 

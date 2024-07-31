@@ -32,12 +32,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware
             ->api(prepend: [
                 AgentTokenAuth::class,
-                EnsureTeamSubscription::class
+                EnsureTeamSubscription::class,
             ])
             ->web(append: [
                 HandleInertiaRequests::class,
                 AddLinkHeadersForPreloadedAssets::class,
-                EnsureTeamSubscription::class
+                EnsureTeamSubscription::class,
             ])
             ->alias([
                 'abilities' => CheckAbilities::class,

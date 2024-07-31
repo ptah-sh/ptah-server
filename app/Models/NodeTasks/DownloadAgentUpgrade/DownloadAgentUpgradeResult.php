@@ -9,8 +9,7 @@ class DownloadAgentUpgradeResult extends AbstractTaskResult
     public function __construct(
         public int $fileSize,
         public int $downloadTime
-    )
-    {
+    ) {
         //
     }
 

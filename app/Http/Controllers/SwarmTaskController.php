@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\NodeTask\InitClusterFormRequest;
 use App\Http\Requests\NodeTask\JoinClusterFormRequest;
-use App\Models\Deployment;
 use App\Models\DeploymentData;
 use App\Models\DeploymentData\LaunchMode;
-use App\Models\DeploymentData\ReleaseCommand;
 use App\Models\Network;
 use App\Models\Node;
 use App\Models\NodeTaskGroup;
@@ -17,7 +15,6 @@ use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\JoinSwarm\JoinSwarmMeta;
 use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeMeta;
 use App\Models\NodeTaskType;
-use App\Models\Service;
 use App\Models\Swarm;
 use App\Models\SwarmData;
 use Illuminate\Support\Facades\DB;
@@ -77,10 +74,10 @@ class SwarmTaskController extends Controller
                                     'Labels' => dockerize_labels([
                                         'swarm.id' => $swarm->id,
                                     ]),
-                                ]
-                            ]
-                        ]
-                    ]
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 [
                     'type' => NodeTaskType::UpdateCurrentNode,
@@ -96,8 +93,8 @@ class SwarmTaskController extends Controller
                                 'node.id' => $node->id,
                                 'node.name' => $node->name,
                             ]),
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 [
                     'type' => NodeTaskType::CreateNetwork,
@@ -107,10 +104,10 @@ class SwarmTaskController extends Controller
                         'NetworkCreateOptions' => [
                             'Driver' => 'overlay',
                             'Labels' => dockerize_labels([
-                                'network.id' => $network->id
+                                'network.id' => $network->id,
                             ]),
                             'Scope' => 'swarm',
-                            'Attachable' => true
+                            'Attachable' => true,
                         ],
                     ],
                 ],
@@ -143,7 +140,7 @@ class SwarmTaskController extends Controller
                                 [
                                     'name' => 'CADDY_ADMIN',
                                     'value' => '0.0.0.0:2019',
-                                ]
+                                ],
                             ],
                             'secretVars' => [
                                 'vars' => [],
@@ -156,20 +153,20 @@ class SwarmTaskController extends Controller
                                 [
                                     'path' => '/start.sh',
                                     'content' => trim(file_get_contents(resource_path('support/caddy/start.sh'))),
-                                ]
+                                ],
                             ],
                             'secretFiles' => [],
                             'volumes' => [
                                 [
-                                    'id' => 'volume-' . Str::random(11),
+                                    'id' => 'volume-'.Str::random(11),
                                     'name' => 'data',
                                     'path' => '/data',
                                 ],
                                 [
-                                    'id' => 'volume-' . Str::random(11),
+                                    'id' => 'volume-'.Str::random(11),
                                     'name' => 'config',
                                     'path' => '/config',
-                                ]
+                                ],
                             ],
                             'ports' => [
                                 [
@@ -219,7 +216,7 @@ class SwarmTaskController extends Controller
             $node->swarm_id = $request->swarm_id;
             $node->save();
 
-            $remoteAddrs = collect($taskGroup->swarm->data->managerNodes)->map(fn(SwarmData\ManagerNode $node) => $node->addr)->toArray();
+            $remoteAddrs = collect($taskGroup->swarm->data->managerNodes)->map(fn (SwarmData\ManagerNode $node) => $node->addr)->toArray();
 
             $joinToken = match ($request->role) {
                 'manager' => $taskGroup->swarm->data->joinTokens->manager,
@@ -238,7 +235,7 @@ class SwarmTaskController extends Controller
                         'JoinToken' => $joinToken,
                         'Availability' => 'active',
                     ],
-                ]
+                ],
             ]);
         });
     }

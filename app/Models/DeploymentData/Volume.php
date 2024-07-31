@@ -12,8 +12,5 @@ class Volume extends Data
         public ?string $dockerName,
         public string $path,
         public ?BackupSchedule $backupSchedule
-    )
-    {
-
-    }
+    ) {}
 }

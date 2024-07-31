@@ -4,10 +4,7 @@ namespace ApiNodes\Http\Controllers;
 
 use ApiNodes\Models\AgentStartedEventData;
 use App\Models\Node;
-use App\Models\NodeData;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class EventController
 {
@@ -29,8 +26,8 @@ class EventController
 
         return [
             'settings' => [
-                'poll_interval' => 5
-            ]
+                'poll_interval' => 5,
+            ],
         ];
     }
 }

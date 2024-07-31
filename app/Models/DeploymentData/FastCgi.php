@@ -12,8 +12,5 @@ class FastCgi extends Data
         #[DataCollectionOf(EnvVar::class)]
         /* @var EnvVar[] */
         public array $env
-    )
-    {
-
-    }
+    ) {}
 }

@@ -9,8 +9,7 @@ class CheckS3StorageMeta extends AbstractTaskMeta
     public function __construct(
         public string $s3StorageId,
         public string $s3StorageName,
-    )
-    {
+    ) {
         //
     }
 

@@ -4,7 +4,8 @@ namespace App\Models\NodeTasks;
 
 use Spatie\LaravelData\Data;
 
-abstract class AbstractTaskMeta extends Data {
+abstract class AbstractTaskMeta extends Data
+{
     abstract public function formattedHtml();
 
     // TODO: makes sense for each task define it's own payload. Examples:

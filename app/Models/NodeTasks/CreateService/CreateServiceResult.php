@@ -9,13 +9,12 @@ class CreateServiceResult extends AbstractTaskResult
 {
     public function __construct(
         public DockerId $docker
-    )
-    {
+    ) {
         //
     }
 
     public function formattedHtml(): string
     {
-        return 'Service ID: <code>' . $this->docker->id . '</code>';
+        return 'Service ID: <code>'.$this->docker->id.'</code>';
     }
 }

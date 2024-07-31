@@ -8,8 +8,7 @@ class CreateRegistryAuthMeta extends AbstractTaskMeta
 {
     public function __construct(
         public string $registryName,
-    )
-    {
+    ) {
         //
     }
 

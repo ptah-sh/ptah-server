@@ -14,8 +14,8 @@ use Laravel\Paddle\Billable;
 
 class Team extends JetstreamTeam
 {
-    use HasFactory;
     use Billable;
+    use HasFactory;
     use Notifiable;
 
     /**
@@ -31,7 +31,7 @@ class Team extends JetstreamTeam
     ];
 
     protected $appends = [
-        'billing'
+        'billing',
     ];
 
     /**
@@ -64,8 +64,6 @@ class Team extends JetstreamTeam
 
     /**
      * Get the name of the team.
-     *
-     * @return string
      */
     protected function paddleName(): string
     {
@@ -74,15 +72,13 @@ class Team extends JetstreamTeam
 
     /**
      * Get the email address of the team.
-     *
-     * @return string
      */
     protected function paddleEmail(): string
     {
         return $this->owner->email;
     }
 
-    protected function getBillingAttribute(): array | null
+    protected function getBillingAttribute(): ?array
     {
         if ($this->subscription() === null) {
             return null;
@@ -95,7 +91,7 @@ class Team extends JetstreamTeam
         ])->toArray();
     }
 
-    public function routeNotificationForMail(Notification $notification): array | string
+    public function routeNotificationForMail(Notification $notification): array|string
     {
         return [$this->customer->email => $this->customer->name];
     }

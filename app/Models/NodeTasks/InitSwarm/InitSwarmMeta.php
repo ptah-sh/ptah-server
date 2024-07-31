@@ -3,7 +3,6 @@
 namespace App\Models\NodeTasks\InitSwarm;
 
 use App\Models\NodeTasks\AbstractTaskMeta;
-use Spatie\LaravelData\Attributes\Validation\IPv4;
 
 class InitSwarmMeta extends AbstractTaskMeta
 {
@@ -11,9 +10,7 @@ class InitSwarmMeta extends AbstractTaskMeta
         public int $swarmId,
         public string $name,
         public bool $forceNewCluster
-    ) {
-
-    }
+    ) {}
 
     public function formattedHtml(): string
     {

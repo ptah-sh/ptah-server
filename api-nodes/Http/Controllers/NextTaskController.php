@@ -3,7 +3,6 @@
 namespace ApiNodes\Http\Controllers;
 
 use App\Models\Node;
-use App\Models\NodeTasks\TaskStatus;
 use App\Models\NodeTaskGroup;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Response;
@@ -14,7 +13,7 @@ class NextTaskController
     {
         if ($node->swarm_id === null) {
             return new Response([
-               'message' => 'No task found.'
+                'message' => 'No task found.',
             ], 204);
         }
 
@@ -29,12 +28,12 @@ class NextTaskController
             return $task->only([
                 'id',
                 'type',
-                'payload'
+                'payload',
             ]);
         }
 
         return new Response([
-            'message' => 'No task found.'
+            'message' => 'No task found.',
         ], 204);
     }
 
@@ -42,7 +41,7 @@ class NextTaskController
     {
         if ($taskGroup->tasks()->running()->first()) {
             return new Response([
-                'error_message' => 'Another task should be already running.'
+                'error_message' => 'Another task should be already running.',
             ], 409);
         }
 
@@ -63,7 +62,7 @@ class NextTaskController
             return $query->where('node_id', $node->id)->orWhere('node_id', null);
         })->pending()->first();
 
-        if (!$taskGroup) {
+        if (! $taskGroup) {
             return null;
         }
 

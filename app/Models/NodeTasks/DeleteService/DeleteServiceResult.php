@@ -7,13 +7,12 @@ use App\Models\NodeTasks\AbstractTaskResult;
 class DeleteServiceResult extends AbstractTaskResult
 {
     public function __construct(
-    )
-    {
+    ) {
         //
     }
 
     public function formattedHtml(): string
     {
-        return "Service deleted successfully.";
+        return 'Service deleted successfully.';
     }
 }

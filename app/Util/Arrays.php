@@ -6,7 +6,7 @@ use Illuminate\Support\Arr;
 
 class Arrays
 {
-    static function niceMerge(array $array1, array $array2): array
+    public static function niceMerge(array $array1, array $array2): array
     {
         if (Arr::isList($array1) && Arr::isList($array2)) {
             return [...$array1, ...$array2];
@@ -17,8 +17,8 @@ class Arrays
         $result = [];
 
         foreach ($allKeys as $key) {
-            $array1KeyMissing = !array_key_exists($key, $array1);
-            $array2KeyMissing = !array_key_exists($key, $array2);
+            $array1KeyMissing = ! array_key_exists($key, $array1);
+            $array2KeyMissing = ! array_key_exists($key, $array2);
             $array2KeyExists = array_key_exists($key, $array2);
             $array2KeyNull = $array2KeyExists && $array2[$key] === null;
             $array2KeyScalar = $array2KeyExists && is_scalar($array2[$key]);

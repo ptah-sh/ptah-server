@@ -2,7 +2,6 @@
 
 namespace App\Api\Controllers;
 
-use App\Models\DeploymentData;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

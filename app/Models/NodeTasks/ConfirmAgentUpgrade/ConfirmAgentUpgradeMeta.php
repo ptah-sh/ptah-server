@@ -8,8 +8,7 @@ class ConfirmAgentUpgradeMeta extends AbstractTaskMeta
 {
     public function __construct(
         public string $targetVersion
-    )
-    {
+    ) {
         //
     }
 

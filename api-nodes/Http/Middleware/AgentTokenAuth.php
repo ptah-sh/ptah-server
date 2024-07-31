@@ -3,7 +3,6 @@
 namespace ApiNodes\Http\Middleware;
 
 use App\Models\Node;
-use App\Models\NodeTasks;
 use App\Models\Scopes\TeamScope;
 use App\Models\Team;
 use Closure;
@@ -23,13 +22,13 @@ class AgentTokenAuth
     {
         $token = $request->header(self::AUTH_HEADER);
 
-        if (!$token) {
+        if (! $token) {
             if ($request->bearerToken()) {
                 return $next($request);
             }
 
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized',
             ], 403);
         }
 
@@ -39,8 +38,8 @@ class AgentTokenAuth
 
         $node->save();
 
-        app()->singleton(Node::class, fn() => $node);
-        app()->singleton(Team::class, fn() => $node->team);
+        app()->singleton(Node::class, fn () => $node);
+        app()->singleton(Team::class, fn () => $node->team);
 
         return $next($request);
     }

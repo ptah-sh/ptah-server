@@ -8,11 +8,8 @@ class BackupSchedule extends Data
 {
     public function __construct(
         public CronPreset $preset,
-        public string     $s3StorageId,
+        public string $s3StorageId,
         // TODO: !!! validate CRON expr
-        public string     $expr,
-    )
-    {
-
-    }
+        public string $expr,
+    ) {}
 }

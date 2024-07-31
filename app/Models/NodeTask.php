@@ -52,7 +52,7 @@ class NodeTask extends Model
         return $this->meta->formattedHtml();
     }
 
-    public function getFormattedResultAttribute(): string | null
+    public function getFormattedResultAttribute(): ?string
     {
         if (is_null($this->result)) {
             return null;

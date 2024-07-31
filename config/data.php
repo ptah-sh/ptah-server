@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Enumerable;
-
 return [
     /**
      * It is possible to skip the PHP reflection analysis of data objects

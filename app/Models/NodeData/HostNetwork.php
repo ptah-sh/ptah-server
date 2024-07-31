@@ -12,9 +12,6 @@ class HostNetwork extends Data
         public string $if_name,
         #[DataCollectionOf(IpAddress::class)]
         #[Required]
-        public array  $ips
-    )
-    {
-
-    }
+        public array $ips
+    ) {}
 }

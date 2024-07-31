@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-
 abstract class Controller
 {
     // TODO: replace with Gate::authorize()

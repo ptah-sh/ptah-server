@@ -17,6 +17,7 @@ class MakeNodeTask extends Command
     /**
      * The console command description.
      *34
+     *
      * @var string
      */
     protected $description = 'Create a new node task';
@@ -52,7 +53,7 @@ class MakeNodeTask extends Command
         foreach ($dirs as $dir) {
             $path = app_path($dir);
 
-            $this->info('Creating directory ' . $dir);
+            $this->info('Creating directory '.$dir);
 
             mkdir($path);
         }
@@ -60,7 +61,7 @@ class MakeNodeTask extends Command
         foreach ($taskDataFiles as $abstractPath => $template) {
             $path = app_path($abstractPath);
 
-            $this->info('Writing ' . $abstractPath);
+            $this->info('Writing '.$abstractPath);
 
             file_put_contents($path, $template);
         }
@@ -70,7 +71,7 @@ class MakeNodeTask extends Command
 
     protected function readStub($type, $taskName): string
     {
-        $template = file_get_contents(__DIR__ . "/stubs/MakeNodeTask/$type.stub");
+        $template = file_get_contents(__DIR__."/stubs/MakeNodeTask/$type.stub");
 
         return str_replace('$taskName', $taskName, $template);
     }

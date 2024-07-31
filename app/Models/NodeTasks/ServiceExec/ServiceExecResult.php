@@ -8,13 +8,12 @@ class ServiceExecResult extends AbstractTaskResult
 {
     public function __construct(
         public array $output
-    )
-    {
+    ) {
         //
     }
 
     public function formattedHtml(): string
     {
-        return join('<br>', $this->output);
+        return implode('<br>', $this->output);
     }
 }

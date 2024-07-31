@@ -11,8 +11,7 @@ class JoinSwarmMeta extends AbstractTaskMeta
     public function __construct(
         public readonly string $swarmId,
         public readonly NodeRole $role,
-    )
-    {
+    ) {
         //
     }
 

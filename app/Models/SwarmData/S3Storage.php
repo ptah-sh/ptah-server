@@ -16,10 +16,7 @@ class S3Storage extends Data
         public string $bucket,
         public string $pathPrefix,
         public ?string $dockerName,
-    )
-    {
-
-    }
+    ) {}
 
     public function sameAs(S3Storage $s3Storage): bool
     {

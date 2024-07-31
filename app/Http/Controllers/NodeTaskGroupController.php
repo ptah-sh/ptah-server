@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Node;
 use App\Models\NodeTaskGroup;
-use App\Models\User;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 class NodeTaskGroupController extends Controller

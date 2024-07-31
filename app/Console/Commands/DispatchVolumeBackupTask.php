@@ -67,7 +67,7 @@ class DispatchVolumeBackupTask extends Command
         ]);
 
         $date = now()->format('Y-m-d_His');
-        $backupFileName = dockerize_name("svc-{$service->id}-{$process->name}-vol-{$volume->name}-{$date}") . '.tar.gz';
+        $backupFileName = dockerize_name("svc-{$service->id}-{$process->name}-vol-{$volume->name}-{$date}").'.tar.gz';
         $archivePath = "{$process->backupVolume->path}/$backupFileName";
         $backupCommand = "tar czfv $archivePath -C {$volume->path} .";
 
@@ -90,8 +90,8 @@ class DispatchVolumeBackupTask extends Command
                         'AttachStdout' => true,
                         'AttachStderr' => true,
                         'Cmd' => ['sh', '-c', $backupCommand],
-                    ]
-                ]
+                    ],
+                ],
             ],
             [
                 'type' => NodeTaskType::UploadS3File,
@@ -106,9 +106,9 @@ class DispatchVolumeBackupTask extends Command
                         'Target' => $process->backupVolume->path,
                     ],
                     'SrcFilePath' => $archivePath,
-                    'DestFilePath' => $s3Storage->pathPrefix . '/' . $backupFileName,
+                    'DestFilePath' => $s3Storage->pathPrefix.'/'.$backupFileName,
                 ],
-            ]
+            ],
         ]);
     }
 }
