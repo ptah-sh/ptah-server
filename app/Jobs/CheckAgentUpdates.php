@@ -17,16 +17,14 @@ class CheckAgentUpdates implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct()
-    {
-    }
+    public function __construct() {}
 
     /**
      * Execute the job.
      */
     public function handle(): void
     {
-        $json = Http::get("https://api.github.com/repos/ptah-sh/ptah-agent/releases/latest")->json();
+        $json = Http::get('https://api.github.com/repos/ptah-sh/ptah-agent/releases/latest')->json();
 
         foreach ($json['assets'] as $asset) {
             preg_match('/^ptah-agent-(?<os>.+)-(?<arch>.+).bin$/', $asset['name'], $matches);

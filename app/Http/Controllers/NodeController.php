@@ -78,7 +78,7 @@ class NodeController extends Controller
             'initTaskGroup' => $initTaskGroup ?: $joinTaskGroup,
             'lastAgentVersion' => $lastAgentVersion,
             'agentUpgradeTaskGroup' => $taskGroup?->is_completed ? null : $taskGroup,
-            'registryUpdateTaskGroup' => $registryTaskGroup?->is_completed ? null : $registryTaskGroup
+            'registryUpdateTaskGroup' => $registryTaskGroup?->is_completed ? null : $registryTaskGroup,
         ]);
     }
 

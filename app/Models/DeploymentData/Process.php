@@ -23,67 +23,64 @@ class Process extends Data
     public function __construct(
         public string $name,
         public ?string $dockerName,
-        public ?string   $dockerRegistryId,
+        public ?string $dockerRegistryId,
         public string $dockerImage,
         public ReleaseCommand $releaseCommand,
         public ?string $command,
         #[DataCollectionOf(ProcessBackup::class)]
-                           /* @var ProcessBackup[] */
+        /* @var ProcessBackup[] */
         public array $backups,
         #[DataCollectionOf(Worker::class)]
-                           /* @var Worker[] */
+        /* @var Worker[] */
         public array $workers,
         #[Enum(LaunchMode::class)]
         public string $launchMode,
         #[DataCollectionOf(EnvVar::class)]
-                           /* @var EnvVar[] */
-        public array  $envVars,
-        public SecretVars  $secretVars,
+        /* @var EnvVar[] */
+        public array $envVars,
+        public SecretVars $secretVars,
         #[DataCollectionOf(ConfigFile::class)]
-                           /* @var ConfigFile[] */
-        public array  $configFiles,
+        /* @var ConfigFile[] */
+        public array $configFiles,
         #[DataCollectionOf(ConfigFile::class)]
-                           /* @var ConfigFile[] */
-        public array  $secretFiles,
+        /* @var ConfigFile[] */
+        public array $secretFiles,
         #[DataCollectionOf(Volume::class)]
-                           /* @var Volume[] */
-        public array  $volumes,
+        /* @var Volume[] */
+        public array $volumes,
         public ?BackupVolume $backupVolume,
-        public int    $replicas,
+        public int $replicas,
         #[DataCollectionOf(NodePort::class)]
         /* @var NodePort[] */
-        public array  $ports,
+        public array $ports,
         #[DataCollectionOf(Caddy::class)]
-                        /* @var Caddy[] */
-        public array  $caddy,
+        /* @var Caddy[] */
+        public array $caddy,
         #[Rule(new RequiredIfArrayHas('caddy.*.targetProtocol', 'fastcgi'))]
         public ?FastCgi $fastCgi,
         #[DataCollectionOf(RedirectRule::class)]
-                           /* @var RedirectRule[] */
+        /* @var RedirectRule[] */
         public array $redirectRules
-    )
-    {
-
-    }
+    ) {}
 
     public function findVolume(string $id): ?Volume
     {
-        return collect($this->volumes)->first(fn(Volume $volume) => $volume->id === $id);
+        return collect($this->volumes)->first(fn (Volume $volume) => $volume->id === $id);
     }
 
     public function findProcessBackup(string $id): ?ProcessBackup
     {
-        return collect($this->backups)->first(fn(ProcessBackup $backup) => $backup->id === $id);
+        return collect($this->backups)->first(fn (ProcessBackup $backup) => $backup->id === $id);
     }
 
     public function findConfigFile(string $path): ?ConfigFile
     {
-        return collect($this->configFiles)->first(fn(ConfigFile $file) => $file->path === $path);
+        return collect($this->configFiles)->first(fn (ConfigFile $file) => $file->path === $path);
     }
 
     public function findSecretFile(string $path): ?ConfigFile
     {
-        return collect($this->secretFiles)->first(fn(ConfigFile $file) => $file->path === $path);
+        return collect($this->secretFiles)->first(fn (ConfigFile $file) => $file->path === $path);
     }
 
     /**
@@ -92,7 +89,7 @@ class Process extends Data
     public function asNodeTasks(Deployment $deployment): array
     {
         if (empty($this->dockerName)) {
-            $this->dockerName = dockerize_name($deployment->service->docker_name . '_' . $this->name);
+            $this->dockerName = dockerize_name($deployment->service->docker_name.'_'.$this->name);
         }
 
         $labels = $deployment->resourceLabels();
@@ -114,9 +111,9 @@ class Process extends Data
         }
 
         foreach ($this->workers as $worker) {
-            if (!$worker->dockerName) {
+            if (! $worker->dockerName) {
                 // TODO: add validation - allow only unique worker commands
-                $worker->dockerName = $this->makeResourceName('wkr_' . $worker->name);
+                $worker->dockerName = $this->makeResourceName('wkr_'.$worker->name);
             }
         }
 
@@ -128,7 +125,7 @@ class Process extends Data
                 continue;
             }
 
-            $configFile->dockerName = $this->makeResourceName('dpl_'.$deployment->id .'_cfg_' . $configFile->path);
+            $configFile->dockerName = $this->makeResourceName('dpl_'.$deployment->id.'_cfg_'.$configFile->path);
 
             $tasks[] = [
                 'type' => NodeTaskType::CreateConfig,
@@ -145,7 +142,7 @@ class Process extends Data
                         'Labels' => dockerize_labels([
                             ...$labels,
                             'kind' => 'config',
-                            "content.hash" => $configFile->hash(),
+                            'content.hash' => $configFile->hash(),
                         ]),
                     ],
                 ],
@@ -160,7 +157,7 @@ class Process extends Data
                 continue;
             }
 
-            $secretFile->dockerName = $this->makeResourceName('dpl_'.$deployment->id .'_cfg_' . $secretFile->path);
+            $secretFile->dockerName = $this->makeResourceName('dpl_'.$deployment->id.'_cfg_'.$secretFile->path);
 
             $tasks[] = [
                 'type' => NodeTaskType::CreateSecret,
@@ -176,15 +173,15 @@ class Process extends Data
                         'Data' => $secretFile->base64(),
                         'Labels' => dockerize_labels([
                             ...$labels,
-                            "content.hash" => $secretFile->hash(),
+                            'content.hash' => $secretFile->hash(),
                         ]),
-                    ]
-                ]
+                    ],
+                ],
             ];
         }
 
         foreach ($this->volumes as $volume) {
-            if (!$volume->dockerName) {
+            if (! $volume->dockerName) {
                 $volume->dockerName = $this->makeResourceName($volume->name);
             }
         }
@@ -212,7 +209,7 @@ class Process extends Data
 
         $authConfigName = $dockerRegistry
             ? $dockerRegistry->dockerName
-            : "";
+            : '';
 
         $tasks[] = [
             'type' => NodeTaskType::PullDockerImage,
@@ -240,7 +237,7 @@ class Process extends Data
         $volumes = $this->volumes;
 
         $mounts = collect($volumes)
-            ->map(fn(Volume $volume) => [
+            ->map(fn (Volume $volume) => [
                 'Type' => 'volume',
                 'Source' => $volume->dockerName,
                 'Target' => $volume->path,
@@ -249,7 +246,7 @@ class Process extends Data
                         'id' => $volume->id,
                         ...$labels,
                     ]),
-                ]
+                ],
             ])
             ->toArray();
 
@@ -257,7 +254,7 @@ class Process extends Data
         if (count($this->volumes)) {
             if ($this->backupVolume == null) {
                 $this->backupVolume = BackupVolume::validateAndCreate([
-                    'id' => 'backups-' . Str::random(11),
+                    'id' => 'backups-'.Str::random(11),
                     'name' => 'backups',
                     'dockerName' => $this->makeResourceName('/ptah/backups'),
                     'path' => '/ptah/backups',
@@ -273,13 +270,13 @@ class Process extends Data
                         'id' => $this->backupVolume->id,
                         ...$labels,
                     ]),
-                ]
+                ],
             ];
         }
 
         $envVars = $this->envVars;
         $envVars[] = EnvVar::validateAndCreate([
-            'name' => "PTAH_HOSTNAME",
+            'name' => 'PTAH_HOSTNAME',
             'value' => $internalDomain,
         ]);
 
@@ -305,42 +302,42 @@ class Process extends Data
                             'Command' => $command,
                             'Args' => $args,
                             'Hostname' => "dpl-{$deployment->id}.{$internalDomain}",
-                            'Env' => collect($envVars)->map(fn(EnvVar $var) => "{$var->name}={$var->value}")->toArray(),
+                            'Env' => collect($envVars)->map(fn (EnvVar $var) => "{$var->name}={$var->value}")->toArray(),
                             'Mounts' => $mounts,
                             'Hosts' => [
                                 $internalDomain,
                             ],
-                            'Secrets' => collect($this->secretFiles)->map(fn(ConfigFile $secretFile) => [
+                            'Secrets' => collect($this->secretFiles)->map(fn (ConfigFile $secretFile) => [
                                 'File' => [
                                     'Name' => $secretFile->path,
                                     // TODO: figure out better permissions settings (if any)
-                                    'UID' => "0",
-                                    "GID" => "0",
-                                    "Mode" => 0777
+                                    'UID' => '0',
+                                    'GID' => '0',
+                                    'Mode' => 0777,
                                 ],
                                 'SecretName' => $secretFile->dockerName,
                             ])->values()->toArray(),
-                            'Configs' => collect($this->configFiles)->map(fn(ConfigFile $configFile) => [
+                            'Configs' => collect($this->configFiles)->map(fn (ConfigFile $configFile) => [
                                 'File' => [
                                     'Name' => $configFile->path,
                                     // TODO: figure out better permissions settings (if any)
-                                    'UID' => "0",
-                                    "GID" => "0",
-                                    "Mode" => 0777
+                                    'UID' => '0',
+                                    'GID' => '0',
+                                    'Mode' => 0777,
                                 ],
                                 'ConfigName' => $configFile->dockerName,
                             ])->values()->toArray(),
                             'Placement' => $deployment->data->placementNodeId ? [
                                 'Constraints' => [
                                     "node.labels.sh.ptah.node.id=={$deployment->data->placementNodeId}",
-                                ]
+                                ],
                             ] : [],
                         ],
                         'Networks' => [
                             [
                                 'Target' => $deployment->data->networkName,
                                 'Aliases' => [$internalDomain],
-                            ]
+                            ],
                         ],
                     ],
                     'Mode' => [
@@ -349,14 +346,14 @@ class Process extends Data
                         ],
                     ],
                     'EndpointSpec' => [
-                        'Ports' => collect($this->ports)->map(fn(NodePort $port) => [
+                        'Ports' => collect($this->ports)->map(fn (NodePort $port) => [
                             'Protocol' => 'tcp',
                             'TargetPort' => $port->targetPort,
                             'PublishedPort' => $port->publishedPort,
                             'PublishMode' => 'ingress',
-                        ])->toArray()
-                    ]
-                ]
+                        ])->toArray(),
+                    ],
+                ],
             ],
         ];
 
@@ -387,31 +384,31 @@ class Process extends Data
                                     $worker->command,
                                 ],
                                 'Hostname' => "dpl-{$deployment->id}.{$worker->name}.{$internalDomain}",
-                                'Env' => collect($this->envVars)->map(fn(EnvVar $var) => "{$var->name}={$var->value}")->toArray(),
+                                'Env' => collect($this->envVars)->map(fn (EnvVar $var) => "{$var->name}={$var->value}")->toArray(),
                                 'Mounts' => [],
                                 'HealthCheck' => [
-                                    'Test' => ['NONE']
+                                    'Test' => ['NONE'],
                                 ],
                                 'Hosts' => [
                                     "{$worker->name}.{$internalDomain}",
                                 ],
-                                'Secrets' => collect($this->secretFiles)->map(fn(ConfigFile $secretFile) => [
+                                'Secrets' => collect($this->secretFiles)->map(fn (ConfigFile $secretFile) => [
                                     'File' => [
                                         'Name' => $secretFile->path,
                                         // TODO: figure out better permissions settings (if any)
-                                        'UID' => "0",
-                                        "GID" => "0",
-                                        "Mode" => 0777
+                                        'UID' => '0',
+                                        'GID' => '0',
+                                        'Mode' => 0777,
                                     ],
                                     'SecretName' => $secretFile->dockerName,
                                 ])->values()->toArray(),
-                                'Configs' => collect($this->configFiles)->map(fn(ConfigFile $configFile) => [
+                                'Configs' => collect($this->configFiles)->map(fn (ConfigFile $configFile) => [
                                     'File' => [
                                         'Name' => $configFile->path,
                                         // TODO: figure out better permissions settings (if any)
-                                        'UID' => "0",
-                                        "GID" => "0",
-                                        "Mode" => 0777
+                                        'UID' => '0',
+                                        'GID' => '0',
+                                        'Mode' => 0777,
                                     ],
                                     'ConfigName' => $configFile->dockerName,
                                 ])->values()->toArray(),
@@ -423,7 +420,7 @@ class Process extends Data
                                     'Aliases' => [
                                         "{$worker->name}.{$internalDomain}",
                                     ],
-                                ]
+                                ],
                             ],
                         ],
                         'Mode' => [
@@ -435,9 +432,9 @@ class Process extends Data
                             'Parallelism' => 1,
                         ],
                         'EndpointSpec' => [
-                            'Ports' => []
-                        ]
-                    ]
+                            'Ports' => [],
+                        ],
+                    ],
                 ],
             ];
         }
@@ -460,11 +457,11 @@ class Process extends Data
                 'kind' => 'secret-env-vars',
             ]),
             'Values' => (object) collect($this->data->secretVars->vars)
-                ->reject(fn(EnvVar $var) => $var->value === null)
-                ->reduce(fn($carry, EnvVar $var) => [...$carry, $var->name => $var->value], []),
+                ->reject(fn (EnvVar $var) => $var->value === null)
+                ->reduce(fn ($carry, EnvVar $var) => [...$carry, $var->name => $var->value], []),
         ];
 
-        if (!empty($previous?->secretVars->dockerName)) {
+        if (! empty($previous?->secretVars->dockerName)) {
             $data['Preserve'] = collect($this->data->secretVars->vars)
                 ->filter(fn (EnvVar $var) => $var->value === null)
                 ->map(fn (EnvVar $var) => $var->name)
@@ -483,26 +480,25 @@ class Process extends Data
         }
 
         return [
-            'ConfigName' => $this->data->secretVars->dockerName . '_wkr_' . $worker->name,
+            'ConfigName' => $this->data->secretVars->dockerName.'_wkr_'.$worker->name,
             'ConfigLabels' => dockerize_labels([
                 ...$labels,
                 'kind' => 'secret-env-vars',
             ]),
             'Values' => [],
-            'Preserve' => collect($this->data->secretVars->vars)->map(fn(EnvVar $var) => $var->name)->toArray(),
+            'Preserve' => collect($this->data->secretVars->vars)->map(fn (EnvVar $var) => $var->name)->toArray(),
             'PreserveFromConfig' => $this->secretVars->dockerName,
         ];
     }
 
-
     public function makeResourceName(string $name): string
     {
-        return dockerize_name($this->dockerName . '_' . $name);
+        return dockerize_name($this->dockerName.'_'.$name);
     }
 
     private function getReleaseCommandPayload(Deployment $deployment, array $labels): array
     {
-        if (!$this->releaseCommand->command) {
+        if (! $this->releaseCommand->command) {
             return [
                 'ConfigName' => '',
                 'ConfigLabels' => (object) [],
@@ -512,6 +508,7 @@ class Process extends Data
 
         // Always create a new config, as the command may be the same, but the image/entrypoint may be different.
         $this->releaseCommand->dockerName = $deployment->makeResourceName('release_command');
+
         return [
             'ConfigName' => $this->releaseCommand->dockerName,
             'ConfigLabels' => dockerize_labels([
@@ -524,10 +521,10 @@ class Process extends Data
 
     private function findWorker(?string $dockerName): ?Worker
     {
-        if (!$dockerName) {
+        if (! $dockerName) {
             return null;
         }
 
-        return collect($this->workers)->first(fn(Worker $worker) => $worker->dockerName === $dockerName);
+        return collect($this->workers)->first(fn (Worker $worker) => $worker->dockerName === $dockerName);
     }
 }

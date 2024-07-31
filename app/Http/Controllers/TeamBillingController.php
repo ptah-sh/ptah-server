@@ -18,9 +18,10 @@ class TeamBillingController extends Controller
 
         //        dd($team->subscription()->nextPayment());
         $checkout = $team->subscribe('pri_01j2ag2ts45hznad1t67bs4syd')->returnTo(route('teams.billing.show', $team));
-//$team->subscription()->anchorBillingCycleOn(Carbon::now()->addMonth()->startOfMonth());
+        //$team->subscription()->anchorBillingCycleOn(Carbon::now()->addMonth()->startOfMonth());
         $nextPayment = $team->subscription()?->nextPayment();
-//Cashier::api()
+
+        //Cashier::api()
         return Inertia::render('Teams/Billing', [
             'team' => $team,
             'customer' => $customer,
@@ -49,7 +50,7 @@ class TeamBillingController extends Controller
             $customer = $team->createAsCustomer();
             $customer->update($formData);
 
-            Cashier::api('PATCH', 'customers/' . $customer->paddle_id, $formData);
+            Cashier::api('PATCH', 'customers/'.$customer->paddle_id, $formData);
         });
 
         return redirect()->route('teams.billing.show', $team);

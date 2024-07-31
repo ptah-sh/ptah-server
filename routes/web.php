@@ -36,10 +36,10 @@ Route::middleware([
 
     Route::post('/node-task-groups/{taskGroup}/retry', [NodeTaskGroupController::class, 'retry'])->name('node-task-groups.retry');
 
-    Route::resource("nodes", NodeController::class);
+    Route::resource('nodes', NodeController::class);
     Route::post('/nodes/{node}/upgrade-agent', [NodeController::class, 'upgradeAgent'])->name('nodes.upgrade-agent');
 
-    Route::resource("services", ServiceController::class);
+    Route::resource('services', ServiceController::class);
     Route::get('/services/{service}/deployments', [ServiceController::class, 'deployments'])->name('services.deployments');
     Route::post('/services/{service}/deployments', [ServiceController::class, 'deploy'])->name('services.deploy');
 

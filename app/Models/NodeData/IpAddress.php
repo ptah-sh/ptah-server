@@ -13,7 +13,5 @@ class IpAddress extends Data
         public string $version,
         #[IP]
         public string $ip
-    )
-    {
-    }
+    ) {}
 }

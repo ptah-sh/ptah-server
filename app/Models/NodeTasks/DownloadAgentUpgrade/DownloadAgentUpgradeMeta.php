@@ -9,8 +9,7 @@ class DownloadAgentUpgradeMeta extends AbstractTaskMeta
     public function __construct(
         public string $targetVersion,
         public string $downloadUrl
-    )
-    {
+    ) {
         //
     }
 

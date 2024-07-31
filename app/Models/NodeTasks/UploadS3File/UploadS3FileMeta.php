@@ -9,8 +9,7 @@ class UploadS3FileMeta extends AbstractTaskMeta
     public function __construct(
         public string $serviceId,
         public string $destPath,
-    )
-    {
+    ) {
         //
     }
 

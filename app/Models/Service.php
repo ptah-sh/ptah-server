@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
 use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
 use App\Traits\HasOwningTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,14 +11,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\Str;
-use InvalidArgumentException;
 
 class Service extends Model
 {
-    use SoftDeletes;
     use HasFactory;
     use HasOwningTeam;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -30,7 +27,7 @@ class Service extends Model
     protected static function booted()
     {
         self::saved(function (Service $service) {
-            if (!$service->docker_name) {
+            if (! $service->docker_name) {
                 $service->docker_name = $service->makeResourceName($service->name);
                 $service->saveQuietly();
             }
@@ -80,7 +77,7 @@ class Service extends Model
 
     public function makeResourceName($name): string
     {
-        return dockerize_name("svc_" . $this->id . '_'. $name);
+        return dockerize_name('svc_'.$this->id.'_'.$name);
     }
 
     public function deploy(DeploymentData $deploymentData): Deployment

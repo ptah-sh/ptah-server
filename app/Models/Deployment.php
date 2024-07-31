@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Query\Builder as QueryBuilder;
-use Illuminate\Support\Facades\Blade;
 use InvalidArgumentException;
 
 class Deployment extends Model
@@ -41,12 +40,12 @@ class Deployment extends Model
 
     public function taskGroups(): HasManyThrough
     {
-        return $this->hasManyThrough(NodeTaskGroup::class, NodeTask::class,  'meta__deployment_id', 'id', 'id', 'task_group_id')->orderByDesc('id');
+        return $this->hasManyThrough(NodeTaskGroup::class, NodeTask::class, 'meta__deployment_id', 'id', 'id', 'task_group_id')->orderByDesc('id');
     }
 
     public function latestTaskGroup(): HasOneThrough
     {
-        return $this->hasOneThrough(NodeTaskGroup::class, NodeTask::class,  'meta__deployment_id', 'id', 'id', 'task_group_id')->latest();
+        return $this->hasOneThrough(NodeTaskGroup::class, NodeTask::class, 'meta__deployment_id', 'id', 'id', 'task_group_id')->latest();
     }
 
     public function previousDeployment(): ?Deployment
@@ -56,7 +55,7 @@ class Deployment extends Model
 
     public function makeResourceName($name): string
     {
-        return $this->service->makeResourceName("dpl_". $this->id . "_" . $name);
+        return $this->service->makeResourceName('dpl_'.$this->id.'_'.$name);
     }
 
     public function scopeLatestDeployments(EloquentBuilder $query): EloquentBuilder
@@ -69,7 +68,8 @@ class Deployment extends Model
         });
     }
 
-    public function resourceLabels(): array {
+    public function resourceLabels(): array
+    {
         return dockerize_labels([
             'service.id' => $this->service_id,
             'deployment.id' => $this->id,
@@ -107,7 +107,7 @@ class Deployment extends Model
 
         $this->latestDeployments()->each(function ($deployment) use (&$caddyHandlers) {
             foreach ($deployment->data->processes as $process) {
-                $caddyHandlers[] = collect($process->caddy)->map(function(Caddy $caddy) use ($deployment, $process) {
+                $caddyHandlers[] = collect($process->caddy)->map(function (Caddy $caddy) use ($deployment, $process) {
                     $routes = [];
 
                     $routes[] = [
@@ -135,10 +135,10 @@ class Deployment extends Model
                                 'upstreams' => [
                                     [
                                         'dial' => "{$process->name}.{$deployment->data->internalDomain}:{$caddy->targetPort}",
-                                    ]
-                                ]
-                            ]
-                        ]
+                                    ],
+                                ],
+                            ],
+                        ],
                     ];
 
                     foreach ($process->redirectRules as $redirectRule) {
@@ -152,9 +152,9 @@ class Deployment extends Model
                                     'host' => [$redirectRule->domainFrom],
                                     'path_regexp' => [
                                         'name' => $regexpName,
-                                        'pattern' => $redirectRule->pathFrom
+                                        'pattern' => $redirectRule->pathFrom,
                                     ],
-                                ]
+                                ],
                             ],
                             'handle' => [
                                 [
@@ -165,8 +165,8 @@ class Deployment extends Model
                                         'X-Ptah-Rule-Id' => [$redirectRule->id],
                                         'Location' => ["{http.request.scheme}://{$redirectRule->domainTo}{$pathTo}"],
                                     ],
-                                ]
-                            ]
+                                ],
+                            ],
                         ];
                     }
 
@@ -179,10 +179,10 @@ class Deployment extends Model
                                             "0.0.0.0:{$caddy->publishedPort}",
                                         ],
                                         'routes' => $routes,
-                                    ]
-                                ]
-                            ]
-                        ]
+                                    ],
+                                ],
+                            ],
+                        ],
                     ];
                 })->toArray();
             }
@@ -193,13 +193,13 @@ class Deployment extends Model
 
         $caddyTask = [];
 
-        if (!empty($caddyHandlers)) {
+        if (! empty($caddyHandlers)) {
             $caddy = [
                 'apps' => [
                     'http' => [
                         'servers' => (object) [],
-                    ]
-                ]
+                    ],
+                ],
             ];
 
             foreach ($caddyHandlers as $handler) {
@@ -215,7 +215,7 @@ class Deployment extends Model
                         [
                             'host' => ['*'],
                             'path' => ['/*'],
-                        ]
+                        ],
                     ],
                     'handle' => [
                         [
@@ -226,8 +226,8 @@ class Deployment extends Model
                                 'Content-Type' => ['text/html; charset=utf-8'],
                             ],
                             'body' => file_get_contents(resource_path('support/caddy/404.html')),
-                        ]
-                    ]
+                        ],
+                    ],
                 ];
             }
 
@@ -238,7 +238,7 @@ class Deployment extends Model
                 ]),
                 'payload' => [
                     'caddy' => $caddy,
-                ]
+                ],
 
             ];
         }

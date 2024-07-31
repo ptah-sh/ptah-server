@@ -8,13 +8,12 @@ class ApplyCaddyConfigMeta extends AbstractTaskMeta
 {
     public function __construct(
         public int $deploymentId
-    )
-    {
+    ) {
         //
     }
 
     public function formattedHtml(): string
     {
-        return "Apply Caddy Config";
+        return 'Apply Caddy Config';
     }
 }

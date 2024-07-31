@@ -8,8 +8,7 @@ class PullDockerImageMeta extends AbstractTaskMeta
 {
     public function __construct(
         public string $dockerImage
-    )
-    {
+    ) {
         //
     }
 

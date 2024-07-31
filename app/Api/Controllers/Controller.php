@@ -2,7 +2,4 @@
 
 namespace App\Api\Controllers;
 
-class Controller
-{
-
-}
+class Controller {}

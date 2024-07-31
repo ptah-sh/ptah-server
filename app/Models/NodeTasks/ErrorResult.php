@@ -6,10 +6,7 @@ class ErrorResult extends AbstractTaskResult
 {
     public function __construct(
         public string $message
-    )
-    {
-
-    }
+    ) {}
 
     public function formattedHtml(): string
     {

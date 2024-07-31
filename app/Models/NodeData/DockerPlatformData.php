@@ -8,8 +8,5 @@ class DockerPlatformData extends Data
 {
     public function __construct(
         public string $name
-    )
-    {
-
-    }
+    ) {}
 }

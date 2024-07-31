@@ -8,13 +8,12 @@ class CheckRegistryAuthMeta extends AbstractTaskMeta
 {
     public function __construct(
         public string $registryName
-    )
-    {
+    ) {
         //
     }
 
     public function formattedHtml(): string
     {
-        return 'Check registry auth <code>' . $this->registryName . '</code>';
+        return 'Check registry auth <code>'.$this->registryName.'</code>';
     }
 }

@@ -9,8 +9,7 @@ class ServiceExecMeta extends AbstractTaskMeta
     public function __construct(
         public int $serviceId,
         public string $command,
-    )
-    {
+    ) {
         //
     }
 

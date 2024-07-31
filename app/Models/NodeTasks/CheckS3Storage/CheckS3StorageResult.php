@@ -7,13 +7,12 @@ use App\Models\NodeTasks\AbstractTaskResult;
 class CheckS3StorageResult extends AbstractTaskResult
 {
     public function __construct(
-    )
-    {
+    ) {
         //
     }
 
     public function formattedHtml(): string
     {
-        return "Success.";
+        return 'Success.';
     }
 }

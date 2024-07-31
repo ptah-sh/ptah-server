@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 use App\Models\DeploymentData;
-use App\Models\NodeTaskGroup;
-use App\Models\NodeTaskGroupType;
 use App\Models\Service;
 use App\Models\Swarm;
 use Illuminate\Support\Facades\DB;
@@ -71,7 +69,6 @@ class ServiceController extends Controller
             $service->deploy($deploymentData);
         });
 
-
         return to_route('services.deployments', ['service' => $service->id]);
     }
 
@@ -102,8 +99,7 @@ class ServiceController extends Controller
             $deployments->with(['latestTaskGroup' => function ($taskGroups) {
                 $taskGroups->with([
                     'invoker',
-                    'tasks' => function ($tasks) {
-                }]);
+                    'tasks' => function ($tasks) {}]);
             }]);
         }]);
 
@@ -112,7 +108,7 @@ class ServiceController extends Controller
 
     public function deploy(Service $service, DeploymentData $deploymentData)
     {
-        DB::transaction(function() use ($service, $deploymentData) {
+        DB::transaction(function () use ($service, $deploymentData) {
             $service->deploy($deploymentData);
         });
 

@@ -11,8 +11,5 @@ class AgentStartedEventData extends Data
     public function __construct(
         public NodeData $node,
         public ?SwarmData $swarm,
-    )
-    {
-
-    }
+    ) {}
 }

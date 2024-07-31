@@ -9,8 +9,7 @@ class CreateS3StorageResult extends AbstractTaskResult
 {
     public function __construct(
         public DockerId $docker,
-    )
-    {
+    ) {
         //
     }
 

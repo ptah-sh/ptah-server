@@ -8,8 +8,7 @@ class UpdateAgentSymlinkMeta extends AbstractTaskMeta
 {
     public function __construct(
         public string $targetVersion
-    )
-    {
+    ) {
         //
     }
 

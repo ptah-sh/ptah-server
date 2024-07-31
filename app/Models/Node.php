@@ -16,7 +16,7 @@ class Node extends Model
     use HasOwningTeam;
 
     protected $casts = [
-        'data' => NodeData::class
+        'data' => NodeData::class,
     ];
 
     protected $fillable = [
@@ -132,7 +132,7 @@ class Node extends Model
                 'payload' => [
                     'TargetVersion' => $targetVersion,
                     'DownloadUrl' => $release->download_url,
-                ]
+                ],
             ],
             [
                 'type' => NodeTaskType::UpdateAgentSymlink,
@@ -141,7 +141,7 @@ class Node extends Model
                 ],
                 'payload' => [
                     'TargetVersion' => $targetVersion,
-                ]
+                ],
             ],
             [
                 'type' => NodeTaskType::ConfirmAgentUpgrade,
@@ -150,8 +150,8 @@ class Node extends Model
                 ],
                 'payload' => [
                     'TargetVersion' => $targetVersion,
-                ]
-            ]
+                ],
+            ],
         ]);
     }
 }

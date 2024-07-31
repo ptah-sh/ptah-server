@@ -12,8 +12,5 @@ class NodePort extends Data
         public int $targetPort,
         #[Between(1, 65535)]
         public int $publishedPort
-    )
-    {
-
-    }
+    ) {}
 }

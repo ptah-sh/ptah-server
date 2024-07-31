@@ -9,8 +9,7 @@ class CreateRegistryAuthResult extends AbstractTaskResult
 {
     public function __construct(
         public DockerId $docker
-    )
-    {
+    ) {
         //
     }
 

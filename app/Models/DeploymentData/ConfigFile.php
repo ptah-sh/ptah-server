@@ -2,10 +2,6 @@
 
 namespace App\Models\DeploymentData;
 
-use App\Models\NodeTasks\DockerId;
-use App\Models\Service;
-use Illuminate\Support\Str;
-use Spatie\LaravelData\Attributes\Computed;
 use Spatie\LaravelData\Data;
 
 class ConfigFile extends Data
@@ -14,8 +10,7 @@ class ConfigFile extends Data
         public string $path,
         public ?string $content,
         public ?string $dockerName,
-    )
-    {
+    ) {
         $this->content = $content ?? '';
     }
 

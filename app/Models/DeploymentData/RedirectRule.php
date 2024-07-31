@@ -13,8 +13,5 @@ class RedirectRule extends Data
         public string $pathFrom,
         public string $pathTo,
         public int $statusCode
-    )
-    {
-
-    }
+    ) {}
 }

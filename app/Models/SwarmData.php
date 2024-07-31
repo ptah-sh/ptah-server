@@ -24,10 +24,7 @@ class SwarmData extends Data
         #[DataCollectionOf(ManagerNode::class)]
         /* @var ManagerNode[] */
         public array $managerNodes,
-    )
-    {
-
-    }
+    ) {}
 
     public function findRegistry(string $id): ?DockerRegistry
     {

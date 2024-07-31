@@ -9,8 +9,7 @@ class CreateNetworkMeta extends AbstractTaskMeta
     public function __construct(
         public int $networkId,
         public string $name,
-    ) {
-    }
+    ) {}
 
     public function formattedHtml(): string
     {

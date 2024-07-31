@@ -22,8 +22,8 @@ class EnsureTeamSubscription
         $team = auth()->user()->currentTeam;
         $subscription = $team->subscription();
 
-        $doesntHaveSubscription = $subscription === null || !$subscription->onTrial() && !$subscription->active();
-        if ($doesntHaveSubscription && !$request->routeIs('teams.billing.show')) {
+        $doesntHaveSubscription = $subscription === null || ! $subscription->onTrial() && ! $subscription->active();
+        if ($doesntHaveSubscription && ! $request->routeIs('teams.billing.show')) {
             return redirect()->route('teams.billing.show', $team);
         }
 

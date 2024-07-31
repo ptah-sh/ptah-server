@@ -9,8 +9,5 @@ class ManagerNode extends Data
     public function __construct(
         public string $nodeId,
         public string $addr,
-    )
-    {
-
-    }
+    ) {}
 }

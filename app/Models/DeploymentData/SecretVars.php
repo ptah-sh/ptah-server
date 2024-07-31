@@ -11,8 +11,5 @@ class SecretVars extends Data
         #[DataCollectionOf(EnvVar::class)]
         public array $vars,
         public ?string $dockerName
-    )
-    {
-
-    }
+    ) {}
 }

@@ -9,13 +9,12 @@ class PullDockerImageResult extends AbstractTaskResult
     public function __construct(
         /* @var string[] */
         public array $output
-    )
-    {
+    ) {
         //
     }
 
     public function formattedHtml(): string
     {
-        return join("<br>\n", $this->output);
+        return implode("<br>\n", $this->output);
     }
 }

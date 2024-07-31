@@ -7,11 +7,10 @@ use App\Models\NodeTasks\AbstractTaskMeta;
 class DeleteServiceMeta extends AbstractTaskMeta
 {
     public function __construct(
-        public int    $serviceId,
+        public int $serviceId,
         public string $dockerName,
         public string $serviceName,
-    )
-    {
+    ) {
         //
     }
 

@@ -2,12 +2,10 @@
 
 namespace App\Traits;
 
-use App\Casts\TaskPayloadCast;
 use App\Models\NodeTask;
-use App\Models\NodeTasks;
-use App\Models\NodeTasks\TaskStatus;
 use App\Models\NodeTaskGroup;
 use App\Models\NodeTaskGroupType;
+use App\Models\NodeTasks\TaskStatus;
 use App\Models\NodeTaskType;
 use Illuminate\Database\Eloquent\Builder;
 use InvalidArgumentException;
@@ -18,7 +16,7 @@ trait HasTaskStatus
     {
         static::addGlobalScope('taskStatusCast', function (Builder $builder) {
             return $builder->withCasts([
-                'status' => TaskStatus::class
+                'status' => TaskStatus::class,
             ])->orderBy('id');
         });
     }
@@ -48,28 +46,28 @@ trait HasTaskStatus
         return $builder->whereIn($builder->qualifyColumn('status'), [TaskStatus::Failed, TaskStatus::Canceled]);
     }
 
-    public function getIsPendingAttribute() : bool
+    public function getIsPendingAttribute(): bool
     {
         return $this->status === TaskStatus::Pending;
     }
 
-    public function getIsRunningAttribute() : bool
+    public function getIsRunningAttribute(): bool
     {
         return $this->status === TaskStatus::Running;
     }
 
-    public function getIsCompletedAttribute() : bool
+    public function getIsCompletedAttribute(): bool
     {
         return $this->status === TaskStatus::Completed;
     }
 
-    public function scopeOfType(Builder $query, NodeTaskType | NodeTaskGroupType $typeClass): Builder
+    public function scopeOfType(Builder $query, NodeTaskType|NodeTaskGroupType $typeClass): Builder
     {
-        if ($this instanceof NodeTaskGroup && !($typeClass instanceof NodeTaskGroupType)) {
+        if ($this instanceof NodeTaskGroup && ! ($typeClass instanceof NodeTaskGroupType)) {
             throw new InvalidArgumentException('typeClass must be an instance of NodeTaskGroupType');
         }
 
-        if ($this instanceof NodeTask && !($typeClass instanceof NodeTaskType)) {
+        if ($this instanceof NodeTask && ! ($typeClass instanceof NodeTaskType)) {
             throw new InvalidArgumentException('typeClass must be an instance of NodeTaskType');
         }
 
