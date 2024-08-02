@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.2](https://github.com/ptah-sh/ptah-server/compare/v0.13.1...v0.13.2) (2024-08-02)
+
+
+### Miscellaneous Chores
+
+* [#85](https://github.com/ptah-sh/ptah-server/issues/85) add legal links ([e7290e9](https://github.com/ptah-sh/ptah-server/commit/e7290e9f8c16197c587d7bef50d47b71ff082c8e))
+
 ## [0.13.1](https://github.com/ptah-sh/ptah-server/compare/v0.13.0...v0.13.1) (2024-08-02)
 
 
