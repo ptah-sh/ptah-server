@@ -1,3 +1,7 @@
+<script setup>
+import { Link } from "@inertiajs/vue3";
+</script>
+
 <template>
     <div class="flex flex-col items-center">
         <a
@@ -54,6 +58,23 @@
                 </div>
             </div>
         </div>
+
+        <div class="flex gap-8 text-xs">
+            <Link
+                :href="route('terms.show')"
+                class="underline hover:text-blue-500"
+                >Terms of Service</Link
+            >
+            <Link
+                :href="route('policy.show')"
+                class="underline hover:text-blue-500"
+                >Privacy Policy</Link
+            >
+            <Link
+                :href="route('refund-policy.show')"
+                class="underline hover:text-blue-500"
+                >Refund Policy</Link
+            >
+        </div>
     </div>
 </template>
-<script setup lang="ts"></script>
