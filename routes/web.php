@@ -2,22 +2,23 @@
 
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\NodeTaskGroupController;
+use App\Http\Controllers\RefundPolicyController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SwarmController;
 use App\Http\Controllers\SwarmTaskController;
 use App\Http\Controllers\TeamBillingController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    if (auth()->user()) {
+        return redirect()->route('dashboard');
+    } else {
+        return redirect()->route('login');
+    }
 });
+
+Route::get('/refund-policy', [RefundPolicyController::class, 'show'])->name('refund-policy.show');
 
 Route::middleware([
     'auth:sanctum',
