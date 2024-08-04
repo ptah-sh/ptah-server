@@ -15,15 +15,11 @@ class EnsureTeamSubscription
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (auth()->guest()) {
-            return $next($request);
-        }
-
         $team = auth()->user()->currentTeam;
         $subscription = $team->subscription();
 
         $doesntHaveSubscription = $subscription === null || ! $subscription->onTrial() && ! $subscription->active();
-        if ($doesntHaveSubscription && ! $request->routeIs('teams.billing.show')) {
+        if ($doesntHaveSubscription) {
             return redirect()->route('teams.billing.show', $team);
         }
 

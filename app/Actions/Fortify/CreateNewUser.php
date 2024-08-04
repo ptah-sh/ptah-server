@@ -48,6 +48,8 @@ class CreateNewUser implements CreatesNewUsers
             'user_id' => $user->id,
             'name' => explode(' ', $user->name, 2)[0]."'s Team",
             'personal_team' => true,
+            'billing_email' => $user->email,
+            'billing_name' => $user->name,
         ]));
     }
 }
