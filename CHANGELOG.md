@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.3](https://github.com/ptah-sh/ptah-server/compare/v0.13.2...v0.13.3) (2024-08-04)
+
+
+### Bug Fixes
+
+* [#78](https://github.com/ptah-sh/ptah-server/issues/78) fix trial management ([5c6cba1](https://github.com/ptah-sh/ptah-server/commit/5c6cba19ae5aaefb8f397a89f640338f91554cf8))
+
 ## [0.13.2](https://github.com/ptah-sh/ptah-server/compare/v0.13.1...v0.13.2) (2024-08-02)
 
 
