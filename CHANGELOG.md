@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.4](https://github.com/ptah-sh/ptah-server/compare/v0.13.3...v0.13.4) (2024-08-04)
+
+
+### Bug Fixes
+
+* [#78](https://github.com/ptah-sh/ptah-server/issues/78) fix subscription middleware logic ([53645d9](https://github.com/ptah-sh/ptah-server/commit/53645d9de33c0450d1bf893da2781fdd92b2c764))
+
 ## [0.13.3](https://github.com/ptah-sh/ptah-server/compare/v0.13.2...v0.13.3) (2024-08-04)
 
 
