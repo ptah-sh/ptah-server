@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Team;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -16,9 +15,8 @@ class TeamBillingController extends Controller
     {
         $customer = $team->createAsCustomer();
 
-        //        dd($team->subscription()->nextPayment());
         $checkout = $team->subscribe('pri_01j2ag2ts45hznad1t67bs4syd')->returnTo(route('teams.billing.show', $team));
-        //$team->subscription()->anchorBillingCycleOn(Carbon::now()->addMonth()->startOfMonth());
+
         $nextPayment = $team->subscription()?->nextPayment();
 
         //Cashier::api()
@@ -43,7 +41,7 @@ class TeamBillingController extends Controller
     {
         $formData = $request->validate([
             'name' => 'required',
-            'email' => 'required|email',
+            'email' => ['required', 'email', 'unique:teams,billing_email'],
         ]);
 
         DB::transaction(function () use ($team, $formData) {

@@ -57,6 +57,17 @@ class Team extends JetstreamTeam
         ];
     }
 
+    protected static function booted(): void
+    {
+        self::deleting(function (Team $team) {
+            $team->nodes()->delete();
+
+            if ($team->subscription()?->active() && ! $team->subscription()->ends_at) {
+                $team->subscription()->cancelNow();
+            }
+        });
+    }
+
     protected function nodes(): HasMany
     {
         return $this->hasMany(Node::class);
@@ -67,6 +78,10 @@ class Team extends JetstreamTeam
      */
     protected function paddleName(): string
     {
+        if ($this->billing_name) {
+            return $this->billing_name;
+        }
+
         return $this->owner->name;
     }
 
@@ -75,6 +90,10 @@ class Team extends JetstreamTeam
      */
     protected function paddleEmail(): string
     {
+        if ($this->billing_email) {
+            return $this->billing_email;
+        }
+
         return $this->owner->email;
     }
 

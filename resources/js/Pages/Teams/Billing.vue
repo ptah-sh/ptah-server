@@ -9,6 +9,7 @@ import TextInput from "@/Components/TextInput.vue";
 import { useForm } from "@inertiajs/vue3";
 import ExternalLink from "@/Components/ExternalLink.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
+import SectionBorder from "@/Components/SectionBorder.vue";
 
 const props = defineProps({
     team: Object,
@@ -50,13 +51,16 @@ const updatePaymentMethod = () => {
             </template>
 
             <template #form>
-                <FormField class="col-span-4">
+                <FormField class="col-span-4" :error="customerForm.errors.name">
                     <template #label> Business Name </template>
 
                     <TextInput v-model="customerForm.name" class="w-full" />
                 </FormField>
 
-                <FormField class="col-span-4">
+                <FormField
+                    class="col-span-4"
+                    :error="customerForm.errors.email"
+                >
                     <template #label> Business Email </template>
 
                     <TextInput v-model="customerForm.email" class="w-full" />
@@ -72,6 +76,8 @@ const updatePaymentMethod = () => {
                 </PrimaryButton>
             </template>
         </FormSection>
+
+        <SectionBorder />
 
         <ActionSection>
             <template #title> Next Payment </template>
@@ -165,6 +171,8 @@ const updatePaymentMethod = () => {
                 </div>
             </template>
         </ActionSection>
+
+        <SectionBorder />
 
         <ActionSection>
             <template #title> Transactions </template>
