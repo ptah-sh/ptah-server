@@ -39,8 +39,11 @@ class NodeController extends Controller
     public function store(StoreNodeRequest $request)
     {
         $node = Node::make($request->validated());
-        $node->team_id = auth()->user()->current_team_id;
-        $node->save();
+
+        DB::transaction(function () use ($node) {
+            $node->team_id = auth()->user()->current_team_id;
+            $node->save();
+        });
 
         return to_route('nodes.show', ['node' => $node->id]);
     }

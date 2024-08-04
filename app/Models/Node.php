@@ -39,14 +39,17 @@ class Node extends Model
 
             $nodesCount = $team->nodes->count();
             $subscription = $team->subscription();
-            if ($subscription->onTrial()) {
-                $subscription->doNotBill()->updateQuantity($nodesCount);
-            } else {
-                if ($subscription->ends_at) {
-                    $subscription->stopCancelation();
-                }
 
-                $subscription->updateQuantity($nodesCount);
+            if ($subscription->ends_at) {
+                $subscription->stopCancelation();
+            }
+
+            if ($nodesCount !== 1) {
+                if ($subscription->onTrial()) {
+                    $subscription->doNotBill()->updateQuantity($nodesCount);
+                } else {
+                    $subscription->updateQuantity($nodesCount);
+                }
             }
         });
 
@@ -55,15 +58,16 @@ class Node extends Model
 
             $nodesCount = $team->nodes->count();
             $subscription = $team->subscription();
+
+            if ($subscription->ends_at && $nodesCount > 0) {
+                $subscription->stopCancelation();
+            }
+
             if ($nodesCount === 0) {
-                if (! $subscription->canceled()) {
+                if (! $subscription->ends_at) {
                     $subscription->cancel();
                 }
             } else {
-                if ($subscription->ends_at) {
-                    $subscription->stopCancelation();
-                }
-
                 if ($subscription->onTrial()) {
                     $subscription->doNotBill()->updateQuantity($nodesCount);
                 } else {

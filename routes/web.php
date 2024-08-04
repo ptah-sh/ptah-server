@@ -44,6 +44,7 @@ Route::middleware([
     Route::get('/services/{service}/deployments', [ServiceController::class, 'deployments'])->name('services.deployments');
     Route::post('/services/{service}/deployments', [ServiceController::class, 'deploy'])->name('services.deploy');
 
+    Route::get('/teams-billing', fn () => redirect()->route('teams.billing.show', auth()->user()->currentTeam));
     Route::get('/teams/{team}/billing', [TeamBillingController::class, 'show'])->name('teams.billing.show');
     Route::patch('/teams/{team}/billing/update-customer', [TeamBillingController::class, 'updateCustomer'])->name('teams.billing.update-customer');
     Route::get('/teams/{team}/billing/download-invoice', [TeamBillingController::class, 'downloadInvoice'])->name('teams.billing.download-invoice');
