@@ -11,24 +11,28 @@ use Laravel\Paddle\Transaction;
 
 class TeamBillingController extends Controller
 {
-    public function show(Team $team)
+    public function show(Team $team, Request $request)
     {
         $customer = $team->createAsCustomer();
 
-        $checkout = $team->subscribe('pri_01j2ag2ts45hznad1t67bs4syd')->returnTo(route('teams.billing.show', $team));
+        $checkout = $team->subscribe(config('billing.paddle.server_price_id'))->customData([
+            'team_id' => $team->id,
+        ])->returnTo(route('teams.billing.subscription-success', $team));
 
-        $nextPayment = $team->subscription()?->nextPayment();
+        $subscription = $team->subscription();
+
+        $nextPayment = $subscription?->nextPayment();
 
         //Cashier::api()
         return Inertia::render('Teams/Billing', [
             'team' => $team,
             'customer' => $customer,
             'nextPayment' => $nextPayment,
-            'subscription' => $team->subscription()?->canceled() ? null : $team->subscription(),
+            'subscription' => $subscription?->valid() ? $subscription : null,
             'checkout' => $checkout->options(),
             'transactions' => $team->transactions,
-            'updatePaymentMethodTxnId' => $team->subscription()?->paymentMethodUpdateTransaction()['id'],
-            'cancelSubscriptionUrl' => $team->subscription()?->cancelUrl(),
+            'updatePaymentMethodTxnId' => $subscription?->paymentMethodUpdateTransaction()['id'],
+            'cancelSubscriptionUrl' => $subscription?->cancelUrl(),
         ]);
     }
 
@@ -41,7 +45,7 @@ class TeamBillingController extends Controller
     {
         $formData = $request->validate([
             'name' => 'required',
-            'email' => ['required', 'email', 'unique:teams,billing_email'],
+            'email' => ['required', 'email', 'unique:teams,billing_email,'.$team->id],
         ]);
 
         DB::transaction(function () use ($team, $formData) {
@@ -52,5 +56,17 @@ class TeamBillingController extends Controller
         });
 
         return redirect()->route('teams.billing.show', $team);
+    }
+
+    public function subscriptionSuccess(Team $team, Request $request)
+    {
+        if (! $team->subscription()?->valid()) {
+            $team->activating_subscription = true;
+            $team->save();
+        }
+
+        session()->flash('success', "Payment successfully processed. We'll active your subscription in a few minutes.");
+
+        return redirect()->to(route('teams.billing.show', $team));
     }
 }

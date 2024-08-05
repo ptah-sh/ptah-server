@@ -57,12 +57,14 @@ class Team extends JetstreamTeam
         ];
     }
 
-    protected static function booted(): void
+    protected static function booted()
     {
         self::deleting(function (Team $team) {
-            $team->nodes()->delete();
+            foreach ($team->nodes as $node) {
+                $node->delete();
+            }
 
-            if ($team->subscription()?->active() && ! $team->subscription()->ends_at) {
+            if ($team->subscription()?->valid()) {
                 $team->subscription()->cancelNow();
             }
         });

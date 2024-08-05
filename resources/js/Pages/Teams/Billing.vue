@@ -82,26 +82,29 @@ const updatePaymentMethod = () => {
         <ActionSection>
             <template #title> Next Payment </template>
 
-            <template
-                v-if="props.subscription && props.nextPayment"
-                #description
-            >
-                Your next payment details.
-            </template>
-            <template
-                v-else-if="props.subscription && !props.nextPayment"
-                #description
-            >
-                You don't have any upcoming payments - subscription will expire
-                soon.
-            </template>
-            <template v-else #description>
-                You don't have to pay anything when you have no servers.
+            <template #description>
+                <template v-if="team.activating_subscription">
+                    Your subscription is being activated.
+                </template>
+                <template v-else-if="props.subscription && props.nextPayment">
+                    Your next payment details.
+                </template>
+                <template v-else-if="props.subscription && !props.nextPayment">
+                    You don't have any upcoming payments - subscription will
+                    expire soon.
+                </template>
+                <template v-else>
+                    You don't have to pay anything when you have no servers.
+                </template>
             </template>
 
             <template #content>
+                <div class="col-span-full" v-if="team.activating_subscription">
+                    Your subscription is being activated. Please refresh the
+                    page to update the status.
+                </div>
                 <div
-                    v-if="props.subscription && nextPayment"
+                    v-else-if="props.subscription && nextPayment"
                     class="col-span-full"
                 >
                     <div class="col-span-full mb-4">

@@ -31,6 +31,7 @@ Route::middleware([
 
     Route::patch('/teams/{team}/billing/update-customer', [TeamBillingController::class, 'updateCustomer'])->name('teams.billing.update-customer');
     Route::get('/teams/{team}/billing/download-invoice', [TeamBillingController::class, 'downloadInvoice'])->name('teams.billing.download-invoice');
+    Route::get('/teams/{team}/billing/subscription-success', [TeamBillingController::class, 'subscriptionSuccess'])->name('teams.billing.subscription-success');
 
     Route::middleware([
         EnsureTeamSubscription::class,
