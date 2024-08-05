@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.13.5](https://github.com/ptah-sh/ptah-server/compare/v0.13.4...v0.13.5) (2024-08-05)
+
+
+### Bug Fixes
+
+* [#94](https://github.com/ptah-sh/ptah-server/issues/94) require billing name and email on team creation ([a57f2b1](https://github.com/ptah-sh/ptah-server/commit/a57f2b1345e8783edc3b90d59aef0375a70db3e8))
+* [#96](https://github.com/ptah-sh/ptah-server/issues/96) cancel subscription on team deletion ([543b69b](https://github.com/ptah-sh/ptah-server/commit/543b69b5dd3f02e4d0e5710afad5b1c4eade6690))
+* add resend package ([d666c06](https://github.com/ptah-sh/ptah-server/commit/d666c06d6a568d0c8f445f55529e35e69b728bf3))
+
 ## [0.13.4](https://github.com/ptah-sh/ptah-server/compare/v0.13.3...v0.13.4) (2024-08-04)
 
 
