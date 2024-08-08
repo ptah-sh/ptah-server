@@ -71,9 +71,14 @@ class Team extends JetstreamTeam
         });
     }
 
-    protected function nodes(): HasMany
+    public function nodes(): HasMany
     {
         return $this->hasMany(Node::class);
+    }
+
+    public function services(): HasMany
+    {
+        return $this->hasMany(Service::class);
     }
 
     /**

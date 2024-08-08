@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\NodeTaskGroupController;
 use App\Http\Controllers\RefundPolicyController;
@@ -9,7 +10,6 @@ use App\Http\Controllers\SwarmTaskController;
 use App\Http\Controllers\TeamBillingController;
 use App\Http\Middleware\EnsureTeamSubscription;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 Route::get('/', function () {
     if (auth()->user()) {
@@ -36,9 +36,7 @@ Route::middleware([
     Route::middleware([
         EnsureTeamSubscription::class,
     ])->group(function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('Dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [DashboardController::class, 'show'])->name('dashboard');
 
         Route::post('/swarms/{swarm}/update-docker-registries', [SwarmController::class, 'updateDockerRegistries'])->name('swarms.update-docker-registries');
         Route::post('/swarms/{swarm}/update-s3-storages', [SwarmController::class, 'updateS3Storages'])->name('swarms.update-s3-storages');

@@ -57,7 +57,7 @@ defineProps({
                     v-for="node in nodes"
                     :key="node.id"
                     :href="route('nodes.show', { node: node.id })"
-                    class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg p-4 flex justify-around"
+                    class="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg p-4 flex justify-around"
                 >
                     <div class="flex">
                         <div class="font-bold text-xl">{{ node.name }}</div>
