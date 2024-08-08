@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/ptah-sh/ptah-server/compare/v0.13.5...v0.14.0) (2024-08-08)
+
+
+### Features
+
+* [#104](https://github.com/ptah-sh/ptah-server/issues/104) adjust billing logic to re-imagined pricing ([2a37e3c](https://github.com/ptah-sh/ptah-server/commit/2a37e3ca3cca6e2a58b9c0672588de71dde923b0))
+
 ## [0.13.5](https://github.com/ptah-sh/ptah-server/compare/v0.13.4...v0.13.5) (2024-08-05)
 
 
