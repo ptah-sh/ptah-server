@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\PricingPlan\UsageQuotas;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
@@ -115,5 +116,25 @@ class Team extends JetstreamTeam
     public function routeNotificationForMail(Notification $notification): array|string
     {
         return [$this->customer->email => $this->customer->name];
+    }
+
+    public function quotas(): UsageQuotas
+    {
+        if ($this->subscription() === null || ! $this->subscription()->valid()) {
+            return new UsageQuotas(0);
+        }
+
+        foreach (config('billing.paddle.plans') as $plan) {
+            if ($this->subscription()->hasProduct($plan['product_id'])) {
+                return new UsageQuotas($plan['quotas']['nodes']);
+            }
+        }
+
+        return new UsageQuotas(0);
+    }
+
+    public function nodesLimitReached(): bool
+    {
+        return $this->nodes()->count() >= $this->quotas()->nodes;
     }
 }

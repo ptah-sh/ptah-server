@@ -15,13 +15,11 @@ class TeamBillingController extends Controller
     {
         $customer = $team->createAsCustomer();
 
-        $checkout = $team->subscribe(config('billing.paddle.server_price_id'))->customData([
-            'team_id' => $team->id,
-        ])->returnTo(route('teams.billing.subscription-success', $team));
-
         $subscription = $team->subscription();
 
         $nextPayment = $subscription?->nextPayment();
+
+        $plans = config('billing.paddle.plans');
 
         //Cashier::api()
         return Inertia::render('Teams/Billing', [
@@ -29,8 +27,8 @@ class TeamBillingController extends Controller
             'customer' => $customer,
             'nextPayment' => $nextPayment,
             'subscription' => $subscription?->valid() ? $subscription : null,
-            'checkout' => $checkout->options(),
             'transactions' => $team->transactions,
+            'plans' => $plans,
             'updatePaymentMethodTxnId' => $subscription?->paymentMethodUpdateTransaction()['id'],
             'cancelSubscriptionUrl' => $subscription?->cancelUrl(),
         ]);
@@ -58,14 +56,14 @@ class TeamBillingController extends Controller
         return redirect()->route('teams.billing.show', $team);
     }
 
-    public function subscriptionSuccess(Team $team, Request $request)
+    public function subscriptionSuccess(Team $team)
     {
         if (! $team->subscription()?->valid()) {
             $team->activating_subscription = true;
             $team->save();
         }
 
-        session()->flash('success', "Payment successfully processed. We'll active your subscription in a few minutes.");
+        session()->flash('success', "Payment successfully processed. We'll activate your subscription in a few minutes.");
 
         return redirect()->to(route('teams.billing.show', $team));
     }

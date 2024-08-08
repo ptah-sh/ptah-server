@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 class Node extends Model
 {
@@ -31,49 +32,11 @@ class Node extends Model
     protected static function booted(): void
     {
         self::creating(function (Node $node) {
+            if ($node->team->nodesLimitReached()) {
+                throw new RuntimeException('Invalid State - The team is at its node limit');
+            }
+
             $node->agent_token = Str::random(42);
-        });
-
-        self::created(function (Node $node) {
-            $team = $node->team;
-
-            $nodesCount = $team->nodes->count();
-            $subscription = $team->subscription();
-
-            if ($subscription->ends_at) {
-                $subscription->stopCancelation();
-            }
-
-            if ($nodesCount !== 1) {
-                if ($subscription->onTrial()) {
-                    $subscription->doNotBill()->updateQuantity($nodesCount);
-                } else {
-                    $subscription->updateQuantity($nodesCount);
-                }
-            }
-        });
-
-        self::deleted(function (Node $node) {
-            $team = $node->team;
-
-            $nodesCount = $team->nodes->count();
-            $subscription = $team->subscription();
-
-            if ($subscription->ends_at && $nodesCount > 0) {
-                $subscription->stopCancelation();
-            }
-
-            if ($nodesCount === 0) {
-                if (! $subscription->ends_at) {
-                    $subscription->cancel();
-                }
-            } else {
-                if ($subscription->onTrial()) {
-                    $subscription->doNotBill()->updateQuantity($nodesCount);
-                } else {
-                    $subscription->updateQuantity($nodesCount);
-                }
-            }
         });
     }
 

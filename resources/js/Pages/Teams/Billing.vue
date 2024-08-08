@@ -20,6 +20,7 @@ const props = defineProps({
     transactions: Array,
     updatePaymentMethodTxnId: String,
     cancelSubscriptionUrl: String,
+    plans: Array,
 });
 
 const customerForm = useForm({
@@ -80,7 +81,7 @@ const updatePaymentMethod = () => {
         <SectionBorder />
 
         <ActionSection>
-            <template #title> Next Payment </template>
+            <template #title>Next Payment</template>
 
             <template #description>
                 <template v-if="team.activating_subscription">
@@ -150,16 +151,52 @@ const updatePaymentMethod = () => {
                     <div class="col-span-full">
                         <p>Subscription is not active.</p>
                         <ExternalLink href="https://ptah.sh/#pricing"
-                            >See Pricing</ExternalLink
+                            >See Detailed Pricing</ExternalLink
                         >
                     </div>
 
-                    <div class="col-span-full">
-                        <PaddleButton
-                            v-if="!props.nextPayment"
-                            :checkout="props.checkout"
-                        />
-                    </div>
+                    <template v-if="!props.nextPayment">
+                        <div class="col-span-full flex gap-4">
+                            <div
+                                v-for="plan in props.plans"
+                                :key="plan.price_id"
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center"
+                            >
+                                <h3 class="text-lg font-semibold mb-2">
+                                    {{ plan.name }}
+                                </h3>
+                                <p
+                                    class="text-gray-600 dark:text-gray-400 mb-4 text-balance"
+                                >
+                                    {{ plan.description }}
+                                </p>
+                                <div
+                                    class="flex items-baseline mb-4 justify-center"
+                                >
+                                    <span class="text-gray-500 text-sm mr-1"
+                                        >$</span
+                                    >
+                                    <span class="text-4xl font-extrabold">{{
+                                        plan.price
+                                    }}</span>
+                                    <span class="text-gray-500 text-sm ml-1"
+                                        >/month</span
+                                    >
+                                </div>
+
+                                <PaddleButton
+                                    :customerId="customer.paddle_id"
+                                    :teamId="
+                                        $page.props.auth.user.current_team.id
+                                    "
+                                    :priceId="plan.price_id"
+                                    :name="plan.name"
+                                >
+                                    Start Free Trial
+                                </PaddleButton>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </template>
 

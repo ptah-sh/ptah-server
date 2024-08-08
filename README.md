@@ -2,25 +2,25 @@
 
 ## About Ptah.sh
 
-Ptah.sh is an open-source self-hosting deployment platform - alternative to Heroku/Vercel and other Big Corp software. We believe that indie, startups and small to medium businesses must not suffer from unpredicted billing or bare-metal/VPS configurations. 
+Ptah.sh is an open-source self-hosting deployment platform - alternative to Heroku/Vercel and other Big Corp software. We believe that indie, startups and small to medium businesses must not suffer from unpredicted billing or bare-metal/VPS configurations.
 
 The service is built on top of the proven container management solution - Docker Swarm.
 
 Ptah.sh takes the pain out of deployment by easing common tasks used in many projects, such as:
 
-- Setting up stateful services (PostgreSQL, MongoDB, MySQL and others).
-- Scaling stateless services to an infinite number of nodes (servers, as much as Docker Swarm can do).
-- Managing automated backups for critical data.
-- Load balancing of an incoming traffic and SSL auto-provisioning via Caddy Server.
-- And many more features.
+-   Setting up stateful services (PostgreSQL, MongoDB, MySQL and others).
+-   Scaling stateless services to an infinite number of nodes (servers, as much as Docker Swarm can do).
+-   Managing automated backups for critical data.
+-   Load balancing of an incoming traffic and SSL auto-provisioning via Caddy Server.
+-   And many more features.
 
 ## Ptah.sh Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Ptah.sh development. If you are interested in becoming a sponsor, please send an e-mail to Bohdan Shulha via [b.shulha@icloud.com](mailto:b.shulha@icloud.com).
+We would like to extend our thanks to the following sponsors for funding Ptah.sh development. If you are interested in becoming a sponsor, please send an e-mail to Bohdan Shulha via [contact@ptah.sh](mailto:contact@ptah.sh).
 
 ### Sponsors
 
-- _None so far_
+-   _None so far_
 
 ## Contributing
 
@@ -28,7 +28,7 @@ Thank you for considering contributing to the Laravel framework! The contributio
 
 ## Security Vulnerabilities
 
-If you discover a security vulnerability within Ptah.sh services, please send an e-mail to Bohdan Shulha via [b.shulha@icloud.com](mailto:b.shulha@icloud.com). All security vulnerabilities will be promptly addressed.
+If you discover a security vulnerability within Ptah.sh services, please send an e-mail to Bohdan Shulha via [contact@ptah.sh](mailto:contact@ptah.sh). All security vulnerabilities will be promptly addressed.
 
 ## License
 

@@ -22,7 +22,10 @@ class NodeController extends Controller
     {
         $nodes = Node::all();
 
-        return Inertia::render('Nodes/Index', ['nodes' => $nodes]);
+        return Inertia::render('Nodes/Index', [
+            'nodes' => $nodes,
+            'nodesLimitReached' => auth()->user()->currentTeam->nodesLimitReached(),
+        ]);
     }
 
     /**
@@ -30,6 +33,10 @@ class NodeController extends Controller
      */
     public function create()
     {
+        if (auth()->user()->currentTeam->nodesLimitReached()) {
+            return redirect()->route('nodes.index');
+        }
+
         return Inertia::render('Nodes/Create');
     }
 
@@ -38,6 +45,10 @@ class NodeController extends Controller
      */
     public function store(StoreNodeRequest $request)
     {
+        if (auth()->user()->currentTeam->nodesLimitReached()) {
+            return redirect()->route('nodes.index');
+        }
+
         $node = Node::make($request->validated());
 
         DB::transaction(function () use ($node) {
