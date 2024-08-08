@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.0](https://github.com/ptah-sh/ptah-server/compare/v0.14.0...v0.15.0) (2024-08-08)
+
+
+### Features
+
+* [#68](https://github.com/ptah-sh/ptah-server/issues/68) replace jetstream dashboard with saas-related microdashboard ([bc46fef](https://github.com/ptah-sh/ptah-server/commit/bc46fef19a34afff16485e39b7b5b2e05d87f21f))
+
 ## [0.14.0](https://github.com/ptah-sh/ptah-server/compare/v0.13.5...v0.14.0) (2024-08-08)
 
 
