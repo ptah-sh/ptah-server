@@ -33,6 +33,11 @@ class SwarmTaskController extends Controller
                     'registries' => [],
                     's3StoragesRev' => 0,
                     's3Storages' => [],
+                    'joinTokens' => [
+                        'worker' => '-',
+                        'manager' => '-',
+                    ],
+                    'managerNodes' => [],
                 ]),
             ]);
 
