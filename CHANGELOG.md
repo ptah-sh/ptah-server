@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.3](https://github.com/ptah-sh/ptah-server/compare/v0.15.2...v0.15.3) (2024-08-09)
+
+
+### Bug Fixes
+
+* [#112](https://github.com/ptah-sh/ptah-server/issues/112) run scheduled commands on server but not on other cli commands ([f716062](https://github.com/ptah-sh/ptah-server/commit/f7160620262857be7b212614d4d28ef85a543fbd))
+
 ## [0.15.2](https://github.com/ptah-sh/ptah-server/compare/v0.15.1...v0.15.2) (2024-08-09)
 
 
