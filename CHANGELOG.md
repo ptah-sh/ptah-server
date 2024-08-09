@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.1](https://github.com/ptah-sh/ptah-server/compare/v0.15.0...v0.15.1) (2024-08-09)
+
+
+### Bug Fixes
+
+* [#107](https://github.com/ptah-sh/ptah-server/issues/107) set default join tokens ([2e1790f](https://github.com/ptah-sh/ptah-server/commit/2e1790f10540e44f7e01cbfbed9f9327a610b09f))
+* [#108](https://github.com/ptah-sh/ptah-server/issues/108) create secrets file each deployment ([9e1cdf1](https://github.com/ptah-sh/ptah-server/commit/9e1cdf14063b83d8b7552f65cb5ba5fad43a3939))
+
 ## [0.15.0](https://github.com/ptah-sh/ptah-server/compare/v0.14.0...v0.15.0) (2024-08-08)
 
 
