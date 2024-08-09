@@ -45,7 +45,7 @@ return Application::configure(basePath: dirname(__DIR__))
         //
     })
     ->withSchedule(function (Schedule $schedule) {
-        if (app()->runningInConsole()) {
+        if (! app()->runningConsoleCommand('schedule:run')) {
             return;
         }
 
