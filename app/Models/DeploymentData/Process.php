@@ -487,7 +487,7 @@ class Process extends Data
                 ...$labels,
                 'kind' => 'secret-env-vars',
             ]),
-            'Values' => [],
+            'Values' => (object) [],
             'Preserve' => collect($this->secretVars->vars)->map(fn (EnvVar $var) => $var->name)->toArray(),
             'PreserveFromConfig' => $this->secretVars->dockerName,
         ];
