@@ -291,7 +291,7 @@ class Process extends Data
             'payload' => [
                 'AuthConfigName' => $authConfigName,
                 'ReleaseCommand' => $this->getReleaseCommandPayload($deployment, $labels),
-                'SecretVars' => (object) $this->getSecretVars($previous, $labels),
+                'SecretVars' => (object) $this->getSecretVars($deployment, $previous, $labels),
                 'SwarmServiceSpec' => [
                     'Name' => $this->dockerName,
                     'Labels' => $labels,
@@ -442,27 +442,29 @@ class Process extends Data
         return $tasks;
     }
 
-    protected function getSecretVars(?Process $previous, $labels): array|object
+    protected function getSecretVars(Deployment $deployment, ?Process $previous, $labels): array|object
     {
-        if (empty($this->data->secretVars->vars)) {
+        if (empty($this->secretVars->vars)) {
+            $this->secretVars->dockerName = null;
+
             return (object) [];
         }
 
-        $this->data->secretVars->dockerName = $this->makeResourceName('secret_vars');
+        $this->secretVars->dockerName = $this->makeResourceName('dpl_'.$deployment->id.'_secret_vars');
 
         $data = [
-            'ConfigName' => $this->data->secretVars->dockerName,
+            'ConfigName' => $this->secretVars->dockerName,
             'ConfigLabels' => dockerize_labels([
                 ...$labels,
                 'kind' => 'secret-env-vars',
             ]),
-            'Values' => (object) collect($this->data->secretVars->vars)
+            'Values' => (object) collect($this->secretVars->vars)
                 ->reject(fn (EnvVar $var) => $var->value === null)
                 ->reduce(fn ($carry, EnvVar $var) => [...$carry, $var->name => $var->value], []),
         ];
 
         if (! empty($previous?->secretVars->dockerName)) {
-            $data['Preserve'] = collect($this->data->secretVars->vars)
+            $data['Preserve'] = collect($this->secretVars->vars)
                 ->filter(fn (EnvVar $var) => $var->value === null)
                 ->map(fn (EnvVar $var) => $var->name)
                 ->toArray();
@@ -475,18 +477,18 @@ class Process extends Data
 
     private function getWorkerSecretVars(Worker $worker, array $labels): array|object
     {
-        if (empty($this->data->secretVars->vars)) {
+        if (empty($this->secretVars->vars)) {
             return (object) [];
         }
 
         return [
-            'ConfigName' => $this->data->secretVars->dockerName.'_wkr_'.$worker->name,
+            'ConfigName' => $this->secretVars->dockerName.'_wkr_'.$worker->name,
             'ConfigLabels' => dockerize_labels([
                 ...$labels,
                 'kind' => 'secret-env-vars',
             ]),
             'Values' => [],
-            'Preserve' => collect($this->data->secretVars->vars)->map(fn (EnvVar $var) => $var->name)->toArray(),
+            'Preserve' => collect($this->secretVars->vars)->map(fn (EnvVar $var) => $var->name)->toArray(),
             'PreserveFromConfig' => $this->secretVars->dockerName,
         ];
     }

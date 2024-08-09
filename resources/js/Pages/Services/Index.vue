@@ -59,7 +59,7 @@ const props = defineProps({
                                         service: service.id,
                                     })
                                 "
-                                class="p-4 flex justify-between"
+                                class="p-4 grid grid-cols-2"
                             >
                                 <div class="flex flex-col">
                                     <span class="font-semibold text-lg">{{
@@ -71,7 +71,7 @@ const props = defineProps({
                                     }}</span>
                                 </div>
 
-                                <div class="flex flex-col w-44">
+                                <div class="flex flex-col">
                                     <span class="text-sm text-gray-500">{{
                                         service.latest_deployment.data
                                             .internalDomain
