@@ -1,12 +1,16 @@
 {
-    "name": "laravel/laravel",
+    "name": "ptah-sh/ptah-server",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
+    "description": "Ptah.sh SaaS server.",
     "keywords": [
-        "laravel",
-        "framework"
+        "docker",
+        "deploy",
+        "ptah",
+        "ptah.sh",
+        "ptah-server",
+        "ptah-saas"
     ],
-    "license": "MIT",
+    "license": "FSL",
     "require": {
         "php": "^8.3",
         "ext-pdo": "*",

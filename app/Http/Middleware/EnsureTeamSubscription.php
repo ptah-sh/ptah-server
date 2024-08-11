@@ -20,6 +20,14 @@ class EnsureTeamSubscription
 
         $doesntHaveSubscription = $subscription === null || ! $subscription->valid();
         if ($doesntHaveSubscription) {
+            if ($request->isJson()) {
+                return response()->json([
+                    'message' => 'You must have a valid subscription to access this resource.',
+                ], 403);
+            }
+
+            session()->flash('error', 'You must have a valid subscription to access this resource.');
+
             return redirect()->route('teams.billing.show', $team);
         }
 

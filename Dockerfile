@@ -14,6 +14,7 @@ WORKDIR /app
 
 ENV COMPOSER_ALLOW_SUPERUSER=1
 ENV SERVER_NAME=":8080"
+ENV APP_NAME="Ptah.sh"
 
 COPY package.json .
 COPY package-lock.json .

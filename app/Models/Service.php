@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\DeploymentData\Process;
 use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
 use App\Traits\HasOwningTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -40,17 +41,18 @@ class Service extends Model
                 'invoker_id' => auth()->id(),
             ]);
 
-            $deleteProcessesTasks = collect($service->latestDeployment->data->processes)->map(function ($process) use ($service) {
+            $deleteProcessesTasks = collect($service->latestDeployment->data->processes)->map(function (Process $process) use ($service) {
                 return [
                     'type' => NodeTaskType::DeleteService,
                     'meta' => new DeleteServiceMeta($service->id, $process->name, $service->name),
                     'payload' => [
-                        'ServiceName' => $service->docker_name,
+                        'ServiceName' => $process->dockerName,
                     ],
                 ];
             })->toArray();
 
             // TODO: apply caddy config after the services deletion
+            //   https://github.com/ptah-sh/ptah-server/issues/117
             $taskGroup->tasks()->createMany($deleteProcessesTasks);
         });
     }
