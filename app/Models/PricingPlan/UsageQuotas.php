@@ -7,6 +7,7 @@ use Spatie\LaravelData\Data;
 class UsageQuotas extends Data
 {
     public function __construct(
-        public int $nodes,
+        public ItemQuota $nodes,
+        public ItemQuota $swarms,
     ) {}
 }

@@ -21,6 +21,7 @@ const openCheckout = () => {
         },
         items: [{ priceId: props.priceId, quantity: 1 }],
         customer: { id: props.customerId },
+        customData: { team_id: props.teamId },
     };
 
     Paddle.Checkout.open(checkout);

@@ -11,6 +11,9 @@ return [
                 'price_id' => env('PADDLE_PLAN_HOBBY_PRICE_ID'),
                 'quotas' => [
                     'nodes' => 1,
+                    'swarms' => 1,
+                    'services' => 20,
+                    'deployments' => 100,
                 ],
             ],
             [
@@ -21,6 +24,9 @@ return [
                 'price_id' => env('PADDLE_PLAN_STARTUP_PRICE_ID'),
                 'quotas' => [
                     'nodes' => 9,
+                    'swarms' => 2,
+                    'services' => 20,
+                    'deployments' => 100,
                 ],
             ],
         ],

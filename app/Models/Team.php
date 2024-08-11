@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\PricingPlan\ItemQuota;
 use App\Models\PricingPlan\UsageQuotas;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -71,6 +72,11 @@ class Team extends JetstreamTeam
         });
     }
 
+    public function swarms(): HasMany
+    {
+        return $this->hasMany(Swarm::class);
+    }
+
     public function nodes(): HasMany
     {
         return $this->hasMany(Node::class);
@@ -126,16 +132,27 @@ class Team extends JetstreamTeam
     public function quotas(): UsageQuotas
     {
         if ($this->subscription() === null || ! $this->subscription()->valid()) {
-            return new UsageQuotas(0);
+            return new UsageQuotas(
+                new ItemQuota(0, fn () => 0),
+                new ItemQuota(0, fn () => 0),
+            );
         }
 
         foreach (config('billing.paddle.plans') as $plan) {
             if ($this->subscription()->hasProduct($plan['product_id'])) {
-                return new UsageQuotas($plan['quotas']['nodes']);
+                $quotas = $plan['quotas'];
+
+                return new UsageQuotas(
+                    new ItemQuota($quotas['nodes'], fn () => $this->nodes()->count()),
+                    new ItemQuota($quotas['swarms'], fn () => $this->swarms()->count()),
+                );
             }
         }
 
-        return new UsageQuotas(0);
+        return new UsageQuotas(
+            new ItemQuota(0, fn () => 0),
+            new ItemQuota(0, fn () => 0),
+        );
     }
 
     public function nodesLimitReached(): bool

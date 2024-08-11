@@ -32,7 +32,7 @@ class Node extends Model
     protected static function booted(): void
     {
         self::creating(function (Node $node) {
-            if ($node->team->nodesLimitReached()) {
+            if ($node->team->quotas()->nodes->quotaReached()) {
                 throw new RuntimeException('Invalid State - The team is at its node limit');
             }
 

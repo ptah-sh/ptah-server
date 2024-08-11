@@ -21,6 +21,7 @@ const props = defineProps([
     "lastAgentVersion",
     "agentUpgradeTaskGroup",
     "registryUpdateTaskGroup",
+    "swarmsQuotaReached",
 ]);
 
 const destroyNode = () => router.delete(route("nodes.destroy", props.node.id));
@@ -49,6 +50,7 @@ const destroyNode = () => router.delete(route("nodes.destroy", props.node.id));
                 v-if="$props.node.swarm_id === null"
                 :node="$props.node"
                 :swarms="$props.swarms"
+                :swarmsQuotaReached="swarmsQuotaReached"
             />
             <InitSwarmProgress
                 v-if="$props.initTaskGroup"

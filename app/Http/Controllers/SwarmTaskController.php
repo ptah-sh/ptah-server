@@ -24,10 +24,18 @@ class SwarmTaskController extends Controller
 {
     public function initCluster(InitClusterFormRequest $request)
     {
-        DB::transaction(function () use ($request) {
+        $currentTeam = auth()->user()->currentTeam;
+
+        if ($currentTeam->quotas()->swarms->quotaReached()) {
+            return redirect()->route('nodes.index');
+        }
+
+        $node = Node::find($request->node_id);
+
+        DB::transaction(function () use ($request, $node) {
             $swarm = Swarm::create([
                 'name' => $request->name,
-                'team_id' => auth()->user()->current_team_id,
+                'team_id' => auth()->user()->currentTeam->id,
                 'data' => SwarmData::validateAndCreate([
                     'registriesRev' => 0,
                     'registries' => [],
@@ -41,14 +49,12 @@ class SwarmTaskController extends Controller
                 ]),
             ]);
 
-            $node = Node::find($request->node_id);
-
             $node->swarm_id = $swarm->id;
             $node->saveQuietly();
 
             $network = Network::create([
                 'swarm_id' => $swarm->id,
-                'team_id' => auth()->user()->current_team_id,
+                'team_id' => auth()->user()->currentTeam->id,
                 'name' => dockerize_name('ptah-net'),
             ]);
 
@@ -57,7 +63,7 @@ class SwarmTaskController extends Controller
                 'swarm_id' => $swarm->id,
                 'node_id' => $request->node_id,
                 'invoker_id' => auth()->user()->id,
-                'team_id' => auth()->user()->current_team_id,
+                'team_id' => auth()->user()->currentTeam->id,
             ]);
 
             $tasks = [
@@ -120,11 +126,11 @@ class SwarmTaskController extends Controller
 
             $caddyService = $swarm->services()->create([
                 'name' => 'caddy',
-                'team_id' => auth()->user()->current_team_id,
+                'team_id' => auth()->user()->currentTeam->id,
             ]);
 
             $deployment = $caddyService->deployments()->create([
-                'team_id' => auth()->user()->current_team_id,
+                'team_id' => auth()->user()->currentTeam->id,
                 'data' => DeploymentData::validateAndCreate([
                     'networkName' => $network->docker_name,
                     'internalDomain' => 'caddy.ptah.local',
@@ -195,7 +201,7 @@ class SwarmTaskController extends Controller
                     ],
                 ]),
             ]);
-            $deployment->team_id = auth()->user()->current_team_id;
+            $deployment->team_id = auth()->user()->currentTeam->id;
             $deployment->save();
 
             foreach ($deployment->asNodeTasks() as $task) {
@@ -204,6 +210,8 @@ class SwarmTaskController extends Controller
 
             $taskGroup->tasks()->createMany($tasks);
         });
+
+        return redirect()->route('nodes.show', ['node' => $node]);
     }
 
     public function joinCluster(JoinClusterFormRequest $request)
@@ -212,7 +220,7 @@ class SwarmTaskController extends Controller
             $taskGroup = NodeTaskGroup::create([
                 'type' => NodeTaskGroupType::JoinSwarm,
                 'swarm_id' => $request->swarm_id,
-                'team_id' => auth()->user()->current_team_id,
+                'team_id' => auth()->user()->currentTeam->id,
                 'node_id' => $request->node_id,
                 'invoker_id' => auth()->user()->id,
             ]);

@@ -24,7 +24,7 @@ class NodeController extends Controller
 
         return Inertia::render('Nodes/Index', [
             'nodes' => $nodes,
-            'nodesLimitReached' => auth()->user()->currentTeam->nodesLimitReached(),
+            'nodesLimitReached' => auth()->user()->currentTeam->quotas()->nodes->quotaReached(),
         ]);
     }
 
@@ -33,7 +33,7 @@ class NodeController extends Controller
      */
     public function create()
     {
-        if (auth()->user()->currentTeam->nodesLimitReached()) {
+        if (auth()->user()->currentTeam->quotas()->nodes->quotaReached()) {
             return redirect()->route('nodes.index');
         }
 
@@ -45,7 +45,7 @@ class NodeController extends Controller
      */
     public function store(StoreNodeRequest $request)
     {
-        if (auth()->user()->currentTeam->nodesLimitReached()) {
+        if (auth()->user()->currentTeam->quotas()->nodes->quotaReached()) {
             return redirect()->route('nodes.index');
         }
 
@@ -93,6 +93,7 @@ class NodeController extends Controller
             'lastAgentVersion' => $lastAgentVersion,
             'agentUpgradeTaskGroup' => $taskGroup?->is_completed ? null : $taskGroup,
             'registryUpdateTaskGroup' => $registryTaskGroup?->is_completed ? null : $registryTaskGroup,
+            'swarmsQuotaReached' => auth()->user()->currentTeam->quotas()->swarms->quotaReached(),
         ]);
     }
 
