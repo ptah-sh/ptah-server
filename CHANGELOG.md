@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.4](https://github.com/ptah-sh/ptah-server/compare/v0.15.3...v0.15.4) (2024-08-11)
+
+
+### Bug Fixes
+
+* [#116](https://github.com/ptah-sh/ptah-server/issues/116) remove services (processes) when a service has been deleted from ui ([07da9de](https://github.com/ptah-sh/ptah-server/commit/07da9de0d72111bb0a6f78be49dbae64c8d71b05))
+
 ## [0.15.3](https://github.com/ptah-sh/ptah-server/compare/v0.15.2...v0.15.3) (2024-08-09)
 
 
