@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/ptah-sh/ptah-server/compare/v0.15.5...v0.16.0) (2024-08-11)
+
+
+### Features
+
+* [#114](https://github.com/ptah-sh/ptah-server/issues/114) add swarm count quotas ([859179b](https://github.com/ptah-sh/ptah-server/commit/859179b5e5c6ab25f05dbb5cd5b9816a192ebd91))
+
 ## [0.15.5](https://github.com/ptah-sh/ptah-server/compare/v0.15.4...v0.15.5) (2024-08-11)
 
 
