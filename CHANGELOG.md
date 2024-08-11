@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.5](https://github.com/ptah-sh/ptah-server/compare/v0.15.4...v0.15.5) (2024-08-11)
+
+
+### Bug Fixes
+
+* [#116](https://github.com/ptah-sh/ptah-server/issues/116) inertia integration ([7b42be7](https://github.com/ptah-sh/ptah-server/commit/7b42be793885461141c9173b25ff89558b993449))
+
 ## [0.15.4](https://github.com/ptah-sh/ptah-server/compare/v0.15.3...v0.15.4) (2024-08-11)
 
 
