@@ -2,7 +2,7 @@
 
 ## About Ptah.sh
 
-Ptah.sh is an open-source self-hosting deployment platform - alternative to Heroku/Vercel and other Big Corp software. We believe that indie, startups and small to medium businesses must not suffer from unpredicted billing or bare-metal/VPS configurations.
+Ptah.sh is a [Fair Source](https://fair.io/) self-hosting deployment platform - alternative to Heroku/Vercel and other Big Corp software. We believe that indie, startups and small to medium businesses must not suffer from unpredicted billing or bare-metal/VPS configurations.
 
 The service is built on top of the proven container management solution - Docker Swarm.
 
@@ -32,7 +32,7 @@ If you discover a security vulnerability within Ptah.sh services, please send an
 
 ## License
 
-The Ptah.sh service suite is open-sourced software licensed under the [Functional Source License, Version 1.1, Apache 2.0 Future License](https://github.com/ptah-sh/ptah-server/blob/main/LICENSE.md).
+The Ptah.sh service suite is a Fair Source software licensed under the [Functional Source License, Version 1.1, Apache 2.0 Future License](https://github.com/ptah-sh/ptah-server/blob/main/LICENSE.md).
 
 ## Star History ★
 
