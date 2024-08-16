@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.1](https://github.com/ptah-sh/ptah-server/compare/v0.17.0...v0.17.1) (2024-08-16)
+
+
+### Bug Fixes
+
+* [#124](https://github.com/ptah-sh/ptah-server/issues/124) try installing excimer via pecl ([67e5616](https://github.com/ptah-sh/ptah-server/commit/67e56160a6d71fffa9c4c2a8f8e7aa9a56aa5a59))
+
 ## [0.17.0](https://github.com/ptah-sh/ptah-server/compare/v0.16.0...v0.17.0) (2024-08-16)
 
 
