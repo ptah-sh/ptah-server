@@ -5,7 +5,7 @@ return [
         'plans' => [
             [
                 'name' => 'Hobby',
-                'price' => 14,
+                'price' => 19,
                 'description' => 'Perfect plan to try the service or host non-critical applications',
                 'product_id' => env('PADDLE_PLAN_HOBBY_PRODUCT_ID'),
                 'price_id' => env('PADDLE_PLAN_HOBBY_PRICE_ID'),
