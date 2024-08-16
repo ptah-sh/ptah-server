@@ -21,6 +21,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "resend/resend-laravel": "^0.14.0",
+        "sentry/sentry-laravel": "^4.8",
         "spatie/laravel-data": "^4.7",
         "spatie/laravel-ray": "^1.37",
         "tightenco/ziggy": "^2.0"
