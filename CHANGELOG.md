@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.17.0](https://github.com/ptah-sh/ptah-server/compare/v0.16.0...v0.17.0) (2024-08-16)
+
+
+### Features
+
+* [#124](https://github.com/ptah-sh/ptah-server/issues/124) add sentry ingegration ([716d2b3](https://github.com/ptah-sh/ptah-server/commit/716d2b314cf1be381746883cc5cd23ee5bae94fe))
+
+
+### Miscellaneous Chores
+
+* add ptah.sh logo to readme ([3186bf9](https://github.com/ptah-sh/ptah-server/commit/3186bf9f45c14e9e11876137452e3ab27b613ad7))
+* fix open source to fair source ([bd8e23f](https://github.com/ptah-sh/ptah-server/commit/bd8e23f3c0ef25427415e484f957d3bcaf0dbda3))
+* fix pricing to reflect the latest changes ([bb5869b](https://github.com/ptah-sh/ptah-server/commit/bb5869b7504ddb5beb02f0b8ffbb68bc7674c65b))
+
 ## [0.16.0](https://github.com/ptah-sh/ptah-server/compare/v0.15.5...v0.16.0) (2024-08-11)
 
 
