@@ -5,7 +5,8 @@ RUN apt-get update \
     && apt-get clean && rm -rf /var/lib/apt/lists /var/cache/apt/archives \
     && curl https://raw.githubusercontent.com/composer/getcomposer.org/76a7060ccb93902cd7576b67264ad91c8a2700e2/web/installer | php -- --quiet \
     && docker-php-ext-configure pgsql \
-    && docker-php-ext-install pdo pdo_pgsql pgsql bcmath excimer \
+    && docker-php-ext-install pdo pdo_pgsql pgsql bcmath \
+    && pecl install excimer \
     && docker-php-source delete \
     && awk 'NR==1 {print; print "\tservers {\n\t\ttrusted_proxies static private_ranges\n\t}\n"; next} 1' /etc/caddy/Caddyfile > /etc/caddy/Caddyfile.tmp \
     && mv /etc/caddy/Caddyfile.tmp /etc/caddy/Caddyfile
