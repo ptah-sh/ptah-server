@@ -109,7 +109,7 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'noreply@ptah.sh'),
+        'address' => env('MAIL_FROM_ADDRESS', 'noreply@watchtower.ptah.sh'),
         'name' => env('MAIL_FROM_NAME', 'Ptah.sh'),
     ],
 
