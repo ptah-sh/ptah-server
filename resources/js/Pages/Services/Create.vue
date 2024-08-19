@@ -22,6 +22,7 @@ const props = defineProps({
     deploymentData: Object,
     dockerRegistries: Array,
     s3Storages: Array,
+    marketplaceUrl: String,
 });
 
 const form = useForm({
@@ -48,7 +49,7 @@ const hideTemplatePicker = () => {
 
 const applyTemplate = (template) => {
     form.name = template.name;
-    console.log(JSON.stringify(template.deploymentData.processes));
+
     form.deploymentData.processes = template.deploymentData.processes;
 
     hideTemplatePicker();
@@ -58,6 +59,7 @@ const applyTemplate = (template) => {
 <template>
     <AppLayout title="Dashboard">
         <TemplatePicker
+            :marketplace-url="marketplaceUrl"
             :show="showTemplatePicker.show"
             @apply="applyTemplate"
             @close="hideTemplatePicker"

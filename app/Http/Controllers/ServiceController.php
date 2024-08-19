@@ -51,6 +51,7 @@ class ServiceController extends Controller
             'deploymentData' => $deploymentData,
             'dockerRegistries' => $dockerRegistries,
             's3Storages' => $s3Storages,
+            'marketplaceUrl' => config('ptah.marketplace_url'),
         ]);
     }
 

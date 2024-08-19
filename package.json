@@ -27,7 +27,8 @@
         "vue": "^3.3.13"
     },
     "dependencies": {
-        "dayjs": "^1.11.11"
+        "dayjs": "^1.11.11",
+        "swrv": "^1.0.4"
     },
     "lint-staged": {
         "*.{js,vue,css,md,json}": "prettier --write",

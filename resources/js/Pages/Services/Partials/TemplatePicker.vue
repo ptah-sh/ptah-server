@@ -1,205 +1,42 @@
 <script setup>
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import { computed, h, reactive, markRaw, ref } from "vue";
+import { computed, h, reactive, markRaw, ref, onMounted, effect } from "vue";
 import ExternalLink from "@/Components/ExternalLink.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import FormField from "@/Components/FormField.vue";
 import { makeId } from "@/id.js";
+import useSWRV, { mutate } from "swrv";
 
-defineProps({
+const props = defineProps({
+    marketplaceUrl: String,
     show: Boolean,
 });
 
+const state = reactive({
+    category: null,
+    step: "select",
+    template: {},
+    extends: [],
+});
+
+const marketplaceCategories = useSWRV(props.marketplaceUrl + ".json");
+const marketplaceApps = useSWRV(() =>
+    state.category
+        ? props.marketplaceUrl + "/" + state.category + ".json"
+        : false,
+);
+
 const emit = defineEmits(["close", "apply"]);
 
-const categories = [
-    {
-        name: "Analytics",
-        slug: "analytics",
-        description: "User analytics and metrics",
-        templates: [
-            {
-                extends: [
-                    {
-                        slug: "databases/postgresql",
-                    },
-                ],
-
-                name: "Shlink",
-                slug: "analytics/shlink",
-                description: "Shlink.io url shortener",
-                form: {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            domain: { type: "string" },
-                            geoLiteKey: { type: "string" },
-                            apiKey: { type: "string" },
-                        },
-                    },
-                },
-                processes: [
-                    {
-                        name: "Shlink",
-                        description: "Shlink.io url shortener",
-                        url: "https://github.com/shlinkio/shlink",
-                        data: {
-                            name: "shlink",
-                            dockerImage: "shlinkio/shlink",
-                            envVars: [
-                                { name: "DEFAULT_DOMAIN", value: "{{domain}}" },
-                                { name: "IS_HTTPS_ENABLED", value: "true" },
-                                { name: "DB_DRIVER", value: "postgres" },
-                                {
-                                    name: "DB_NAME",
-                                    value: "{{databases/postgresql/database}}",
-                                },
-                                {
-                                    name: "DB_USER",
-                                    value: "{{databases/postgresql/user}}",
-                                },
-                                {
-                                    name: "DB_PASSWORD",
-                                    value: "{{databases/postgresql/password}}",
-                                },
-                                {
-                                    name: "DB_HOST",
-                                    value: "pgbouncer.{{service/internalDomainName}}",
-                                },
-                                { name: "DB_PORT", value: "5432" },
-                            ],
-                            secretVars: {
-                                vars: [
-                                    {
-                                        name: "GEOLITE_LICENSE_KEY",
-                                        value: "{{geoLiteKey}}",
-                                    },
-                                    {
-                                        name: "INITIAL_API_KEY",
-                                        value: "{{apiKey}}",
-                                    },
-                                ],
-                            },
-                            caddy: [
-                                {
-                                    targetProtocol: "http",
-                                    targetPort: "8080",
-                                    publishedPort: "443",
-                                    domain: "{{domain}}",
-                                    path: "/*",
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        ],
-    },
-    {
-        name: "Databases",
-        slug: "databases",
-        description: "RDBMS and NoSQL databases",
-        templates: [
-            {
-                name: "PostgreSQL",
-                slug: "databases/postgresql",
-                description: "Single-server PostgreSQL database",
-                form: {
-                    schema: {
-                        type: "object",
-                        properties: {
-                            user: { type: "string" },
-                            password: { type: "string" },
-                            database: { type: "string" },
-                        },
-                        required: ["user", "password", "database"],
-                    },
-                    // TODO: adapt ajv (https://ajv.js.org/) with something like https://jsonforms.io/ (craft our own?)
-                    ui: {},
-                },
-                processes: [
-                    {
-                        name: "PostgreSQL",
-                        description: "PostgreSQL database",
-                        url: "https://github.com/bitnami/containers/tree/main/bitnami/postgresql",
-                        data: {
-                            name: "pg",
-                            dockerImage: "bitnami/postgresql:16",
-                            envVars: [
-                                {
-                                    name: "POSTGRESQL_USER",
-                                    value: "{{user}}",
-                                },
-                                {
-                                    name: "POSTGRESQL_PASSWORD",
-                                    value: "{{password}}",
-                                },
-                                {
-                                    name: "POSTGRESQL_DATABASE",
-                                    value: "{{database}}",
-                                },
-                            ],
-                            volumes: [
-                                {
-                                    name: "data",
-                                    path: "/bitnami/postgresql",
-                                    backupSchedule: null,
-                                },
-                            ],
-                        },
-                    },
-                    {
-                        name: "PGBouncer",
-                        description: "Connection pool manager for PostgreSQL",
-                        url: "https://github.com/bitnami/containers/tree/main/bitnami/pgbouner",
-                        data: {
-                            name: "pgbouncer",
-                            dockerImage: "bitnami/pgbouncer:latest",
-                            envVars: [
-                                {
-                                    name: "PGBOUNCER_POOL_MODE",
-                                    value: "session",
-                                },
-                                {
-                                    name: "POSTGRESQL_USERNAME",
-                                    value: "{{user}}",
-                                },
-                                {
-                                    name: "POSTGRESQL_PASSWORD",
-                                    value: "{{password}}",
-                                },
-                                {
-                                    name: "POSTGRESQL_DATABASE",
-                                    value: "{{database}}",
-                                },
-                                {
-                                    name: "POSTGRESQL_HOST",
-                                    value: "pg.{{service/internalDomainName}}",
-                                },
-                                {
-                                    name: "PGBOUNCER_PORT",
-                                    value: "5432",
-                                },
-                                {
-                                    name: "PGBOUNCER_DATABASE",
-                                    value: "{{database}}",
-                                },
-                            ],
-                        },
-                    },
-                ],
-            },
-        ],
-    },
-];
-
-const state = reactive({
-    category: categories[0].slug,
-    step: "select",
-    template: null,
-    extends: [],
+effect(() => {
+    if (state.category === null) {
+        state.category =
+            marketplaceCategories.data.value?.length > 0
+                ? marketplaceCategories.data.value[0].slug
+                : null;
+    }
 });
 
 const form = reactive({
@@ -207,26 +44,24 @@ const form = reactive({
     data: {},
 });
 
-const templates = computed(() => {
-    return categories.find((category) => category.slug === state.category)
-        .templates;
-});
+const selectTemplate = async (template) => {
+    state.template = await (
+        await fetch(props.marketplaceUrl + "/" + template.slug + ".json")
+    ).json();
 
-const selectTemplate = (template) => {
-    state.step = "configure";
-    state.template = template;
+    if (state.template.extends) {
+        for (const extend of state.template.extends) {
+            const res = await (
+                await fetch(props.marketplaceUrl + "/" + extend.slug + ".json")
+            ).json();
 
-    if (template.extends) {
-        state.extends = template.extends.map((t) => {
-            const [category] = t.slug.split("/");
-
-            return categories
-                .find((c) => c.slug === category)
-                .templates.find((e) => e.slug === t.slug);
-        });
+            state.extends.push(res);
+        }
     } else {
         state.extends = [];
     }
+
+    state.step = "configure";
 };
 
 const fillPlaceholders = (slug, value) => {
@@ -337,7 +172,10 @@ const applyTemplate = () => {
         <template #content>
             <div v-if="state.step === 'select'">
                 <ul class="grid gap-4 grid-cols-2">
-                    <li class="w-full" v-for="category in categories">
+                    <li
+                        class="w-full"
+                        v-for="category in marketplaceCategories.data.value"
+                    >
                         <input
                             type="radio"
                             :id="category.slug"
@@ -357,7 +195,7 @@ const applyTemplate = () => {
                                     >{{ category.name }}
                                     <span
                                         class="text-xs font-normal text-gray-500 dark:text-gray-300"
-                                        >({{ category.templates.length }})</span
+                                        >({{ category.apps }})</span
                                     ></span
                                 >
                                 <span
@@ -372,7 +210,7 @@ const applyTemplate = () => {
                 <div v-auto-animate>
                     <div
                         class="mt-4 border border-gray-200 rounded-lg p-4 relative hover:bg-gray-50 group"
-                        v-for="template in templates"
+                        v-for="template in marketplaceApps.data.value"
                         :key="template.slug"
                     >
                         <div
@@ -381,7 +219,8 @@ const applyTemplate = () => {
                             <ExternalLink
                                 :href="
                                     'https://ptah.sh/marketplace/' +
-                                    template.slug
+                                    template.slug +
+                                    '/'
                                 "
                                 >View</ExternalLink
                             >
@@ -404,16 +243,12 @@ const applyTemplate = () => {
                                 class="text-sm font-medium text-gray-900 dark:text-gray-300"
                             >
                                 Processes
-                                <span
-                                    class="text-xs font-normal text-gray-500 dark:text-gray-300"
-                                    >(service)</span
-                                >
                             </p>
                         </div>
                         <ul class="grid gap-4 grid-cols-2">
                             <li
                                 v-for="process in template.processes"
-                                :key="process.id"
+                                :key="process.slug"
                             >
                                 <p
                                     class="font-medium text-gray-900 dark:text-gray-300"
@@ -426,7 +261,7 @@ const applyTemplate = () => {
                                     {{ process.description }}
                                 </p>
                                 <ExternalLink :href="process.url">{{
-                                    process.data.dockerImage
+                                    process.dockerImage
                                 }}</ExternalLink>
                             </li>
                         </ul>
@@ -467,7 +302,6 @@ const applyTemplate = () => {
                                 form.data[`${state.template.slug}/${prop}`]
                             "
                             class="w-full"
-                            :placeholder="_descriptor.description"
                         />
                     </FormField>
                 </template>
@@ -494,7 +328,6 @@ const applyTemplate = () => {
                             <TextInput
                                 v-model="form.data[`${template.slug}/${prop}`]"
                                 class="w-full"
-                                :placeholder="_descriptor.description"
                             />
                         </FormField>
                     </template>
