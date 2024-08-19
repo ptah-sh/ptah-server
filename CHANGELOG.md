@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://github.com/ptah-sh/ptah-server/compare/v0.17.1...v0.18.0) (2024-08-19)
+
+
+### Features
+
+* [#102](https://github.com/ptah-sh/ptah-server/issues/102) try the service templates concept ([096bb40](https://github.com/ptah-sh/ptah-server/commit/096bb40ec06f67a25d29c1bbba1f21ade75c9eb4))
+
 ## [0.17.1](https://github.com/ptah-sh/ptah-server/compare/v0.17.0...v0.17.1) (2024-08-16)
 
 
