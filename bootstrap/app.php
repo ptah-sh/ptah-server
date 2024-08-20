@@ -46,7 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
         Integration::handles($exceptions);
     })
     ->withSchedule(function (Schedule $schedule) {
-        if (! app()->runningConsoleCommand('schedule:run') && ! app()->runningConsoleCommand('schedule:work')) {
+        if (! app()->runningConsoleCommand('schedule:run', 'schedule:work')) {
             return;
         }
 
