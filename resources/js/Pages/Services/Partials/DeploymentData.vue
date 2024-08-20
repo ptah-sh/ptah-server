@@ -26,7 +26,6 @@ import BackupSchedule from "@/Components/BackupSchedule.vue";
 const model = defineModel();
 
 const props = defineProps({
-    swarms: Array,
     networks: Array,
     nodes: Array,
     serviceName: String | undefined,
@@ -287,7 +286,18 @@ const extractFieldErrors = (basePath) => {
         <template #title> Service Location </template>
 
         <template #description>
-            <p>Configure the location of the service in the swarm.</p>
+            <p>
+                To isolate containers from one another, you can utilize
+                different networks.
+            </p>
+            <p>
+                Services can be accessed by their internal domain name by other
+                containers on the same network.
+            </p>
+            <p>
+                If no Placement Node is selected, the containers will be able to
+                run on any node within the Swarm Cluster.
+            </p>
         </template>
 
         <template #content>

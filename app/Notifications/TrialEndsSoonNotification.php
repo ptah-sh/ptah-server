@@ -45,7 +45,7 @@ class TrialEndsSoonNotification extends Notification implements ShouldQueue
         $dateDiff = $nextPayment->date->longRelativeToNowDiffForHumans();
 
         return (new MailMessage)
-            ->subject("Your trial ends in {$dateDiff}")
+            ->subject("Your free trial ends in {$dateDiff}")
             ->greeting("Hello {$this->team->customer->name}!")
             ->line('Your trial for team '.$this->team->name.' ends soon.')
             ->line("You will be charged {$nextPayment->amount()} on {$nextPayment->date->toDateTimeString()} ({$dateDiff}).")

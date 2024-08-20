@@ -217,16 +217,22 @@ class SwarmTaskController extends Controller
     public function joinCluster(JoinClusterFormRequest $request)
     {
         DB::transaction(function () use ($request) {
+            $node = Node::findOrFail($request->node_id);
+            $swarm = $node->team->swarms()->first();
+
+            if (! $swarm) {
+                throw new \Exception('No swarm found for the node\'s team.');
+            }
+
             $taskGroup = NodeTaskGroup::create([
                 'type' => NodeTaskGroupType::JoinSwarm,
-                'swarm_id' => $request->swarm_id,
-                'team_id' => auth()->user()->currentTeam->id,
-                'node_id' => $request->node_id,
+                'swarm_id' => $swarm->id,
+                'team_id' => $node->team_id,
+                'node_id' => $node->id,
                 'invoker_id' => auth()->user()->id,
             ]);
 
-            $node = Node::findOrFail($request->node_id);
-            $node->swarm_id = $request->swarm_id;
+            $node->swarm_id = $swarm->id;
             $node->save();
 
             $remoteAddrs = collect($taskGroup->swarm->data->managerNodes)->map(fn (SwarmData\ManagerNode $node) => $node->addr)->toArray();
@@ -238,7 +244,7 @@ class SwarmTaskController extends Controller
 
             $taskGroup->tasks()->create([
                 'type' => NodeTaskType::JoinSwarm,
-                'meta' => JoinSwarmMeta::from(['swarmId' => $request->swarm_id, 'role' => $request->role]),
+                'meta' => JoinSwarmMeta::from(['swarmId' => $swarm->id, 'role' => $request->role]),
                 'payload' => [
                     'JoinSpec' => [
                         'ListenAddr' => '0.0.0.0:2377',

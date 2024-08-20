@@ -15,7 +15,6 @@ class InitClusterFormRequest extends FormRequest
     {
         return [
             'node_id' => ['required', 'exists:nodes,id'],
-            'name' => ['required', 'string', 'max:255'],
             'advertise_addr' => ['required', 'ipv4'],
             'force_new_cluster' => ['boolean'],
         ];

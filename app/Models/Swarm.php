@@ -13,7 +13,6 @@ class Swarm extends Model
     use HasOwningTeam;
 
     protected $fillable = [
-        'name',
         'data',
         'team_id',
     ];

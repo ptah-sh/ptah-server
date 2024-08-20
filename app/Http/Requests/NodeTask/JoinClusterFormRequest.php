@@ -15,7 +15,6 @@ class JoinClusterFormRequest extends FormRequest
     {
         return [
             'node_id' => ['required', 'exists:nodes,id'],
-            'swarm_id' => ['required', 'exists:swarms,id'],
             'role' => ['required', 'in:manager,worker'],
             'advertise_addr' => ['exclude_if:role,worker', 'required', 'ipv4'],
         ];

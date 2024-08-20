@@ -8,7 +8,6 @@ use App\Models\AgentRelease;
 use App\Models\Node;
 use App\Models\NodeTaskGroupType;
 use App\Models\Service;
-use App\Models\Swarm;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -87,13 +86,11 @@ class NodeController extends Controller
 
         return Inertia::render('Nodes/Show', [
             'node' => $node,
-            'swarms' => Swarm::all(),
             'isLastNode' => $node->team->nodes->count() === 1,
             'initTaskGroup' => $initTaskGroup ?: $joinTaskGroup,
             'lastAgentVersion' => $lastAgentVersion,
             'agentUpgradeTaskGroup' => $taskGroup?->is_completed ? null : $taskGroup,
             'registryUpdateTaskGroup' => $registryTaskGroup?->is_completed ? null : $registryTaskGroup,
-            'swarmsQuotaReached' => auth()->user()->currentTeam->quotas()->swarms->quotaReached(),
         ]);
     }
 

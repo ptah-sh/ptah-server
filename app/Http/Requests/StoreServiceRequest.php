@@ -23,7 +23,6 @@ class StoreServiceRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string'],
-            'swarm_id' => ['required', 'exists:swarms,id'],
         ];
     }
 }

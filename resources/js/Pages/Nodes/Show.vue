@@ -1,5 +1,6 @@
 <script setup>
-import NewSwarmCluster from "@/Pages/Nodes/Partials/NewSwarmCluster.vue";
+import InitSwarmCluster from "@/Pages/Nodes/Partials/InitSwarmCluster.vue";
+import JoinSwarmCluster from "@/Pages/Nodes/Partials/JoinSwarmCluster.vue";
 import ServerDetailsForm from "@/Pages/Nodes/Partials/ServerDetailsForm.vue";
 import ShowLayout from "@/Pages/Nodes/ShowLayout.vue";
 import AgentStatus from "@/Pages/Nodes/Partials/AgentStatus.vue";
@@ -9,19 +10,16 @@ import SwarmDetails from "@/Pages/Nodes/Partials/SwarmDetails.vue";
 import AgentUpgradeStatus from "@/Pages/Nodes/Partials/AgentUpgradeStatus.vue";
 import DockerRegistries from "@/Pages/Nodes/Partials/DockerRegistries.vue";
 import S3Storages from "@/Pages/Nodes/Partials/S3Storages.vue";
-import ActionSection from "@/Components/ActionSection.vue";
 import DeleteResourceSection from "@/Components/DeleteResourceSection.vue";
 import { router } from "@inertiajs/vue3";
 
 const props = defineProps([
     "node",
-    "swarms",
     "isLastNode",
     "initTaskGroup",
     "lastAgentVersion",
     "agentUpgradeTaskGroup",
     "registryUpdateTaskGroup",
-    "swarmsQuotaReached",
 ]);
 
 const destroyNode = () => router.delete(route("nodes.destroy", props.node.id));
@@ -46,12 +44,16 @@ const destroyNode = () => router.delete(route("nodes.destroy", props.node.id));
         <SectionBorder v-if="$props.node.online" />
 
         <template v-if="$props.node.online">
-            <NewSwarmCluster
-                v-if="$props.node.swarm_id === null"
+            <InitSwarmCluster
+                v-if="isLastNode && node.swarm_id === null"
                 :node="$props.node"
-                :swarms="$props.swarms"
-                :swarmsQuotaReached="swarmsQuotaReached"
             />
+
+            <JoinSwarmCluster
+                v-if="!isLastNode && node.swarm_id === null"
+                :node="$props.node"
+            />
+
             <InitSwarmProgress
                 v-if="$props.initTaskGroup"
                 :taskGroup="$props.initTaskGroup"

@@ -33,19 +33,18 @@ class ServiceController extends Controller
      */
     public function create()
     {
-        $swarms = Swarm::all();
+        $swarm = auth()->user()->currentTeam->swarms()->first();
 
-        $networks = count($swarms) ? $swarms[0]->networks : [];
-        $nodes = count($swarms) ? $swarms[0]->nodes : [];
-        $dockerRegistries = count($swarms) ? $swarms[0]->data->registries : [];
-        $s3Storages = count($swarms) ? $swarms[0]->data->s3Storages : [];
+        $networks = $swarm->networks;
+        $nodes = $swarm->nodes;
+        $dockerRegistries = $swarm->data->registries;
+        $s3Storages = $swarm->data->s3Storages;
 
         $deploymentData = DeploymentData::make([
-            'networkName' => count($networks) ? $networks[0]->name : null,
+            'networkName' => $networks->first()->name,
         ]);
 
         return Inertia::render('Services/Create', [
-            'swarms' => $swarms,
             'networks' => $networks,
             'nodes' => $nodes,
             'deploymentData' => $deploymentData,
@@ -62,15 +61,21 @@ class ServiceController extends Controller
     {
         $deploymentData = DeploymentData::validateAndCreate($request->get('deploymentData'));
 
+        $team = auth()->user()->currentTeam;
+        $swarm = $team->swarms()->firstOrFail();
+
         $service = Service::make($request->validated());
-        $service->team_id = auth()->user()->current_team_id;
+        $service->team_id = $team->id;
+        $service->swarm_id = $swarm->id;
+
         DB::transaction(function () use ($service, $deploymentData) {
             $service->save();
 
             $service->deploy($deploymentData);
         });
 
-        return to_route('services.deployments', ['service' => $service->id]);
+        return to_route('services.deployments', $service)
+            ->with('success', 'Service created and deployment scheduled successfully.');
     }
 
     /**
