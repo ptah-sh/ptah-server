@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.1](https://github.com/ptah-sh/ptah-server/compare/v0.19.0...v0.19.1) (2024-08-20)
+
+
+### Bug Fixes
+
+* [#133](https://github.com/ptah-sh/ptah-server/issues/133) display a subscription warning banner ([aa02cc7](https://github.com/ptah-sh/ptah-server/commit/aa02cc7ed8a3eda9512b5e09519a1eb263b92790))
+* schedule ([e46834b](https://github.com/ptah-sh/ptah-server/commit/e46834b535daf97350ca563753b7648fd1537b9b))
+
 ## [0.19.0](https://github.com/ptah-sh/ptah-server/compare/v0.18.0...v0.19.0) (2024-08-19)
 
 
