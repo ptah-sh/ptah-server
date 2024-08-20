@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.20.0](https://github.com/ptah-sh/ptah-server/compare/v0.19.1...v0.20.0) (2024-08-20)
+
+
+### Features
+
+* [#122](https://github.com/ptah-sh/ptah-server/issues/122) rework swarm-related management interfaces ([16bc52c](https://github.com/ptah-sh/ptah-server/commit/16bc52ca0eadd665bfa39fb1733513a1027cc9da))
+
 ## [0.19.1](https://github.com/ptah-sh/ptah-server/compare/v0.19.0...v0.19.1) (2024-08-20)
 
 
