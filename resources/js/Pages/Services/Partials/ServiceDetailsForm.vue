@@ -2,13 +2,12 @@
 import TextInput from "@/Components/TextInput.vue";
 import TeamCard from "@/Components/TeamCard.vue";
 import FormField from "@/Components/FormField.vue";
-import Select from "@/Components/Select.vue";
-import { effect, reactive } from "vue";
 
 const model = defineModel();
 
 const props = defineProps({
     team: Object,
+    service: Object,
 });
 </script>
 
@@ -19,5 +18,11 @@ const props = defineProps({
         <template #label>Service Name</template>
 
         <TextInput v-model="model.name" class="block w-full" />
+    </FormField>
+
+    <FormField v-if="service" class="col-span-2">
+        <template #label>Service Slug</template>
+
+        <TextInput :value="props.service.slug" class="block w-full" readonly />
     </FormField>
 </template>

@@ -118,7 +118,7 @@ class ServiceController extends Controller
             $service->deploy($deploymentData);
         });
 
-        return to_route('services.deployments', ['service' => $service->id]);
+        return to_route('services.deployments', $service);
     }
 
     /**

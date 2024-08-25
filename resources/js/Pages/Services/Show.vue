@@ -6,13 +6,7 @@ import DeploymentData from "@/Pages/Services/Partials/DeploymentData.vue";
 import ServiceDetailsForm from "@/Pages/Services/Partials/ServiceDetailsForm.vue";
 import FormSection from "@/Components/FormSection.vue";
 import SectionBorder from "@/Components/SectionBorder.vue";
-import DangerButton from "@/Components/DangerButton.vue";
-import TextInput from "@/Components/TextInput.vue";
-import DialogModal from "@/Components/DialogModal.vue";
-import InputError from "@/Components/InputError.vue";
-import SecondaryButton from "@/Components/SecondaryButton.vue";
-import { nextTick, reactive, ref } from "vue";
-import ActionSection from "@/Components/ActionSection.vue";
+import { ref } from "vue";
 import DeleteResourceSection from "@/Components/DeleteResourceSection.vue";
 
 const props = defineProps({
@@ -27,13 +21,13 @@ const serviceForm = useForm({
 });
 
 const updateService = () => {
-    serviceForm.put(route("services.update", props.service.id));
+    serviceForm.put(route("services.update", props.service));
 };
 
 const deploymentForm = useForm(props.service.latest_deployment.data);
 
 const deploy = () => {
-    deploymentForm.post(route("services.deploy", props.service.id));
+    deploymentForm.post(route("services.deploy", props.service));
 };
 
 const deletionForm = useForm({
@@ -41,7 +35,7 @@ const deletionForm = useForm({
 });
 
 const destroyService = () => {
-    return deletionForm.delete(route("services.destroy", props.service.id));
+    return deletionForm.delete(route("services.destroy", props.service));
 };
 
 const serviceDeleteInput = ref(null);
@@ -66,7 +60,8 @@ const serviceDeleteInput = ref(null);
             <template #form>
                 <ServiceDetailsForm
                     v-model="serviceForm"
-                    :team="$props.service.team"
+                    :team="props.service.team"
+                    :service="props.service"
                 />
             </template>
 

@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 
 class Service extends Model
 {
@@ -25,8 +26,24 @@ class Service extends Model
         'team_id',
     ];
 
+    // Add this line to make slug the routing key
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     protected static function booted()
     {
+        static::creating(function (Service $service) {
+            $service->slug = $service->generateUniqueSlug($service->name);
+        });
+
+        static::updating(function (Service $service) {
+            if ($service->isDirty('name')) {
+                $service->slug = $service->generateUniqueSlug($service->name);
+            }
+        });
+
         self::saved(function (Service $service) {
             if (! $service->docker_name) {
                 $service->docker_name = $service->makeResourceName($service->name);
@@ -55,6 +72,27 @@ class Service extends Model
             //   https://github.com/ptah-sh/ptah-server/issues/117
             $taskGroup->tasks()->createMany($deleteProcessesTasks);
         });
+    }
+
+    protected function generateUniqueSlug($name)
+    {
+        $slug = Str::slug($name);
+        $originalSlug = $slug;
+        $vocabulary = ['cat', 'dog', 'bird', 'fish', 'mouse', 'rabbit', 'turtle', 'frog', 'bear', 'lion'];
+        $adjectives = ['happy', 'brave', 'bright', 'cheerful', 'confident', 'creative', 'determined', 'energetic', 'friendly', 'funny', 'generous', 'kind'];
+        shuffle($vocabulary);
+        shuffle($adjectives);
+
+        foreach ($adjectives as $adjective) {
+            foreach ($vocabulary as $word) {
+                $uniqueSlug = $originalSlug.'-'.$adjective.'-'.$word;
+                if (! self::where('slug', $uniqueSlug)->where('id', '!=', $this->id)->exists()) {
+                    return $uniqueSlug;
+                }
+            }
+        }
+
+        return $slug.'-'.$adjectives[0].'-'.$vocabulary[0].'-'.time();
     }
 
     public function swarm(): BelongsTo

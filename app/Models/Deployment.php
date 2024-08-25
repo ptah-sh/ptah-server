@@ -72,6 +72,7 @@ class Deployment extends Model
     {
         return dockerize_labels([
             'service.id' => $this->service_id,
+            'service.slug' => $this->service->slug,
             'deployment.id' => $this->id,
         ]);
     }

@@ -49,16 +49,12 @@ const props = defineProps({
                 <NoDataYet v-if="$props.services.length === 0" />
 
                 <div class="grid grid-cols-2 gap-4">
-                    <div v-for="service in props.services" :key="service.id">
+                    <div v-for="service in props.services" :key="service.slug">
                         <div
                             class="bg-white dark:bg-gray-800 shadow sm:rounded-lg"
                         >
                             <Link
-                                :href="
-                                    route('services.show', {
-                                        service: service.id,
-                                    })
-                                "
+                                :href="route('services.show', service)"
                                 class="p-4 grid grid-cols-2"
                             >
                                 <div class="flex flex-col">
