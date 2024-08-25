@@ -14,5 +14,6 @@ class NodeData extends Data
         public DockerData $docker,
         public HostData $host,
         public NodeRole $role,
+        public string $address,
     ) {}
 }

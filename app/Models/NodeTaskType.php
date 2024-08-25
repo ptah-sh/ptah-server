@@ -36,6 +36,8 @@ use App\Events\NodeTasks\ServiceExec\ServiceExecCompleted;
 use App\Events\NodeTasks\ServiceExec\ServiceExecFailed;
 use App\Events\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkCompleted;
 use App\Events\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkFailed;
+use App\Events\NodeTasks\UpdateDirdConfig\UpdateDirdConfigCompleted;
+use App\Events\NodeTasks\UpdateDirdConfig\UpdateDirdConfigFailed;
 use App\Events\NodeTasks\UpdateNode\UpdateCurrentNodeCompleted;
 use App\Events\NodeTasks\UpdateNode\UpdateCurrentNodeFailed;
 use App\Events\NodeTasks\UpdateService\UpdateServiceCompleted;
@@ -78,6 +80,8 @@ use App\Models\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkMeta;
 use App\Models\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkResult;
 use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeMeta;
 use App\Models\NodeTasks\UpdateCurrentNode\UpdateCurrentNodeResult;
+use App\Models\NodeTasks\UpdateDirdConfig\UpdateDirdConfigMeta;
+use App\Models\NodeTasks\UpdateDirdConfig\UpdateDirdConfigResult;
 use App\Models\NodeTasks\UpdateService\UpdateServiceMeta;
 use App\Models\NodeTasks\UpdateService\UpdateServiceResult;
 use App\Models\NodeTasks\UploadS3File\UploadS3FileMeta;
@@ -106,6 +110,7 @@ enum NodeTaskType: int
     case ServiceExec = 17;
     case UploadS3File = 18;
     case JoinSwarm = 19;
+    case UpdateDirdConfig = 20;
 
     public function meta(): string
     {
@@ -130,6 +135,7 @@ enum NodeTaskType: int
             self::ServiceExec => ServiceExecMeta::class,
             self::UploadS3File => UploadS3FileMeta::class,
             self::JoinSwarm => JoinSwarmMeta::class,
+            self::UpdateDirdConfig => UpdateDirdConfigMeta::class,
         };
     }
 
@@ -156,6 +162,7 @@ enum NodeTaskType: int
             self::ServiceExec => ServiceExecResult::class,
             self::UploadS3File => UploadS3FileResult::class,
             self::JoinSwarm => JoinSwarmResult::class,
+            self::UpdateDirdConfig => UpdateDirdConfigResult::class,
         };
     }
 
@@ -182,6 +189,7 @@ enum NodeTaskType: int
             self::ServiceExec => ServiceExecCompleted::class,
             self::UploadS3File => UploadS3FileCompleted::class,
             self::JoinSwarm => JoinSwarmCompleted::class,
+            self::UpdateDirdConfig => UpdateDirdConfigCompleted::class,
         };
     }
 
@@ -208,6 +216,7 @@ enum NodeTaskType: int
             self::ServiceExec => ServiceExecFailed::class,
             self::UploadS3File => UploadS3FileFailed::class,
             self::JoinSwarm => JoinSwarmFailed::class,
+            self::UpdateDirdConfig => UpdateDirdConfigFailed::class,
         };
     }
 }
