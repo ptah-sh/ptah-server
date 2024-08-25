@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.21.0](https://github.com/ptah-sh/ptah-server/compare/v0.20.1...v0.21.0) (2024-08-25)
+
+
+### Features
+
+* [#140](https://github.com/ptah-sh/ptah-server/issues/140) use slugs as the service identifiers ([3860f24](https://github.com/ptah-sh/ptah-server/commit/3860f245ba2b598badf7a87ca6a91e69b3776106))
+
 ## [0.20.1](https://github.com/ptah-sh/ptah-server/compare/v0.20.0...v0.20.1) (2024-08-25)
 
 
