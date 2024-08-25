@@ -61,13 +61,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ) use ($schedule) {
             foreach ($services as $service) {
                 foreach ($service->latestDeployment->data->processes as $process) {
-                    // FIXME: this is an array when running migrations
-                    if (is_array($process)) {
-                        continue;
-                    }
                     if ($process->replicas === 0) {
                         continue;
                     }
+
                     foreach ($process->volumes as $volume) {
                         $backupSchedule = $volume->backupSchedule;
                         if ($backupSchedule === null) {
