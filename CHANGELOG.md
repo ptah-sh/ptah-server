@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.20.1](https://github.com/ptah-sh/ptah-server/compare/v0.20.0...v0.20.1) (2024-08-25)
+
+
+### Bug Fixes
+
+* [#138](https://github.com/ptah-sh/ptah-server/issues/138) use dird to get the real ip of end-users ([6ca2ccc](https://github.com/ptah-sh/ptah-server/commit/6ca2ccc317096e95766acbb638e59724a2f23a69))
+
+
+### Miscellaneous Chores
+
+* add os notice to readme ([524aaf9](https://github.com/ptah-sh/ptah-server/commit/524aaf9db04114cfe7292e34818051e2a70ed80e))
+
 ## [0.20.0](https://github.com/ptah-sh/ptah-server/compare/v0.19.1...v0.20.0) (2024-08-20)
 
 
