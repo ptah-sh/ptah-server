@@ -28,6 +28,7 @@ class EventController
                 $nodeAddresses = $swarm->nodes->pluck('data.address')->toArray();
                 $dockerServices = collect($swarm->services)
                     ->filter(function ($service) {
+                        // TODO: use some flags on the service to determine if it should be passed to DIRD
                         return Str::contains($service->docker_name, 'caddy');
                     })
                     ->pluck('docker_name')

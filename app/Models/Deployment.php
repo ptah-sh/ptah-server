@@ -64,6 +64,8 @@ class Deployment extends Model
             $query
                 ->selectRaw('max("latest_deployments_query"."id")')
                 ->from('deployments', 'latest_deployments_query')
+                ->join('services', 'services.id', '=', 'latest_deployments_query.service_id')
+                ->whereNull('services.deleted_at')
                 ->groupBy('latest_deployments_query.service_id');
         });
     }
