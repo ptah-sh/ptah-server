@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.3](https://github.com/ptah-sh/ptah-server/compare/v0.22.2...v0.22.3) (2024-08-27)
+
+
+### Bug Fixes
+
+* [#142](https://github.com/ptah-sh/ptah-server/issues/142) clear extends on template selection ([2be0006](https://github.com/ptah-sh/ptah-server/commit/2be0006e711ff1f6160153cd5b1b694d857d65de))
+
 ## [0.22.2](https://github.com/ptah-sh/ptah-server/compare/v0.22.1...v0.22.2) (2024-08-27)
 
 
