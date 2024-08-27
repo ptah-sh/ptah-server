@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.22.0](https://github.com/ptah-sh/ptah-server/compare/v0.21.0...v0.22.0) (2024-08-27)
+
+
+### Features
+
+* [#142](https://github.com/ptah-sh/ptah-server/issues/142) use gh action to deploy to ptah.sh ([48e31ac](https://github.com/ptah-sh/ptah-server/commit/48e31ac48447898b7caa4f46297d24fc3edc903b))
+* [#145](https://github.com/ptah-sh/ptah-server/issues/145) rework 1-click template forms logic ([b2819e5](https://github.com/ptah-sh/ptah-server/commit/b2819e5ef614589ab84c0bd8dcf52cb973ac87df))
+
+
+### Bug Fixes
+
+* [#143](https://github.com/ptah-sh/ptah-server/issues/143) omit caddy configs for deleted services ([508b935](https://github.com/ptah-sh/ptah-server/commit/508b9352e8c692ef137930cd128f66ba45d1da19))
+
 ## [0.21.0](https://github.com/ptah-sh/ptah-server/compare/v0.20.1...v0.21.0) (2024-08-25)
 
 
