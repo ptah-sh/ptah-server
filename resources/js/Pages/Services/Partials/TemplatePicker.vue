@@ -48,6 +48,7 @@ const form = reactive({
 const selectTemplate = async (template) => {
     form.errors = {};
     form.data = {};
+    state.extends = [];
 
     state.template = await (
         await fetch(props.marketplaceUrl + "/" + template.slug + ".json")
@@ -61,8 +62,6 @@ const selectTemplate = async (template) => {
 
             state.extends.push(res);
         }
-    } else {
-        state.extends = [];
     }
 
     state.step = "configure";
