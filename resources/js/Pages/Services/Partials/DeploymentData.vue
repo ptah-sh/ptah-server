@@ -1570,7 +1570,7 @@ const extractFieldErrors = (basePath) => {
 
                     <div class="pt-2 select-none">
                         <FwbToggle
-                            :model-value="item.backupSchedule !== null"
+                            :model-value="item.backupSchedule != null"
                             :disabled="props.s3Storages.length === 0"
                             :class="
                                 props.s3Storages.length === 0

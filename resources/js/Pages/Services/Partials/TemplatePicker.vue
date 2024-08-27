@@ -8,6 +8,7 @@ import TextInput from "@/Components/TextInput.vue";
 import FormField from "@/Components/FormField.vue";
 import { makeId } from "@/id.js";
 import useSWRV, { mutate } from "swrv";
+import DynamicForm from "./DynamicForm.vue";
 
 const props = defineProps({
     marketplaceUrl: String,
@@ -45,6 +46,9 @@ const form = reactive({
 });
 
 const selectTemplate = async (template) => {
+    form.errors = {};
+    form.data = {};
+
     state.template = await (
         await fetch(props.marketplaceUrl + "/" + template.slug + ".json")
     ).json();
@@ -136,6 +140,25 @@ const mapProcessTemplate = (templateSlug, process, newIndex) => {
 };
 
 const applyTemplate = () => {
+    form.errors = {};
+
+    validateForm(form.data, state.template.form, form.errors);
+    state.extends.forEach((template) => {
+        console.log(
+            JSON.stringify({
+                data: form.data,
+                form: template.form,
+                errors: form.errors,
+                slug: template.slug,
+            }),
+        );
+        validateForm(form.data, template.form, form.errors, template.slug);
+    });
+
+    if (Object.keys(form.errors).length > 0) {
+        return;
+    }
+
     const extendedTemplates = state.extends.reduce((acc, template) => {
         return [
             ...acc,
@@ -158,6 +181,34 @@ const applyTemplate = () => {
             processes,
         },
     });
+};
+
+const validateForm = (formData, schema, errors, scope) => {
+    switch (schema.type) {
+        case "v-stack":
+        case "h-stack":
+            for (const item of schema.items) {
+                validateForm(formData, item, errors, scope);
+            }
+
+            break;
+        case "text-field":
+            console.log(JSON.stringify({ formData, schema, errors, scope }));
+
+            const itemName = scope ? `${scope}/${schema.name}` : schema.name;
+            if (
+                schema.required &&
+                schema.format === "string" &&
+                (formData[itemName] == null || formData[itemName].trim() === "")
+            ) {
+                errors[itemName] =
+                    `The ${schema.label.toLowerCase()} field is required`;
+            }
+
+            break;
+    }
+
+    return Object.keys(errors).length === 0;
 };
 </script>
 
@@ -290,21 +341,11 @@ const applyTemplate = () => {
                     {{ state.template.description }}
                 </p>
 
-                <template
-                    v-for="(_descriptor, prop) in state.template.form.schema
-                        .properties"
-                >
-                    <FormField class="my-2" :error="form.errors[prop]">
-                        <template #label>{{ prop }}</template>
-
-                        <TextInput
-                            v-model="
-                                form.data[`${state.template.slug}/${prop}`]
-                            "
-                            class="w-full"
-                        />
-                    </FormField>
-                </template>
+                <DynamicForm
+                    :item="state.template.form"
+                    :form="form.data"
+                    :errors="form.errors"
+                />
 
                 <div v-for="template in state.extends">
                     <p
@@ -318,19 +359,12 @@ const applyTemplate = () => {
                         {{ template.description }}
                     </p>
 
-                    <template
-                        v-for="(_descriptor, prop) in template.form.schema
-                            .properties"
-                    >
-                        <FormField class="my-2" :error="form.errors[prop]">
-                            <template #label>{{ prop }}</template>
-
-                            <TextInput
-                                v-model="form.data[`${template.slug}/${prop}`]"
-                                class="w-full"
-                            />
-                        </FormField>
-                    </template>
+                    <DynamicForm
+                        :item="template.form"
+                        :scope="template.slug"
+                        :form="form.data"
+                        :errors="form.errors"
+                    />
                 </div>
             </div>
         </template>
