@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.1](https://github.com/ptah-sh/ptah-server/compare/v0.22.0...v0.22.1) (2024-08-27)
+
+
+### Bug Fixes
+
+* [#142](https://github.com/ptah-sh/ptah-server/issues/142) gh action version ([d25c58d](https://github.com/ptah-sh/ptah-server/commit/d25c58d03cf78dc61f8728bf75501b146bb3f277))
+
 ## [0.22.0](https://github.com/ptah-sh/ptah-server/compare/v0.21.0...v0.22.0) (2024-08-27)
 
 
