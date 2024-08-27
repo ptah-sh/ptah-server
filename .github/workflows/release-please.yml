@@ -53,7 +53,7 @@ jobs:
       - name: Deploy to Ptah.sh
         uses: ptah-sh/deploy-action@v1.1.1
         with:
-          apiKey: ${{ secrets.PTAH_API_KEY }}
+          apiKey: ${{ secrets.PTAH_API_TOKEN }}
           service: 'ptah-server-prod'
           processes: |
             - name: svc
