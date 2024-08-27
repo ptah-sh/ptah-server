@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.2](https://github.com/ptah-sh/ptah-server/compare/v0.22.1...v0.22.2) (2024-08-27)
+
+
+### Bug Fixes
+
+* [#142](https://github.com/ptah-sh/ptah-server/issues/142) ooops apitoken not api key ([7b15f1d](https://github.com/ptah-sh/ptah-server/commit/7b15f1d270db5afa4582a6b149a29884789e1acd))
+
 ## [0.22.1](https://github.com/ptah-sh/ptah-server/compare/v0.22.0...v0.22.1) (2024-08-27)
 
 
