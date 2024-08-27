@@ -50,11 +50,22 @@ jobs:
       - build-and-publish
     if: ${{ needs.release-please.outputs.release_created }}
     steps:
-      - name: Deploy
-        run: |
-          curl --fail-with-body -X POST \
-            -H 'Content-Type: application/json' \
-            -H 'Accept: application/json' \
-            -H 'Authorization: Bearer ${{ secrets.PTAH_API_TOKEN }}' \
-            -d '{"processes":[{"name":"svc","dockerImage":"ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}"}]}' \
-            https://ctl.ptah.sh/api/v0/services/3/deploy
+      - name: Deploy to Ptah.sh
+        uses: ptah-sh/deploy-action@v1
+        with:
+          apiKey: ${{ secrets.PTAH_API_KEY }}
+          service: 'ptah-server-prod'
+          processes: |
+            - name: svc
+              dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
+              envVars:
+                - name: SENTRY_VERSION
+                  value: ${{ needs.release-please.outputs.tag_name }}
+        # - name: Deploy
+        #   run: |
+        #     curl --fail-with-body -X POST \
+        #       -H 'Content-Type: application/json' \
+        #       -H 'Accept: application/json' \
+        #       -H 'Authorization: Bearer ${{ secrets.PTAH_API_TOKEN }}' \
+        #       -d '{"processes":[{"name":"svc","dockerImage":"ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}"}]}' \
+        #       https://ctl.ptah.sh/api/v0/services/3/deploy
