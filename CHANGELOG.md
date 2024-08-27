@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.4](https://github.com/ptah-sh/ptah-server/compare/v0.22.3...v0.22.4) (2024-08-27)
+
+
+### Bug Fixes
+
+* [#142](https://github.com/ptah-sh/ptah-server/issues/142) sentry release, not sentry version ([a449b61](https://github.com/ptah-sh/ptah-server/commit/a449b61bb8962d64eeebdf03521dad8e499798de))
+
 ## [0.22.3](https://github.com/ptah-sh/ptah-server/compare/v0.22.2...v0.22.3) (2024-08-27)
 
 
