@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.22.5](https://github.com/ptah-sh/ptah-server/compare/v0.22.4...v0.22.5) (2024-08-28)
+
+
+### Bug Fixes
+
+* expired subscriptions can't be managed on paddle ([396b5ca](https://github.com/ptah-sh/ptah-server/commit/396b5ca86843c2f161861638e070f4bf5e5fb4bd))
+
+
+### Miscellaneous Chores
+
+* allow contributions ([8bf83d0](https://github.com/ptah-sh/ptah-server/commit/8bf83d0d5d932a457a8d46b82a123889e8eb034a))
+
 ## [0.22.4](https://github.com/ptah-sh/ptah-server/compare/v0.22.3...v0.22.4) (2024-08-27)
 
 
