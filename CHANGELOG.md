@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.7](https://github.com/ptah-sh/ptah-server/compare/v0.22.6...v0.22.7) (2024-08-28)
+
+
+### Bug Fixes
+
+* pricing on the billing page ([bae520b](https://github.com/ptah-sh/ptah-server/commit/bae520b518e0e1d36a8fc9cc24a8821b53caa531))
+
 ## [0.22.6](https://github.com/ptah-sh/ptah-server/compare/v0.22.5...v0.22.6) (2024-08-28)
 
 
