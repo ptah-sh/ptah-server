@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.6](https://github.com/ptah-sh/ptah-server/compare/v0.22.5...v0.22.6) (2024-08-28)
+
+
+### Bug Fixes
+
+* [#151](https://github.com/ptah-sh/ptah-server/issues/151), [#152](https://github.com/ptah-sh/ptah-server/issues/152), [#118](https://github.com/ptah-sh/ptah-server/issues/118) correct security measures ([d693784](https://github.com/ptah-sh/ptah-server/commit/d693784a6d37de493f84959966ca183bfb50aed0))
+
 ## [0.22.5](https://github.com/ptah-sh/ptah-server/compare/v0.22.4...v0.22.5) (2024-08-28)
 
 
