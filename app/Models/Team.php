@@ -159,4 +159,14 @@ class Team extends JetstreamTeam
     {
         return $this->nodes()->count() >= $this->quotas()->nodes;
     }
+
+    public function validSubscription(): ?Subscription
+    {
+        return $this->subscription()?->valid() ? $this->subscription() : null;
+    }
+
+    public function hasValidSubscription(): bool
+    {
+        return $this->validSubscription() !== null;
+    }
 }

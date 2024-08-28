@@ -15,10 +15,7 @@ class TeamBillingController extends Controller
     {
         $customer = $team->createAsCustomer();
 
-        $subscription = $team->subscription();
-        if (! $subscription?->valid()) {
-            $subscription = null;
-        }
+        $subscription = $team->validSubscription();
 
         $nextPayment = $subscription?->nextPayment();
 

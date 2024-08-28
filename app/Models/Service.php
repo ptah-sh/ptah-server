@@ -34,13 +34,14 @@ class Service extends Model
 
     protected static function booted()
     {
-        static::creating(function (Service $service) {
-            $service->slug = $service->generateUniqueSlug($service->name);
+        static::created(function (Service $service) {
+            $service->slug = $service->generateUniqueSlug();
+            $service->saveQuietly();
         });
 
         static::updating(function (Service $service) {
             if ($service->isDirty('name')) {
-                $service->slug = $service->generateUniqueSlug($service->name);
+                $service->slug = $service->generateUniqueSlug();
             }
         });
 
@@ -74,25 +75,18 @@ class Service extends Model
         });
     }
 
-    protected function generateUniqueSlug($name)
+    protected function generateUniqueSlug()
     {
-        $slug = Str::slug($name);
-        $originalSlug = $slug;
+        $slug = Str::slug($this->name);
         $vocabulary = ['cat', 'dog', 'bird', 'fish', 'mouse', 'rabbit', 'turtle', 'frog', 'bear', 'lion'];
         $adjectives = ['happy', 'brave', 'bright', 'cheerful', 'confident', 'creative', 'determined', 'energetic', 'friendly', 'funny', 'generous', 'kind'];
+
         shuffle($vocabulary);
         shuffle($adjectives);
 
-        foreach ($adjectives as $adjective) {
-            foreach ($vocabulary as $word) {
-                $uniqueSlug = $originalSlug.'-'.$adjective.'-'.$word;
-                if (! self::where('slug', $uniqueSlug)->where('id', '!=', $this->id)->exists()) {
-                    return $uniqueSlug;
-                }
-            }
-        }
+        $hexId = dechex($this->id);
 
-        return $slug.'-'.$adjectives[0].'-'.$vocabulary[0].'-'.time();
+        return $slug.'-'.$adjectives[0].'-'.$vocabulary[0].'-'.$hexId;
     }
 
     public function swarm(): BelongsTo
