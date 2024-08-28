@@ -13,6 +13,7 @@ use Laravel\Jetstream\Events\TeamDeleted;
 use Laravel\Jetstream\Events\TeamUpdated;
 use Laravel\Jetstream\Team as JetstreamTeam;
 use Laravel\Paddle\Billable;
+use Laravel\Paddle\Subscription;
 
 class Team extends JetstreamTeam
 {
