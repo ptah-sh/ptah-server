@@ -24,7 +24,7 @@ We would like to extend our thanks to the following sponsors for funding Ptah.sh
 
 -   _None so far_
 
-## Suppoted Operating Systems
+## Supported Operating Systems
 
 Currently we support only the latest stable Ubuntu (24.04) with x86_64 architecture. You can build Agent and/or the server software for other operating systems, but no guarantee it will work.
 
