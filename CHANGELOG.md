@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.22.8](https://github.com/ptah-sh/ptah-server/compare/v0.22.7...v0.22.8) (2024-08-28)
+
+
+### Bug Fixes
+
+* correct subscription class ([029da3c](https://github.com/ptah-sh/ptah-server/commit/029da3c01a9f004225bc3fcf5d3fac533a9218b3))
+
 ## [0.22.7](https://github.com/ptah-sh/ptah-server/compare/v0.22.6...v0.22.7) (2024-08-28)
 
 
