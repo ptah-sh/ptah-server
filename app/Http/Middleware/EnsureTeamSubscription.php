@@ -16,10 +16,8 @@ class EnsureTeamSubscription
     public function handle(Request $request, Closure $next): Response
     {
         $team = auth()->user()->currentTeam;
-        $subscription = $team->subscription();
 
-        $doesntHaveSubscription = $subscription === null || ! $subscription->valid();
-        if ($doesntHaveSubscription) {
+        if (! $team->hasValidSubscription()) {
             return redirect()->route('teams.billing.show', $team)->warningBanner('You must have a valid subscription to access this resource.');
         }
 

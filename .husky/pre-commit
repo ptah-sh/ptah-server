@@ -1,1 +1,5 @@
+set -e
+
+php artisan ide-helper:actions
+
 lint-staged

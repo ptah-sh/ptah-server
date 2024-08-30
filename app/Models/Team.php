@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\PricingPlan\ItemQuota;
 use App\Models\PricingPlan\UsageQuotas;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
@@ -132,6 +133,13 @@ class Team extends JetstreamTeam
 
     public function quotas(): UsageQuotas
     {
+        if (! config('billing.enabled')) {
+            return new UsageQuotas(
+                new ItemQuota(PHP_INT_MAX, fn () => 0),
+                new ItemQuota(PHP_INT_MAX, fn () => 0),
+            );
+        }
+
         if ($this->subscription() === null || ! $this->subscription()->valid()) {
             return new UsageQuotas(
                 new ItemQuota(0, fn () => 0),
@@ -163,11 +171,19 @@ class Team extends JetstreamTeam
 
     public function validSubscription(): ?Subscription
     {
+        if (! config('billing.enabled')) {
+            throw new Exception('Billing is not enabled. Check with hasValidSubscription() first.');
+        }
+
         return $this->subscription()?->valid() ? $this->subscription() : null;
     }
 
     public function hasValidSubscription(): bool
     {
-        return $this->validSubscription() !== null;
+        if (config('billing.enabled')) {
+            return $this->validSubscription() !== null;
+        }
+
+        return true;
     }
 }
