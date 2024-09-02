@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.23.0](https://github.com/ptah-sh/ptah-server/compare/v0.22.8...v0.23.0) (2024-09-02)
+
+
+### Features
+
+* [#162](https://github.com/ptah-sh/ptah-server/issues/162) self-hosting scripts ([3521031](https://github.com/ptah-sh/ptah-server/commit/352103164b2a1264e753677fa5a0a7be042be4c0))
+
+
+### Bug Fixes
+
+* repo link ([fda09e4](https://github.com/ptah-sh/ptah-server/commit/fda09e4e1ef0171feb691765ab506c04f7485164))
+
+
+### Miscellaneous Chores
+
+* update installation data ([e00bd97](https://github.com/ptah-sh/ptah-server/commit/e00bd976aad5c3b9fb6494d8384816fff49ce862))
+
 ## [0.22.8](https://github.com/ptah-sh/ptah-server/compare/v0.22.7...v0.22.8) (2024-08-28)
 
 
