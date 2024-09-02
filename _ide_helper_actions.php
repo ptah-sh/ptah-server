@@ -13,8 +13,9 @@ namespace App\Actions\Nodes;
  * @method static dispatchAfterResponse(\App\Models\User $user, \App\Models\Node $node, string $advertiseAddr)
  * @method static mixed run(\App\Models\User $user, \App\Models\Node $node, string $advertiseAddr)
  */
-class InitCluster {}
-
+class InitCluster
+{
+}
 namespace App\Actions\Services;
 
 /**
@@ -28,23 +29,32 @@ namespace App\Actions\Services;
  * @method static dispatchAfterResponse(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
  * @method static mixed run(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
  */
-class StartDeployment {}
-
+class StartDeployment
+{
+}
 namespace Lorisleiva\Actions\Concerns;
 
 /**
  * @method void asController()
  */
-trait AsController {}
+trait AsController
+{
+}
 /**
  * @method void asListener()
  */
-trait AsListener {}
+trait AsListener
+{
+}
 /**
  * @method void asJob()
  */
-trait AsJob {}
+trait AsJob
+{
+}
 /**
  * @method void asCommand(\Illuminate\Console\Command $command)
  */
-trait AsCommand {}
+trait AsCommand
+{
+}
