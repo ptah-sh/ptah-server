@@ -15,7 +15,6 @@ const props = defineProps({
 const initForm = useForm({
     node_id: props.node.id,
     advertise_addr: "",
-    force_new_cluster: false,
 });
 
 const submit = () => {
@@ -61,18 +60,6 @@ const submit = () => {
                                 </optgroup>
                             </Select>
                         </FormField>
-
-                        <FormField :error="initForm.errors.force_new_cluster">
-                            <!-- TODO: add warning that the force new cluster will wipe out your existing cluster (services, data?) -->
-                            <FwbCheckbox
-                                label="Force New Cluster"
-                                v-model="initForm.force_new_cluster"
-                            />
-                        </FormField>
-                        <InputError
-                            v-if="initForm.force_new_cluster"
-                            message="Be aware that you will lose your data!"
-                        />
                     </template>
                     <template v-else> No IP found </template>
                 </div>

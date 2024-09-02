@@ -2,6 +2,9 @@ name: Code Quality
 
 on: [push]
 
+permissions:
+  contents: write
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -93,3 +96,45 @@ jobs:
 
       - name: Pint!
         run: vendor/bin/pint --test
+      
+      - name: Configure Git
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+
+      - name: Update Installation Data
+        env:
+          DB_PORT: ${{ job.services.postgres.ports[5432] }}
+          REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+        run: |
+          scripts/self-hosted/make-install-agent.sh
+
+          php artisan ide-helper:actions
+          php artisan migrate:fresh
+          php artisan app:self-host-ptah > scripts/self-hosted/tasks.json
+          npx prettier --write scripts/self-hosted/tasks.json
+          
+          cat << EOF > scripts/self-hosted/db.sql
+          BEGIN WORK ISOLATION LEVEL SERIALIZABLE;
+          EOF
+          
+          docker run --rm \
+            --network="host" \
+            --env PGPASSWORD=$DB_PASSWORD \
+            postgres \
+            pg_dump \
+            -U $DB_USERNAME \
+            -h localhost \
+            -d $DB_DATABASE \
+            -p $DB_PORT \
+            --clean --if-exists \
+            --no-owner --no-acl \
+            >> scripts/self-hosted/db.sql
+
+          cat << EOF >> scripts/self-hosted/db.sql
+          COMMIT;
+          EOF
+          
+          git add .
+          git commit -m "chore: update installation data"
+          git push

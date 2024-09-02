@@ -1,5 +1,6 @@
 <?php
 
+use App\Actions\Nodes\InitCluster;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\NodeTaskGroupController;
@@ -41,7 +42,7 @@ Route::middleware([
         Route::post('/swarms/{swarm}/update-docker-registries', [SwarmController::class, 'updateDockerRegistries'])->name('swarms.update-docker-registries');
         Route::post('/swarms/{swarm}/update-s3-storages', [SwarmController::class, 'updateS3Storages'])->name('swarms.update-s3-storages');
 
-        Route::post('/swarm-tasks/init-cluster', [SwarmTaskController::class, 'initCluster'])->name('swarm-tasks.init-cluster');
+        Route::post('/swarm-tasks/init-cluster', InitCluster::class)->name('swarm-tasks.init-cluster');
         Route::post('/swarm-tasks/join-cluster', [SwarmTaskController::class, 'joinCluster'])->name('swarm-tasks.join-cluster');
 
         Route::post('/node-task-groups/{taskGroup}/retry', [NodeTaskGroupController::class, 'retry'])->name('node-task-groups.retry');

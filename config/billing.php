@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'enabled' => (bool) env('BILLING_ENABLED', true),
+
     'paddle' => [
         'plans' => [
             [

@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 class Service extends Model
@@ -34,14 +33,18 @@ class Service extends Model
 
     protected static function booted()
     {
+        static::creating(function (Service $service) {
+            $service->slug = $service->generateUniqueSlug($service->team_id);
+        });
+
         static::created(function (Service $service) {
-            $service->slug = $service->generateUniqueSlug();
+            $service->slug = $service->generateUniqueSlug($service->id);
             $service->saveQuietly();
         });
 
         static::updating(function (Service $service) {
             if ($service->isDirty('name')) {
-                $service->slug = $service->generateUniqueSlug();
+                $service->slug = $service->generateUniqueSlug($service->id);
             }
         });
 
@@ -55,7 +58,7 @@ class Service extends Model
         self::deleting(function (Service $service) {
             $taskGroup = $service->swarm->taskGroups()->create([
                 'type' => NodeTaskGroupType::DeleteService,
-                'team_id' => auth()->user()->current_team_id,
+                'team_id' => auth()->user()->currentTeam->id,
                 'invoker_id' => auth()->id(),
             ]);
 
@@ -75,18 +78,18 @@ class Service extends Model
         });
     }
 
-    protected function generateUniqueSlug()
+    protected function generateUniqueSlug($id)
     {
         $slug = Str::slug($this->name);
-        $vocabulary = ['cat', 'dog', 'bird', 'fish', 'mouse', 'rabbit', 'turtle', 'frog', 'bear', 'lion'];
-        $adjectives = ['happy', 'brave', 'bright', 'cheerful', 'confident', 'creative', 'determined', 'energetic', 'friendly', 'funny', 'generous', 'kind'];
+        $vocabulary = config('ptah.services.slug.vocabulary');
+        $adjectives = config('ptah.services.slug.adjectives');
 
         shuffle($vocabulary);
         shuffle($adjectives);
 
-        $hexId = dechex($this->id);
+        $hexId = dechex($id);
 
-        return $slug.'-'.$adjectives[0].'-'.$vocabulary[0].'-'.$hexId;
+        return $slug.'_'.$adjectives[0].'_'.$vocabulary[0].'_'.$hexId;
     }
 
     public function swarm(): BelongsTo
@@ -112,28 +115,5 @@ class Service extends Model
     public function makeResourceName($name): string
     {
         return dockerize_name('svc_'.$this->id.'_'.$name);
-    }
-
-    public function deploy(DeploymentData $deploymentData): Deployment
-    {
-        Gate::authorize('deploy', $this);
-
-        $this->placement_node_id = $deploymentData->placementNodeId;
-
-        $taskGroup = NodeTaskGroup::create([
-            'swarm_id' => $this->swarm_id,
-            'team_id' => $this->team_id,
-            'invoker_id' => auth()->id(),
-            'type' => $this->deployments()->exists() ? NodeTaskGroupType::UpdateService : NodeTaskGroupType::CreateService,
-        ]);
-
-        $deployment = $this->deployments()->create([
-            'team_id' => $this->team_id,
-            'data' => $deploymentData,
-        ]);
-
-        $taskGroup->tasks()->createMany($deployment->asNodeTasks());
-
-        return $deployment;
     }
 }

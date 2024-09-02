@@ -1,9 +1,8 @@
 <script setup>
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import { computed } from "vue";
 
 const props = defineProps({
-    teamId: Object,
+    teamId: Number,
     priceId: String,
     customerId: String,
     name: String,
