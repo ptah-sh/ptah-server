@@ -27,7 +27,7 @@ namespace App\Actions\Services;
  * @method static dispatchSync(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
  * @method static dispatchNow(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
  * @method static dispatchAfterResponse(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
- * @method static mixed run(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
+ * @method static \App\Models\Deployment run(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
  */
 class StartDeployment
 {
