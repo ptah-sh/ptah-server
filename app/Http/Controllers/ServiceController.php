@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Services\StartDeployment;
 use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 use App\Models\DeploymentData;
@@ -71,7 +72,7 @@ class ServiceController extends Controller
         DB::transaction(function () use ($service, $deploymentData) {
             $service->save();
 
-            $service->deploy($deploymentData);
+            StartDeployment::run(auth()->user(), $service, $deploymentData);
         });
 
         return to_route('services.deployments', $service)
@@ -114,9 +115,7 @@ class ServiceController extends Controller
 
     public function deploy(Service $service, DeploymentData $deploymentData)
     {
-        DB::transaction(function () use ($service, $deploymentData) {
-            $service->deploy($deploymentData);
-        });
+        StartDeployment::run(auth()->user(), $service, $deploymentData);
 
         return to_route('services.deployments', $service);
     }

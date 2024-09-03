@@ -2,9 +2,9 @@
 
 namespace App\Api\Controllers;
 
+use App\Actions\Services\StartDeployment;
 use App\Models\Service;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 class ServiceController extends Controller
@@ -15,9 +15,7 @@ class ServiceController extends Controller
 
         $deploymentData = $service->latestDeployment->data->copyWith($request->all());
 
-        $deployment = DB::transaction(function () use ($service, $deploymentData) {
-            return $service->deploy($deploymentData);
-        });
+        $deployment = StartDeployment::run(auth()->user(), $service, $deploymentData);
 
         return [
             'deployment_id' => $deployment->id,

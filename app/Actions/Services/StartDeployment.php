@@ -2,6 +2,7 @@
 
 namespace App\Actions\Services;
 
+use App\Models\Deployment;
 use App\Models\DeploymentData;
 use App\Models\NodeTaskGroup;
 use App\Models\NodeTaskGroupType;
@@ -30,9 +31,9 @@ class StartDeployment
         return $request->user()->belongsToTeam($service->team);
     }
 
-    public function handle(User $user, Service $service, DeploymentData $deploymentData)
+    public function handle(User $user, Service $service, DeploymentData $deploymentData): Deployment
     {
-        DB::transaction(function () use ($service, $deploymentData, $user) {
+        return DB::transaction(function () use ($service, $deploymentData, $user) {
             $service->placement_node_id = $deploymentData->placementNodeId;
             $service->saveQuietly();
 
@@ -49,6 +50,8 @@ class StartDeployment
             ]);
 
             $taskGroup->tasks()->createMany($deployment->asNodeTasks());
+
+            return $deployment;
         });
     }
 
