@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.23.1](https://github.com/ptah-sh/ptah-server/compare/v0.23.0...v0.23.1) (2024-09-03)
+
+
+### Bug Fixes
+
+* deploy webhook ([50d769f](https://github.com/ptah-sh/ptah-server/commit/50d769f145312412a78f80b31bb17a271bdfbbcc))
+
+
+### Miscellaneous Chores
+
+* update installation data ([e6449b8](https://github.com/ptah-sh/ptah-server/commit/e6449b8a1567846072093c875ffbbbc25ef14f69))
+
 ## [0.23.0](https://github.com/ptah-sh/ptah-server/compare/v0.22.8...v0.23.0) (2024-09-02)
 
 
