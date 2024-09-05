@@ -107,7 +107,7 @@ jobs:
           DB_PORT: ${{ job.services.postgres.ports[5432] }}
           REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
         run: |
-          scripts/self-hosted/make-install-agent.sh
+          scripts/self-hosted/make-installers.sh
 
           php artisan ide-helper:actions
           php artisan migrate:fresh
