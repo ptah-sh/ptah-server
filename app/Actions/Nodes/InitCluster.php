@@ -244,6 +244,7 @@ class InitCluster
             'caddy' => [],
             'fastcgiVars' => null,
             'redirectRules' => [],
+            'rewriteRules' => [],
         ];
     }
 }
