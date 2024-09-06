@@ -136,6 +136,11 @@ jobs:
           COMMIT;
           EOF
           
-          git add .
-          git commit -m "chore: update installation data" -n
-          git push
+          # Check if there are any changes to commit
+          if git diff --exit-code && git diff --staged --exit-code; then
+            echo "No changes to commit"
+          else
+            git add .
+            git commit -m "chore: update installation data" -n
+            git push
+          fi
