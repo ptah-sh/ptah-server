@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.25.0](https://github.com/ptah-sh/ptah-server/compare/v0.24.2...v0.25.0) (2024-09-06)
+
+
+### Features
+
+* [#172](https://github.com/ptah-sh/ptah-server/issues/172) use stable ids pool for the generated data ([c68cc00](https://github.com/ptah-sh/ptah-server/commit/c68cc00099de887f422e0fee931d836794892b24))
+
+
+### Bug Fixes
+
+* add id to the generated rewrite rules ([fd8f49a](https://github.com/ptah-sh/ptah-server/commit/fd8f49aa7ce10bc89ab6e9fa2d97e6f7f781c822))
+
+
+### Miscellaneous Chores
+
+* update installation data ([622d656](https://github.com/ptah-sh/ptah-server/commit/622d65636973b7f9212c10966302bb8ee7efe05f))
+* update installation data ([87a87c9](https://github.com/ptah-sh/ptah-server/commit/87a87c9c449118a9c2840df934a2bb2012cdb2f5))
+
 ## [0.24.2](https://github.com/ptah-sh/ptah-server/compare/v0.24.1...v0.24.2) (2024-09-06)
 
 
