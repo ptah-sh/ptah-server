@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.24.0](https://github.com/ptah-sh/ptah-server/compare/v0.23.1...v0.24.0) (2024-09-06)
+
+
+### Features
+
+* [#162](https://github.com/ptah-sh/ptah-server/issues/162) create install-server script as well ([15a0e8f](https://github.com/ptah-sh/ptah-server/commit/15a0e8fbdcdd4c4df4877ecfc4b939a0856bb2f8))
+* [#168](https://github.com/ptah-sh/ptah-server/issues/168) support rewrite rules ([d4f0779](https://github.com/ptah-sh/ptah-server/commit/d4f077995457289f924cac623dfe8fb6e11874e4))
+
+
+### Miscellaneous Chores
+
+* update installation data ([c148295](https://github.com/ptah-sh/ptah-server/commit/c1482959001c7beec8c30fd542e061c41b3d80b2))
+* update installation data ([6413ef1](https://github.com/ptah-sh/ptah-server/commit/6413ef13b19754ec95a83117e5d3ea3408e7f66d))
+
 ## [0.23.1](https://github.com/ptah-sh/ptah-server/compare/v0.23.0...v0.23.1) (2024-09-03)
 
 
