@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.24.1](https://github.com/ptah-sh/ptah-server/compare/v0.24.0...v0.24.1) (2024-09-06)
+
+
+### Bug Fixes
+
+* try disable git hooks ([ca318e2](https://github.com/ptah-sh/ptah-server/commit/ca318e2ffb9c25e96b2dfb5173e8c2f9207bb000))
+
 ## [0.24.0](https://github.com/ptah-sh/ptah-server/compare/v0.23.1...v0.24.0) (2024-09-06)
 
 
