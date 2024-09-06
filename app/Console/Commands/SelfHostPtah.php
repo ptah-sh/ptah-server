@@ -13,11 +13,11 @@ use App\Models\NodeTasks\DummyTaskResult;
 use App\Models\Service;
 use App\Models\Team;
 use App\Models\User;
+use App\Util\ResourceId;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
 
 class SelfHostPtah extends Command
 {
@@ -40,6 +40,20 @@ class SelfHostPtah extends Command
      */
     public function handle()
     {
+        ResourceId::useIdsPool([
+            'a1b2c3d4e5f',
+            'g6h7i8j9k1',
+            'l2m3n4o5p6',
+            'q7r8s9t0a1',
+            'b2c3d4e5f6',
+            'h7i8j9k0l1',
+            'm3n4o5p6q7',
+            's9t0a1b2c3',
+            'd4e5f6g7h8',
+            'j9k0l1m2n3',
+            'p6q7r8s9t0',
+        ]);
+
         $user = User::create([
             'name' => 'Self Host',
             'email' => 'self-hosted@localhost',
@@ -119,7 +133,7 @@ class SelfHostPtah extends Command
                     'secretFiles' => [],
                     'volumes' => [
                         [
-                            'id' => 'volume-'.Str::random(11),
+                            'id' => ResourceId::make('volume'),
                             'name' => 'data',
                             'path' => '/bitnami/postgresql',
                         ],
@@ -179,7 +193,7 @@ class SelfHostPtah extends Command
                     'secretFiles' => [],
                     'volumes' => [
                         [
-                            'id' => 'volume-'.Str::random(11),
+                            'id' => ResourceId::make('volume'),
                             'name' => 'data',
                             'path' => '/bitnami/postgresql',
                         ],
@@ -269,7 +283,7 @@ class SelfHostPtah extends Command
                     'ports' => [],
                     'caddy' => [
                         [
-                            'id' => 'caddy-'.Str::random(11),
+                            'id' => ResourceId::make('caddy'),
                             'targetProtocol' => 'http',
                             'targetPort' => 8080,
                             'publishedPort' => 80,

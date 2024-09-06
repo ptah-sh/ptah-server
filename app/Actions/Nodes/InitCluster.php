@@ -16,8 +16,8 @@ use App\Models\NodeTaskType;
 use App\Models\Swarm;
 use App\Models\SwarmData;
 use App\Models\User;
+use App\Util\ResourceId;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\AsAction;
 
@@ -225,12 +225,12 @@ class InitCluster
             'secretFiles' => [],
             'volumes' => [
                 [
-                    'id' => 'volume-'.Str::random(11),
+                    'id' => ResourceId::make('volume'),
                     'name' => 'data',
                     'path' => '/data',
                 ],
                 [
-                    'id' => 'volume-'.Str::random(11),
+                    'id' => ResourceId::make('volume'),
                     'name' => 'config',
                     'path' => '/config',
                 ],

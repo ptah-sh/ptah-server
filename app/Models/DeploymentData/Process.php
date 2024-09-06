@@ -11,8 +11,8 @@ use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTasks\UpdateService\UpdateServiceMeta;
 use App\Models\NodeTaskType;
 use App\Rules\RequiredIfArrayHas;
+use App\Util\ResourceId;
 use Exception;
-use Illuminate\Support\Str;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Enum;
 use Spatie\LaravelData\Attributes\Validation\Rule;
@@ -257,7 +257,7 @@ class Process extends Data
         if (count($this->volumes)) {
             if ($this->backupVolume == null) {
                 $this->backupVolume = BackupVolume::validateAndCreate([
-                    'id' => 'backups-'.Str::random(11),
+                    'id' => ResourceId::make('volume'),
                     'name' => 'backups',
                     'dockerName' => $this->makeResourceName('/ptah/backups'),
                     'path' => '/ptah/backups',
