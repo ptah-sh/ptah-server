@@ -1,13 +1,11 @@
 <script setup>
 import ConfirmationModal from "@/Components/ConfirmationModal.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import { computed, h, reactive, markRaw, ref, onMounted, effect } from "vue";
+import { reactive, effect } from "vue";
 import ExternalLink from "@/Components/ExternalLink.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import TextInput from "@/Components/TextInput.vue";
-import FormField from "@/Components/FormField.vue";
 import { makeId } from "@/id.js";
-import useSWRV, { mutate } from "swrv";
+import useSWRV from "swrv";
 import DynamicForm from "./DynamicForm.vue";
 
 const props = defineProps({
@@ -121,6 +119,7 @@ const mapProcessTemplate = (templateSlug, process, newIndex) => {
         ports: [],
         replicas: 1,
         redirectRules: [],
+        rewriteRules: [],
         fastCgi: null,
         ...process.data,
         volumes:

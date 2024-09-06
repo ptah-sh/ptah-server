@@ -110,6 +110,7 @@ jobs:
           scripts/self-hosted/make-installers.sh
 
           php artisan ide-helper:actions
+          vendor/bin/pint _ide_helper_actions.php
           php artisan migrate:fresh
           php artisan app:self-host-ptah > scripts/self-hosted/tasks.json
           npx prettier --write scripts/self-hosted/tasks.json
@@ -136,5 +137,5 @@ jobs:
           EOF
           
           git add .
-          git commit -m "chore: update installation data"
+          git commit -m "chore: update installation data" -n
           git push
