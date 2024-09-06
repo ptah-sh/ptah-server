@@ -5,6 +5,7 @@ use App\Console\Commands\DispatchProcessBackupTask;
 use App\Console\Commands\DispatchVolumeBackupTask;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\CheckAgentUpdates;
+use App\Models\Scopes\TeamScope;
 use App\Models\Service;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
@@ -55,7 +56,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ->onOneServer()
             ->withoutOverlapping();
 
-        Service::withoutGlobalScopes()->with(['latestDeployment' => fn ($query) => $query->withoutGlobalScopes()])->chunk(100, function (
+        Service::withoutGlobalScope(TeamScope::class)->with(['latestDeployment'])->chunk(100, function (
             /* @var Service[] $services */
             $services
         ) use ($schedule) {
