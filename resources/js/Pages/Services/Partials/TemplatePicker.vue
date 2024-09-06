@@ -121,12 +121,13 @@ const mapProcessTemplate = (templateSlug, process, newIndex) => {
         redirectRules: [],
         fastCgi: null,
         ...process.data,
-        rewriteRules: process.data.rewriteRules?.map((rule) => {
-            return {
-                ...rule,
-                id: makeId("rewrite-rule"),
-            };
-        }),
+        rewriteRules:
+            process.data.rewriteRules?.map((rule) => {
+                return {
+                    ...rule,
+                    id: makeId("rewrite-rule"),
+                };
+            }) || [],
         volumes:
             process.data.volumes?.map((volume) => {
                 return {
