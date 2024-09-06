@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.24.2](https://github.com/ptah-sh/ptah-server/compare/v0.24.1...v0.24.2) (2024-09-06)
+
+
+### Bug Fixes
+
+* rewrite rules default value ([b7e021a](https://github.com/ptah-sh/ptah-server/commit/b7e021acd9c8a5dd85219bf20e6b9f9a5b2ee58b))
+* rewrite rules default value - 2 ([2694d21](https://github.com/ptah-sh/ptah-server/commit/2694d21fa168ff0bd685d368443fc5061f6c7f6a))
+
 ## [0.24.1](https://github.com/ptah-sh/ptah-server/compare/v0.24.0...v0.24.1) (2024-09-06)
 
 
