@@ -13,6 +13,7 @@ use App\Models\NodeTasks\DummyTaskResult;
 use App\Models\Service;
 use App\Models\Team;
 use App\Models\User;
+use App\Util\AgentToken;
 use App\Util\ResourceId;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Casts\Json;
@@ -40,6 +41,8 @@ class SelfHostPtah extends Command
      */
     public function handle()
     {
+        AgentToken::useFakeToken('fake_agent_token');
+
         ResourceId::useIdsPool([
             'a1b2c3d4e5f',
             'g6h7i8j9k1',
@@ -83,8 +86,6 @@ class SelfHostPtah extends Command
             'ip' => '192.168.1.1',
             'team_id' => $team->id,
         ]);
-
-        $node->update(['agent_token' => 'AGENT_TOKEN']);
 
         InitCluster::run($user, $node, '192.168.1.1');
 

@@ -3,12 +3,12 @@
 namespace App\Models;
 
 use App\Traits\HasOwningTeam;
+use App\Util\AgentToken;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Str;
 use RuntimeException;
 
 class Node extends Model
@@ -36,7 +36,7 @@ class Node extends Model
                 throw new RuntimeException('Invalid State - The team is at its node limit');
             }
 
-            $node->agent_token = Str::random(42);
+            $node->agent_token = AgentToken::make();
         });
     }
 
