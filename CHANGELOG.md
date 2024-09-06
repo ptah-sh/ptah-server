@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.26.1](https://github.com/ptah-sh/ptah-server/compare/v0.26.0...v0.26.1) (2024-09-06)
+
+
+### Bug Fixes
+
+* [#174](https://github.com/ptah-sh/ptah-server/issues/174) ignore deleted services ([fc56048](https://github.com/ptah-sh/ptah-server/commit/fc56048c5e7101a4fa80f0aa478470bdfb05a5ba))
+
 ## [0.26.0](https://github.com/ptah-sh/ptah-server/compare/v0.25.0...v0.26.0) (2024-09-06)
 
 
