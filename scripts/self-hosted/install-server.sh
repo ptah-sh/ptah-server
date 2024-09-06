@@ -259,7 +259,6 @@ sql_dump_file="db.sql"
 sql_dump_file_tmp="db.sql.tmp"
 
 sed -e "s|self_hosted_password|$password_hash|g" \
-    -e "s|fake_agent_token|$random_token|g" \
     "$sql_dump_file" > "$sql_dump_file_tmp"
 
 # Replace the original file with the updated one
