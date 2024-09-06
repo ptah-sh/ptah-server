@@ -1240,7 +1240,7 @@ COPY public.node_tasks (id, team_id, task_group_id, type, meta, payload, status,
 --
 
 COPY public.nodes (id, team_id, name, agent_token, last_seen_at, created_at, updated_at, data, swarm_id) FROM stdin;
-1	1	default	sdsuksbgGny0Iz3LC2hcb4aq0JMijCITLCGzkZ4zpM	\N	2024-09-01 00:00:00	2024-09-01 00:00:00	\N	1
+1	1	default	CiDxqmiTyJMV6qIhEI8mozcmHg9easnbYfvCPppdht	\N	2024-09-01 00:00:00	2024-09-01 00:00:00	\N	1
 \.
 
 
