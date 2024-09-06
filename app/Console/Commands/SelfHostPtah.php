@@ -129,6 +129,7 @@ class SelfHostPtah extends Command
                     'caddy' => [],
                     'fastcgiVars' => null,
                     'redirectRules' => [],
+                    'rewriteRules' => [],
                 ],
                 [
                     'name' => 'pool',
@@ -188,6 +189,7 @@ class SelfHostPtah extends Command
                     'caddy' => [],
                     'fastcgiVars' => null,
                     'redirectRules' => [],
+                    'rewriteRules' => [],
                 ],
                 [
                     'name' => 'app',
@@ -277,6 +279,7 @@ class SelfHostPtah extends Command
                     ],
                     'fastcgiVars' => null,
                     'redirectRules' => [],
+                    'rewriteRules' => [],
                 ],
             ],
         ]));
