@@ -60,7 +60,10 @@ class Process extends Data
         public ?FastCgi $fastCgi,
         #[DataCollectionOf(RedirectRule::class)]
         /* @var RedirectRule[] */
-        public array $redirectRules
+        public array $redirectRules,
+        #[DataCollectionOf(RewriteRule::class)]
+        /* @var RewriteRule[] */
+        public array $rewriteRules
     ) {}
 
     public function findVolume(string $id): ?Volume

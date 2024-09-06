@@ -52,6 +52,7 @@ class DeploymentData extends Data
             'caddy' => [],
             'fastCgi' => null,
             'redirectRules' => [],
+            'rewriteRules' => [],
         ];
 
         $defaults = [

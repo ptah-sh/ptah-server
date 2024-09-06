@@ -1,5 +1,7 @@
 set -e
 
 php artisan ide-helper:actions
+vendor/bin/pint _ide_helper_actions.php
+git add _ide_helper_actions.php
 
 lint-staged

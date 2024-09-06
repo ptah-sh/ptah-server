@@ -36,4 +36,5 @@ RUN php composer.phar install \
     && apt-get -y remove npm unzip \
     && apt-get -y clean \
     && apt-get -y autoremove \
-    && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+    && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
+    && echo "memory_limit = 256M" >> "$PHP_INI_DIR/php.ini"

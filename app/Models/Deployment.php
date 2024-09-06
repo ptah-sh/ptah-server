@@ -113,6 +113,44 @@ class Deployment extends Model
                 $caddyHandlers[] = collect($process->caddy)->map(function (Caddy $caddy) use ($deployment, $process) {
                     $routes = [];
 
+                    $handlers = [];
+
+                    $pathRegexps = [];
+                    foreach ($process->rewriteRules as $rewriteRule) {
+                        $pathRegexps[] = [
+                            'find' => $rewriteRule->pathFrom,
+                            'replace' => $rewriteRule->pathTo,
+                        ];
+                    }
+
+                    if (! empty($pathRegexps)) {
+                        $handlers[] = [
+                            'handler' => 'rewrite',
+                            'path_regexp' => $pathRegexps,
+                        ];
+                    }
+
+                    $handlers[] = [
+                        'handler' => 'reverse_proxy',
+                        'headers' => [
+                            'request' => [
+                                'set' => $this->getForwardedHeaders($caddy),
+                            ],
+                            'response' => [
+                                'set' => [
+                                    'X-Powered-By' => ['https://ptah.sh'],
+                                    'X-Ptah-Rule-Id' => [$caddy->id],
+                                ],
+                            ],
+                        ],
+                        'transport' => $this->getTransportOptions($caddy, $process),
+                        'upstreams' => [
+                            [
+                                'dial' => "{$process->name}.{$deployment->data->internalDomain}:{$caddy->targetPort}",
+                            ],
+                        ],
+                    ];
+
                     $routes[] = [
                         'match' => [
                             [
@@ -120,28 +158,7 @@ class Deployment extends Model
                                 'path' => [$caddy->path],
                             ],
                         ],
-                        'handle' => [
-                            [
-                                'handler' => 'reverse_proxy',
-                                'headers' => [
-                                    'request' => [
-                                        'set' => $this->getForwardedHeaders($caddy),
-                                    ],
-                                    'response' => [
-                                        'set' => [
-                                            'X-Powered-By' => ['https://ptah.sh'],
-                                            'X-Ptah-Rule-Id' => [$caddy->id],
-                                        ],
-                                    ],
-                                ],
-                                'transport' => $this->getTransportOptions($caddy, $process),
-                                'upstreams' => [
-                                    [
-                                        'dial' => "{$process->name}.{$deployment->data->internalDomain}:{$caddy->targetPort}",
-                                    ],
-                                ],
-                            ],
-                        ],
+                        'handle' => $handlers,
                     ];
 
                     foreach ($process->redirectRules as $redirectRule) {

@@ -1,18 +1,12 @@
 <script setup>
 import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import PrimaryButton from "@/Components/PrimaryButton.vue";
-import AppLayout from "@/Layouts/AppLayout.vue";
 import TextInput from "@/Components/TextInput.vue";
 import ActionSection from "@/Components/ActionSection.vue";
-import { useForm } from "@inertiajs/vue3";
 import FormField from "@/Components/FormField.vue";
 import Select from "@/Components/Select.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextArea from "@/Components/TextArea.vue";
 import { computed, effect, nextTick, reactive, ref } from "vue";
-import ServiceDetailsForm from "@/Pages/Services/Partials/ServiceDetailsForm.vue";
-import TabItem from "@/Components/Tabs/TabItem.vue";
 import { FwbToggle, FwbTooltip } from "flowbite-vue";
 import ProcessTabs from "@/Pages/Services/Partials/ProcessTabs.vue";
 import DangerButton from "@/Components/DangerButton.vue";
@@ -20,7 +14,6 @@ import DialogModal from "@/Components/DialogModal.vue";
 import AddComponentButton from "@/Components/Service/AddComponentButton.vue";
 import RemoveComponentButton from "@/Components/Service/RemoveComponentButton.vue";
 import ComponentBlock from "@/Components/Service/ComponentBlock.vue";
-import FormFieldGrid from "@/Components/FormFieldGrid.vue";
 import BackupSchedule from "@/Components/BackupSchedule.vue";
 
 const model = defineModel();
@@ -122,6 +115,16 @@ const addRedirectRule = () => {
     });
 };
 
+const addRewriteRule = () => {
+    model.value.processes[
+        state.selectedProcessIndex["caddy"]
+    ].rewriteRules.push({
+        id: makeId("rewrite-rule"),
+        pathFrom: "",
+        pathTo: "",
+    });
+};
+
 const addFastCgiVar = () => {
     model.value.processes[state.selectedProcessIndex["caddy"]].fastCgi.env.push(
         { id: makeId("fastcgi"), name: "", value: "" },
@@ -154,6 +157,7 @@ const addProcess = () => {
         replicas: 1,
         caddy: [],
         redirectRules: [],
+        rewriteRules: [],
         fastCgi: null,
     });
 
@@ -1987,6 +1991,54 @@ const extractFieldErrors = (basePath) => {
                         />
                     </FormField>
                 </ComponentBlock>
+
+                <ComponentBlock
+                    v-model="
+                        model.processes[state.selectedProcessIndex['caddy']]
+                            .rewriteRules
+                    "
+                    v-slot="{ item }"
+                    label="Rewrite Rules"
+                    @remove="
+                        model.processes[
+                            state.selectedProcessIndex['caddy']
+                        ].rewriteRules.splice($event, 1)
+                    "
+                >
+                    <FormField
+                        :error="
+                            props.errors[
+                                `processes.${state.selectedProcessIndex['caddy']}.rewriteRules.${item.$index}.pathFrom`
+                            ]
+                        "
+                        class="col-span-3"
+                    >
+                        <template #label>Path From</template>
+
+                        <TextInput
+                            v-model="item.pathFrom"
+                            class="w-full"
+                            placeholder="/old-path/(.*)"
+                        />
+                    </FormField>
+
+                    <FormField
+                        :error="
+                            props.errors[
+                                `processes.${state.selectedProcessIndex['caddy']}.rewriteRules.${item.$index}.pathTo`
+                            ]
+                        "
+                        class="col-span-3"
+                    >
+                        <template #label>Path To</template>
+
+                        <TextInput
+                            v-model="item.pathTo"
+                            class="w-full"
+                            placeholder="/new-path/$1"
+                        />
+                    </FormField>
+                </ComponentBlock>
             </div>
 
             <template v-if="hasFastCgiHandlers">
@@ -2141,6 +2193,15 @@ const extractFieldErrors = (basePath) => {
                 @click="addRedirectRule"
             >
                 Redirect Rule
+            </AddComponentButton>
+            <AddComponentButton
+                v-if="
+                    model.processes[state.selectedProcessIndex['caddy']].caddy
+                        .length > 0
+                "
+                @click="addRewriteRule"
+            >
+                Rewrite Rule
             </AddComponentButton>
             <SecondaryButton v-if="hasFastCgiHandlers" @click="addFastCgiVar">
                 <svg

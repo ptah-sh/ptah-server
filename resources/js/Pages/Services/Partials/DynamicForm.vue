@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from "vue";
 import TextInput from "@/Components/TextInput.vue";
+import TextArea from "@/Components/TextArea.vue";
 import FormField from "@/Components/FormField.vue";
 
 const props = defineProps({
@@ -47,7 +48,13 @@ const itemName = computed(() => {
             <template #label>{{ item.label }}</template>
 
             <TextInput
-                v-if="item.type === 'text-field'"
+                v-if="item.type === 'text-field' && !item.multiline"
+                v-model="form[itemName]"
+                class="w-full"
+            />
+
+            <TextArea
+                v-else-if="item.type === 'text-field' && item.multiline"
                 v-model="form[itemName]"
                 class="w-full"
             />
