@@ -119,9 +119,14 @@ const mapProcessTemplate = (templateSlug, process, newIndex) => {
         ports: [],
         replicas: 1,
         redirectRules: [],
-        rewriteRules: [],
         fastCgi: null,
         ...process.data,
+        rewriteRules: process.data.rewriteRules?.map((rule) => {
+            return {
+                ...rule,
+                id: makeId("rewrite-rule"),
+            };
+        }),
         volumes:
             process.data.volumes?.map((volume) => {
                 return {
