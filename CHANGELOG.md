@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.26.0](https://github.com/ptah-sh/ptah-server/compare/v0.25.0...v0.26.0) (2024-09-06)
+
+
+### Features
+
+* [#172](https://github.com/ptah-sh/ptah-server/issues/172) use stable agent token for the generated data ([a9f5c2b](https://github.com/ptah-sh/ptah-server/commit/a9f5c2b13c0bc41d4764b2a355fd6debc0961858))
+
+
+### Bug Fixes
+
+* avoid failure on an empty commits ([46ae558](https://github.com/ptah-sh/ptah-server/commit/46ae558511cc304c4a8505bcb5f4e4a0b137739f))
+* fallback to empty rewrite rules ([39a3b57](https://github.com/ptah-sh/ptah-server/commit/39a3b572cd443f1ff751d70f6da15c166bf3b97f))
+
+
+### Miscellaneous Chores
+
+* update installation data ([62362f3](https://github.com/ptah-sh/ptah-server/commit/62362f369cf35fa52c2687565d280c9aabb6b5b3))
+* update installation data ([e59fc5e](https://github.com/ptah-sh/ptah-server/commit/e59fc5e582bb9de292a6e3a0469c34813922a878))
+
 ## [0.25.0](https://github.com/ptah-sh/ptah-server/compare/v0.24.2...v0.25.0) (2024-09-06)
 
 
