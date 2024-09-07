@@ -18,6 +18,11 @@ SCRIPT_DIR="$(dirname "$0")"
 #include:core.sh
 #--- core.sh
 
+echo "$(header "Downloading dependencies: tasks.json, db.sql and install-agent.sh")"
+curl -sSL https://raw.githubusercontent.com/ptah-sh/ptah-server/main/scripts/self-hosted/tasks.json > tasks.json
+curl -sSL https://raw.githubusercontent.com/ptah-sh/ptah-server/main/scripts/self-hosted/db.sql > db.sql
+curl -sSL https://raw.githubusercontent.com/ptah-sh/ptah-server/main/scripts/self-hosted/install-agent.sh > install-agent.sh
+
 # Function to let user choose an IP address with styling
 choose_ip_address() {
     local ip_list="$1"
@@ -100,7 +105,7 @@ get_user_credentials() {
     echo -e "\n$(green "Credentials saved successfully.")"
 }
 
-IP_LIST=$(./ptah-agent list-ips)
+IP_LIST=$(/tmp/ptah-agent list-ips)
 choose_ip_address "$IP_LIST" "Advertised IP addresses" "ADVERTISE_ADDR" "$ADVERTISED_IP_HELP"
 choose_ip_address "$IP_LIST" "Public IP address" "PUBLIC_IP" "$PUBLIC_IP_HELP"
 
@@ -149,11 +154,11 @@ export PTAH_BASE_URL="http://$PUBLIC_IP:80"
 
 export SKIP_CORE_INSTALL=1
 
-bash agent.sh
+bash install-agent.sh
 
 export PTAH_ROOT_DIR=/home/ptah/ptah-agent
 
-/home/ptah/ptah-agent/current exec-tasks tasks.json
+$PTAH_ROOT_DIR/current exec-tasks tasks.json
 
 
 sql_dump_file="db.sql"

@@ -107,8 +107,6 @@ jobs:
           DB_PORT: ${{ job.services.postgres.ports[5432] }}
           REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
         run: |
-          scripts/self-hosted/make-installers.sh
-
           php artisan ide-helper:actions
           vendor/bin/pint _ide_helper_actions.php
           php artisan migrate:fresh
@@ -135,7 +133,9 @@ jobs:
           cat << EOF >> scripts/self-hosted/db.sql
           COMMIT;
           EOF
-          
+
+          scripts/self-hosted/make-installers.sh
+
           # Check if there are any changes to commit
           if git diff --exit-code && git diff --staged --exit-code; then
             echo "No changes to commit"
