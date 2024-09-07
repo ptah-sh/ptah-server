@@ -94,6 +94,8 @@ if [ -z "$SKIP_CORE_INSTALL" ]; then
 
     curl -fsSL https://get.docker.com/ | sh
 
+    rm -f /tmp/ptah-agent
+    
     curl -L https://github.com/ptah-sh/ptah-agent/releases/latest/download/ptah-agent-linux-x86_64.bin -o /tmp/ptah-agent
 
     chmod +x /tmp/ptah-agent

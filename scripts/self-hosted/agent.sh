@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+
 # Header generated with http://www.kammerl.de/ascii/AsciiSignature.php
 # Selected font - starwars
 
