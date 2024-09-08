@@ -192,13 +192,7 @@ class SelfHostPtah extends Command
                     ],
                     'configFiles' => [],
                     'secretFiles' => [],
-                    'volumes' => [
-                        [
-                            'id' => ResourceId::make('volume'),
-                            'name' => 'data',
-                            'path' => '/bitnami/postgresql',
-                        ],
-                    ],
+                    'volumes' => [],
                     'replicas' => 1,
                     'ports' => [],
                     'caddy' => [],
