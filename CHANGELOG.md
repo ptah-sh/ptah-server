@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.26.2](https://github.com/ptah-sh/ptah-server/compare/v0.26.1...v0.26.2) (2024-09-08)
+
+
+### Bug Fixes
+
+* [#174](https://github.com/ptah-sh/ptah-server/issues/174) use root to exec the backup command ([9b40161](https://github.com/ptah-sh/ptah-server/commit/9b40161ff8054f609400c855236657eddc6f805e))
+* include tasks and db files ([d5d93c4](https://github.com/ptah-sh/ptah-server/commit/d5d93c4f58efb069bb409753850bb8a43e57884b))
+
+
+### Miscellaneous Chores
+
+* update installation data ([061ca3a](https://github.com/ptah-sh/ptah-server/commit/061ca3ad06db9bbd553aa8f6f0b655dbe3db88b6))
+
 ## [0.26.1](https://github.com/ptah-sh/ptah-server/compare/v0.26.0...v0.26.1) (2024-09-06)
 
 
