@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Node;
 use App\Models\NodeTaskGroupType;
 use App\Models\NodeTaskType;
+use App\Models\Scopes\TeamScope;
 use App\Models\Service;
 use Exception;
 use Illuminate\Console\Command;
@@ -42,7 +43,7 @@ class DispatchVolumeBackupTask extends Command
     protected function dispatchBackupTask(): void
     {
         /* @var Service $service */
-        $service = Service::findOrFail($this->option('service-id'));
+        $service = Service::withoutGlobalScope(TeamScope::class)->with(['latestDeployment'])->findOrFail($this->option('service-id'));
 
         $deployment = $service->latestDeployment;
 
@@ -56,7 +57,7 @@ class DispatchVolumeBackupTask extends Command
             throw new Exception("Could not find volume {$this->option('volume')} in process {$process->name}.");
         }
 
-        $node = Node::findOrFail($deployment->data->placementNodeId);
+        $node = Node::withoutGlobalScope(TeamScope::class)->findOrFail($deployment->data->placementNodeId);
 
         $taskGroup = $node->taskGroups()->create([
             'swarm_id' => $node->swarm_id,
@@ -87,6 +88,7 @@ class DispatchVolumeBackupTask extends Command
                 'payload' => [
                     'ProcessName' => $process->dockerName,
                     'ExecSpec' => [
+                        'User' => 'root',
                         'AttachStdout' => true,
                         'AttachStderr' => true,
                         'Cmd' => ['sh', '-c', $backupCommand],
