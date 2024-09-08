@@ -10,7 +10,6 @@ use App\Rules\UniqueInArray;
 use App\Util\Arrays;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
-use Spatie\LaravelData\Attributes\Validation\Exists;
 use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Data;
 
@@ -19,8 +18,6 @@ class DeploymentData extends Data
     public function __construct(
         public string $networkName,
         public string $internalDomain,
-        #[Exists(Node::class, 'id')]
-        public ?int $placementNodeId,
         #[DataCollectionOf(Process::class)]
         #[Rule(new UniqueInArray('name'))]
         /* @var Process[] */
@@ -31,6 +28,7 @@ class DeploymentData extends Data
     {
         $processDefaults = [
             'name' => 'svc',
+            'placementNodeId' => null,
             'dockerRegistryId' => null,
             'dockerImage' => '',
             'releaseCommand' => ReleaseCommand::from([
@@ -58,7 +56,6 @@ class DeploymentData extends Data
         $defaults = [
             'networkName' => '',
             'internalDomain' => '',
-            'placementNodeId' => null,
             'processes' => empty($attributes['processes']) ? [$processDefaults] : $attributes['processes'],
         ];
 

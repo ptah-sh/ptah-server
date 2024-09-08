@@ -57,7 +57,7 @@ class DispatchVolumeBackupTask extends Command
             throw new Exception("Could not find volume {$this->option('volume')} in process {$process->name}.");
         }
 
-        $node = Node::withoutGlobalScope(TeamScope::class)->findOrFail($deployment->data->placementNodeId);
+        $node = Node::withoutGlobalScope(TeamScope::class)->findOrFail($process->placementNodeId);
 
         $taskGroup = $node->taskGroups()->create([
             'swarm_id' => $node->swarm_id,

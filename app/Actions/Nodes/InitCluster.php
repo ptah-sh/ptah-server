@@ -183,17 +183,17 @@ class InitCluster
         return DeploymentData::validateAndCreate([
             'networkName' => $network->docker_name,
             'internalDomain' => 'caddy.ptah.local',
-            'placementNodeId' => $node->id,
             'processes' => [
-                $this->getCaddyProcessConfig(),
+                $this->getCaddyProcessConfig($node),
             ],
         ]);
     }
 
-    private function getCaddyProcessConfig(): array
+    private function getCaddyProcessConfig(Node $node): array
     {
         return [
             'name' => 'svc',
+            'placementNodeId' => $node->id,
             'launchMode' => LaunchMode::Daemon->value,
             'dockerRegistryId' => null,
             'dockerImage' => 'caddy:2.8-alpine',

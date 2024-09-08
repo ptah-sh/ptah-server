@@ -34,9 +34,6 @@ class StartDeployment
     public function handle(User $user, Service $service, DeploymentData $deploymentData): Deployment
     {
         return DB::transaction(function () use ($service, $deploymentData, $user) {
-            $service->placement_node_id = $deploymentData->placementNodeId;
-            $service->saveQuietly();
-
             $taskGroup = NodeTaskGroup::create([
                 'swarm_id' => $service->swarm_id,
                 'team_id' => $service->team_id,

@@ -137,6 +137,7 @@ const addProcess = () => {
     model.value.processes.push({
         id: makeId("process"),
         name: "process_" + newIndex,
+        placementNodeId: null,
         dockerRegistryId: null,
         dockerImage: "",
         releaseCommand: {
@@ -327,20 +328,6 @@ const extractFieldErrors = (basePath) => {
                         :value="network.docker_name"
                     >
                         {{ network.name }}
-                    </option>
-                </Select>
-            </FormField>
-
-            <FormField
-                :error="props.errors['placementNodeId']"
-                class="col-span-2"
-            >
-                <template #label>Placement Node</template>
-
-                <Select v-model="model.placementNodeId">
-                    <option :value="null">Run on all Nodes</option>
-                    <option v-for="node in $page.props.nodes" :value="node.id">
-                        {{ node.name }}
                     </option>
                 </Select>
             </FormField>
@@ -537,7 +524,7 @@ const extractFieldErrors = (basePath) => {
                     }}.{{ model.internalDomain }}</span
                 >
             </FormField>
-
+            <!--
             <FormField
                 class="col-span-2"
                 :error="
@@ -555,8 +542,32 @@ const extractFieldErrors = (basePath) => {
                     "
                 >
                     <option value="daemon">Daemon / Worker</option>
-                    <!--          <option :value="false">Schedule (crontab)</option>-->
-                    <!--          <option>Lifecycle Hook (before deploy / after deploy to, for example run migrations and/or upload static files)</option>-->
+                              <option :value="false">Schedule (crontab)</option>
+                              <option>Lifecycle Hook (before deploy / after deploy to, for example run migrations and/or upload static files)</option>
+                </Select>
+            </FormField>
+        -->
+
+            <FormField
+                :error="
+                    props.errors[
+                        `processes.${state.selectedProcessIndex['processes']}.placementNodeId`
+                    ]
+                "
+                class="col-span-2"
+            >
+                <template #label>Placement Node</template>
+
+                <Select
+                    v-model="
+                        model.processes[state.selectedProcessIndex['processes']]
+                            .placementNodeId
+                    "
+                >
+                    <option :value="null">Run on all Nodes</option>
+                    <option v-for="node in $page.props.nodes" :value="node.id">
+                        {{ node.name }}
+                    </option>
                 </Select>
             </FormField>
 

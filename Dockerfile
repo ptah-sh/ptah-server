@@ -33,6 +33,7 @@ RUN php composer.phar install \
     && npm run build \
     && php artisan optimize \
     && php artisan data:cache-structures \
+    && rm -rf node_modules \
     && apt-get -y remove npm unzip \
     && apt-get -y clean \
     && apt-get -y autoremove \

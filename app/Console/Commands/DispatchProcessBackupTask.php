@@ -56,7 +56,7 @@ class DispatchProcessBackupTask extends Command
             throw new Exception("Could not find backup command {$this->option('backup-cmd-id')} in process {$process->name}.");
         }
 
-        $node = Node::findOrFail($deployment->data->placementNodeId);
+        $node = Node::findOrFail($process->placementNodeId);
 
         $taskGroup = $node->taskGroups()->create([
             'swarm_id' => $node->swarm_id,

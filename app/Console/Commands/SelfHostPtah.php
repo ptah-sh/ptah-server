@@ -100,10 +100,10 @@ class SelfHostPtah extends Command
         StartDeployment::run($user, $service, DeploymentData::validateAndCreate([
             'networkName' => $network->docker_name,
             'internalDomain' => 'server.ptah.local',
-            'placementNodeId' => $node->id,
             'processes' => [
                 [
                     'name' => 'pg',
+                    'placementNodeId' => $node->id,
                     'launchMode' => LaunchMode::Daemon->value,
                     'dockerRegistryId' => null,
                     'dockerImage' => 'bitnami/postgresql:16',

@@ -3,6 +3,7 @@
 namespace App\Models\DeploymentData;
 
 use App\Models\Deployment;
+use App\Models\Node;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
 use App\Models\NodeTasks\CreateService\CreateServiceMeta;
@@ -15,6 +16,8 @@ use App\Util\ResourceId;
 use Exception;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Enum;
+use Spatie\LaravelData\Attributes\Validation\Exists;
+use Spatie\LaravelData\Attributes\Validation\RequiredWith;
 use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Data;
 
@@ -22,6 +25,9 @@ class Process extends Data
 {
     public function __construct(
         public string $name,
+        #[Exists(Node::class, 'id')]
+        #[RequiredWith('volumes')]
+        public ?int $placementNodeId,
         public ?string $dockerName,
         public ?string $dockerRegistryId,
         public string $dockerImage,
@@ -330,9 +336,9 @@ class Process extends Data
                                 ],
                                 'ConfigName' => $configFile->dockerName,
                             ])->values()->toArray(),
-                            'Placement' => $deployment->data->placementNodeId ? [
+                            'Placement' => $this->placementNodeId ? [
                                 'Constraints' => [
-                                    "node.labels.sh.ptah.node.id=={$deployment->data->placementNodeId}",
+                                    "node.labels.sh.ptah.node.id=={$this->placementNodeId}",
                                 ],
                             ] : [],
                         ],
