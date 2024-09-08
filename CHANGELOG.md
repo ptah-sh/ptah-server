@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.27.0](https://github.com/ptah-sh/ptah-server/compare/v0.26.2...v0.27.0) (2024-09-08)
+
+
+### Features
+
+* [#41](https://github.com/ptah-sh/ptah-server/issues/41) move placementNodeId to processes and require it's presence ([5897cc9](https://github.com/ptah-sh/ptah-server/commit/5897cc97a576ff67d82cc81db9a98b2b10147d71))
+* [#69](https://github.com/ptah-sh/ptah-server/issues/69) use docker/metadata-action to create labels ([977f154](https://github.com/ptah-sh/ptah-server/commit/977f154780afa9293ea74074776c6ca967c2f9ea))
+
+
+### Bug Fixes
+
+* [#41](https://github.com/ptah-sh/ptah-server/issues/41) self-host configuration ([2bc7a66](https://github.com/ptah-sh/ptah-server/commit/2bc7a665e25030d1e780b730900f58af8de0045b))
+
+
+### Miscellaneous Chores
+
+* update installation data ([db6d4d7](https://github.com/ptah-sh/ptah-server/commit/db6d4d7c9ed8a6a388dcd0ebe69e2d2da3e4cf67))
+
 ## [0.26.2](https://github.com/ptah-sh/ptah-server/compare/v0.26.1...v0.26.2) (2024-09-08)
 
 
