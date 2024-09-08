@@ -17,6 +17,7 @@ jobs:
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}
     steps:
       - uses: googleapis/release-please-action@v4
         id: release
@@ -25,23 +26,37 @@ jobs:
           release-type: php
       - run: echo "release_created=${{ steps.release.outputs.release_created }}" >> "$GITHUB_OUTPUT"
       - run: echo "tag_name=${{ steps.release.outputs.tag_name }}" >> "$GITHUB_OUTPUT"
+      - run: echo "version=${{ steps.release.outputs.major }}.${{ steps.release.outputs.minor }}.${{ steps.release.outputs.patch }}" >> "$GITHUB_OUTPUT"
 
   build-and-publish:
     runs-on: ubuntu-latest
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created }}
     steps:
+      - name: Docker Image Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ptah-sh/ptah-server
+          tags: |
+            type=semver,pattern={{version}}
+            type=ref,event=branch
+            type=sha
+
       - name: Login to Docker Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
           push: true
-          tags: ghcr.io/ptah-sh/ptah-server:latest,ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
+          tags: ${{ steps.meta.outputs.tags }}
+          annotations: ${{ steps.meta.outputs.annotations }}
+          labels: ${{ steps.meta.outputs.labels }}
   # TODO: should we create a github deployment?
   deploy:
     runs-on: ubuntu-latest
@@ -57,7 +72,7 @@ jobs:
           service: 'ptah-server-prod'
           processes: |
             - name: svc
-              dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
+              dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.version }}
               envVars:
                 - name: SENTRY_RELEASE
                   value: ${{ needs.release-please.outputs.tag_name }}

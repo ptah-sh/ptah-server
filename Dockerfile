@@ -1,8 +1,14 @@
 FROM dunglas/frankenphp:latest
 
+LABEL org.opencontainers.image.title=Ptah.sh
+LABEL org.opencontainers.image.description="Self-hosted, open-source, and extensible PaaS"
+LABEL org.opencontainers.image.url=https://ptah.sh
+LABEL org.opencontainers.image.source=https://github.com/ptah-sh/ptah-server
+LABEL org.opencontainers.image.licenses=FSL1.1, Apache 2.0 Future License
+LABEL org.opencontainers.image.vendor="Bohdan Shulha"
+
 RUN apt-get update \
     && apt-get install -y nodejs npm unzip libpq-dev \
-    && apt-get clean && rm -rf /var/lib/apt/lists /var/cache/apt/archives \
     && curl https://raw.githubusercontent.com/composer/getcomposer.org/76a7060ccb93902cd7576b67264ad91c8a2700e2/web/installer | php -- --quiet \
     && docker-php-ext-configure pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql bcmath \
