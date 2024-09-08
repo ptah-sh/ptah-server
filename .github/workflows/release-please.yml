@@ -44,6 +44,7 @@ jobs:
             type=ref,event=tag
             type=sha
             type=edge
+            type=raw,priority=1001,value=${{ needs.release-please.outputs.tag_name }}
 
       - name: Login to Docker Registry
         uses: docker/login-action@v3
