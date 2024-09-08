@@ -37,11 +37,13 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ptah-sh/ptah-server
+          images: ghcr.io/ptah-sh/ptah-server
           tags: |
             type=semver,pattern={{version}}
-            type=ref,event=branch
+            type=ref,event=pr
+            type=ref,event=tag
             type=sha
+            type=edge
 
       - name: Login to Docker Registry
         uses: docker/login-action@v3
@@ -72,7 +74,7 @@ jobs:
           service: 'ptah-server-prod'
           processes: |
             - name: svc
-              dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.version }}
+              dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
               envVars:
                 - name: SENTRY_RELEASE
                   value: ${{ needs.release-please.outputs.tag_name }}
