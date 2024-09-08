@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.27.1](https://github.com/ptah-sh/ptah-server/compare/v0.27.0...v0.27.1) (2024-09-08)
+
+
+### Bug Fixes
+
+* [#69](https://github.com/ptah-sh/ptah-server/issues/69) use docker/metadata-action to create labels 2 ([0e03730](https://github.com/ptah-sh/ptah-server/commit/0e03730eeafc20674a28f1b344889dbf37ad7e2b))
+
 ## [0.27.0](https://github.com/ptah-sh/ptah-server/compare/v0.26.2...v0.27.0) (2024-09-08)
 
 
