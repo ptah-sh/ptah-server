@@ -4,7 +4,7 @@ LABEL org.opencontainers.image.title="Ptah.sh"
 LABEL org.opencontainers.image.description="Self-hosted, open-source, and extensible PaaS"
 LABEL org.opencontainers.image.url="https://ptah.sh"
 LABEL org.opencontainers.image.source="https://github.com/ptah-sh/ptah-server"
-LABEL org.opencontainers.image.licenses="FSL1.1, Apache 2.0 Future License"
+LABEL org.opencontainers.image.licenses="FSL-1.1-Apache-2.0"
 LABEL org.opencontainers.image.vendor="Bohdan Shulha"
 
 RUN apt-get update \

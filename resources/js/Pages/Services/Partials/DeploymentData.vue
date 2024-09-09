@@ -2003,154 +2003,159 @@ const extractFieldErrors = (basePath) => {
                     </FormField>
                 </ComponentBlock>
 
-                <ComponentBlock
-                    v-model="
-                        model.processes[state.selectedProcessIndex['caddy']]
-                            .rewriteRules
-                    "
-                    v-slot="{ item }"
-                    label="Rewrite Rules"
-                    @remove="
-                        model.processes[
+                <template v-if="hasFastCgiHandlers">
+                    <hr class="col-span-full" />
+
+                    <FormField
+                        class="col-span-3"
+                        :error="
+                            props.errors[
+                                `processes.${state.selectedProcessIndex['caddy']}.fastCgi.root`
+                            ]
+                        "
+                    >
+                        <template #label>FastCGI Root</template>
+
+                        <TextInput
+                            v-model="
+                                model.processes[
+                                    state.selectedProcessIndex['caddy']
+                                ].fastCgi.root
+                            "
+                            class="w-full"
+                            placeholder="/app/public"
+                        />
+                    </FormField>
+
+                    <div class="col-span-3"></div>
+
+                    <template
+                        v-for="(fastcgiVar, index) in model.processes[
                             state.selectedProcessIndex['caddy']
-                        ].rewriteRules.splice($event, 1)
-                    "
-                >
-                    <FormField
-                        :error="
-                            props.errors[
-                                `processes.${state.selectedProcessIndex['caddy']}.rewriteRules.${item.$index}.pathFrom`
-                            ]
-                        "
-                        class="col-span-3"
+                        ].fastCgi.env"
+                        :key="fastcgiVar.id"
                     >
-                        <template #label>Path From</template>
+                        <div class="col-span-full grid grid-cols-6 gap-2">
+                            <FormField
+                                class="col-span-2"
+                                :error="
+                                    props.errors[
+                                        `processes.${state.selectedProcessIndex['caddy']}.fastCgi.env.${index}.name`
+                                    ]
+                                "
+                            >
+                                <template #label v-if="index === 0"
+                                    >FastCGI Variable Name</template
+                                >
 
-                        <TextInput
-                            v-model="item.pathFrom"
-                            class="w-full"
-                            placeholder="/old-path/(.*)"
-                        />
-                    </FormField>
+                                <TextInput
+                                    v-model="fastcgiVar.name"
+                                    class="w-full"
+                                    placeholder="SCRIPT_FILENAME"
+                                />
+                            </FormField>
 
-                    <FormField
-                        :error="
-                            props.errors[
-                                `processes.${state.selectedProcessIndex['caddy']}.rewriteRules.${item.$index}.pathTo`
-                            ]
-                        "
-                        class="col-span-3"
-                    >
-                        <template #label>Path To</template>
+                            <FormField
+                                class="col-span-4"
+                                :error="
+                                    props.errors[
+                                        `processes.${state.selectedProcessIndex['caddy']}.fastCgi.env.${index}.value`
+                                    ]
+                                "
+                            >
+                                <template #label v-if="index === 0"
+                                    >Value</template
+                                >
 
-                        <TextInput
-                            v-model="item.pathTo"
-                            class="w-full"
-                            placeholder="/new-path/$1"
-                        />
-                    </FormField>
-                </ComponentBlock>
+                                <div class="flex gap-2">
+                                    <TextInput
+                                        v-model="fastcgiVar.value"
+                                        class="grow"
+                                        placeholder="/app/public/index.php"
+                                    />
+
+                                    <SecondaryButton
+                                        @click="
+                                            model.processes[
+                                                state.selectedProcessIndex[
+                                                    'caddy'
+                                                ]
+                                            ].fastCgi.env.splice(index, 1)
+                                        "
+                                        tabindex="-1"
+                                    >
+                                        <svg
+                                            class="w-4 h-4 text-gray-800 dark:text-white"
+                                            aria-hidden="true"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="24"
+                                            height="24"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke="currentColor"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M5 12h14"
+                                            />
+                                        </svg>
+                                    </SecondaryButton>
+                                </div>
+                            </FormField>
+                        </div>
+                    </template>
+                </template>
             </div>
 
-            <template v-if="hasFastCgiHandlers">
-                <hr class="col-span-full" />
-
+            <ComponentBlock
+                v-model="
+                    model.processes[state.selectedProcessIndex['caddy']]
+                        .rewriteRules
+                "
+                v-slot="{ item }"
+                label="Rewrite Rules"
+                @remove="
+                    model.processes[
+                        state.selectedProcessIndex['caddy']
+                    ].rewriteRules.splice($event, 1)
+                "
+            >
                 <FormField
-                    class="col-span-3"
                     :error="
                         props.errors[
-                            `processes.${state.selectedProcessIndex['caddy']}.fastCgi.root`
+                            `processes.${state.selectedProcessIndex['caddy']}.rewriteRules.${item.$index}.pathFrom`
                         ]
                     "
+                    class="col-span-3"
                 >
-                    <template #label>FastCGI Root</template>
+                    <template #label>Path From</template>
 
                     <TextInput
-                        v-model="
-                            model.processes[state.selectedProcessIndex['caddy']]
-                                .fastCgi.root
-                        "
+                        v-model="item.pathFrom"
                         class="w-full"
-                        placeholder="/app/public"
+                        placeholder="/old-path/(.*)"
                     />
                 </FormField>
 
-                <div class="col-span-3"></div>
-
-                <template
-                    v-for="(fastcgiVar, index) in model.processes[
-                        state.selectedProcessIndex['caddy']
-                    ].fastCgi.env"
-                    :key="fastcgiVar.id"
+                <FormField
+                    :error="
+                        props.errors[
+                            `processes.${state.selectedProcessIndex['caddy']}.rewriteRules.${item.$index}.pathTo`
+                        ]
+                    "
+                    class="col-span-3"
                 >
-                    <div class="col-span-full grid grid-cols-6 gap-2">
-                        <FormField
-                            class="col-span-2"
-                            :error="
-                                props.errors[
-                                    `processes.${state.selectedProcessIndex['caddy']}.fastCgi.env.${index}.name`
-                                ]
-                            "
-                        >
-                            <template #label v-if="index === 0"
-                                >FastCGI Variable Name</template
-                            >
+                    <template #label>Path To</template>
 
-                            <TextInput
-                                v-model="fastcgiVar.name"
-                                class="w-full"
-                                placeholder="SCRIPT_FILENAME"
-                            />
-                        </FormField>
-
-                        <FormField
-                            class="col-span-4"
-                            :error="
-                                props.errors[
-                                    `processes.${state.selectedProcessIndex['caddy']}.fastCgi.env.${index}.value`
-                                ]
-                            "
-                        >
-                            <template #label v-if="index === 0">Value</template>
-
-                            <div class="flex gap-2">
-                                <TextInput
-                                    v-model="fastcgiVar.value"
-                                    class="grow"
-                                    placeholder="/app/public/index.php"
-                                />
-
-                                <SecondaryButton
-                                    @click="
-                                        model.processes[
-                                            state.selectedProcessIndex['caddy']
-                                        ].fastCgi.env.splice(index, 1)
-                                    "
-                                    tabindex="-1"
-                                >
-                                    <svg
-                                        class="w-4 h-4 text-gray-800 dark:text-white"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke="currentColor"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M5 12h14"
-                                        />
-                                    </svg>
-                                </SecondaryButton>
-                            </div>
-                        </FormField>
-                    </div>
-                </template>
-            </template>
+                    <TextInput
+                        v-model="item.pathTo"
+                        class="w-full"
+                        placeholder="/new-path/$1"
+                    />
+                </FormField>
+            </ComponentBlock>
         </template>
 
         <template #actions>

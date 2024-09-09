@@ -47,9 +47,9 @@ jobs:
             type=raw,priority=1001,value=${{ needs.release-please.outputs.tag_name }}
             type=raw,value=latest
           labels: |
-            org.opencontainers.image.licenses=FSL1.1, Apache 2.0 Future License
+            org.opencontainers.image.licenses=FSL-1.1-Apache-2.0
           annotations: |
-            org.opencontainers.image.licenses=FSL1.1, Apache 2.0 Future License
+            org.opencontainers.image.licenses=FSL-1.1-Apache-2.0
 
       - name: Login to Docker Registry
         uses: docker/login-action@v3
