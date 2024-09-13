@@ -10,6 +10,5 @@ class SecretVars extends Data
     public function __construct(
         #[DataCollectionOf(EnvVar::class)]
         public array $vars,
-        public ?string $dockerName
     ) {}
 }

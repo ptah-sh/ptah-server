@@ -9,6 +9,7 @@ use App\Models\NodeTaskGroupType;
 use App\Models\Service;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Request;
 use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\AsAction;
 use Symfony\Component\HttpFoundation\Response;
@@ -19,7 +20,7 @@ class StartDeployment
 
     public function rules(): array
     {
-        return DeploymentData::getValidationRules([]);
+        return DeploymentData::getValidationRules(Request::all());
     }
 
     public function authorize(ActionRequest $request): bool
