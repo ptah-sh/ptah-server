@@ -1,6 +1,8 @@
 <?php
 
 use App\Actions\Nodes\InitCluster;
+use App\Actions\Services\CreateService;
+use App\Actions\Services\StartDeployment;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\NodeTaskGroupController;
@@ -9,6 +11,7 @@ use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SwarmController;
 use App\Http\Controllers\SwarmTaskController;
 use App\Http\Controllers\TeamBillingController;
+use App\Http\Controllers\TeamQuotasController;
 use App\Http\Middleware\EnsureTeamSubscription;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +32,7 @@ Route::middleware([
 ])->group(function () {
     Route::get('/teams-billing', fn () => redirect()->route('teams.billing.show', auth()->user()->currentTeam));
     Route::get('/teams/{team}/billing', [TeamBillingController::class, 'show'])->name('teams.billing.show');
+    Route::get('/teams/{team}/quotas', [TeamQuotasController::class, 'index'])->name('teams.billing.quotas');
 
     Route::patch('/teams/{team}/billing/update-customer', [TeamBillingController::class, 'updateCustomer'])->name('teams.billing.update-customer');
     Route::get('/teams/{team}/billing/download-invoice', [TeamBillingController::class, 'downloadInvoice'])->name('teams.billing.download-invoice');
@@ -50,8 +54,9 @@ Route::middleware([
         Route::resource('nodes', NodeController::class);
         Route::post('/nodes/{node}/upgrade-agent', [NodeController::class, 'upgradeAgent'])->name('nodes.upgrade-agent');
 
-        Route::resource('services', ServiceController::class);
+        Route::post('/services/{service:slug}/deployments', StartDeployment::class)->name('services.deploy');
+        Route::resource('services', ServiceController::class)->except(['store']);
+        Route::post('/services', CreateService::class)->name('services.store');
         Route::get('/services/{service}/deployments', [ServiceController::class, 'deployments'])->name('services.deployments');
-        Route::post('/services/{service}/deployments', [ServiceController::class, 'deploy'])->name('services.deploy');
     });
 });

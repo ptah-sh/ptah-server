@@ -6,7 +6,6 @@ import DeploymentData from "@/Pages/Services/Partials/DeploymentData.vue";
 import ServiceDetailsForm from "@/Pages/Services/Partials/ServiceDetailsForm.vue";
 import FormSection from "@/Components/FormSection.vue";
 import SectionBorder from "@/Components/SectionBorder.vue";
-import { ref } from "vue";
 import DeleteResourceSection from "@/Components/DeleteResourceSection.vue";
 
 const props = defineProps({
@@ -37,8 +36,6 @@ const deletionForm = useForm({
 const destroyService = () => {
     return deletionForm.delete(route("services.destroy", props.service));
 };
-
-const serviceDeleteInput = ref(null);
 </script>
 
 <template>

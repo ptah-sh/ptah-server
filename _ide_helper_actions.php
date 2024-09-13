@@ -18,6 +18,18 @@ class InitCluster {}
 namespace App\Actions\Services;
 
 /**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\User $user, \App\Models\Team $team, string $name, \App\Models\DeploymentData $deploymentData)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\User $user, \App\Models\Team $team, string $name, \App\Models\DeploymentData $deploymentData)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\User $user, \App\Models\Team $team, string $name, \App\Models\DeploymentData $deploymentData)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\User $user, \App\Models\Team $team, string $name, \App\Models\DeploymentData $deploymentData)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\User $user, \App\Models\Team $team, string $name, \App\Models\DeploymentData $deploymentData)
+ * @method static dispatchSync(\App\Models\User $user, \App\Models\Team $team, string $name, \App\Models\DeploymentData $deploymentData)
+ * @method static dispatchNow(\App\Models\User $user, \App\Models\Team $team, string $name, \App\Models\DeploymentData $deploymentData)
+ * @method static dispatchAfterResponse(\App\Models\User $user, \App\Models\Team $team, string $name, \App\Models\DeploymentData $deploymentData)
+ * @method static \App\Models\Service run(\App\Models\User $user, \App\Models\Team $team, string $name, \App\Models\DeploymentData $deploymentData)
+ */
+class CreateService {}
+/**
  * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
  * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
  * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)

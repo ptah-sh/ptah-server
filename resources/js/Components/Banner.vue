@@ -1,16 +1,42 @@
 <script setup>
-import { ref, watchEffect } from "vue";
-import { usePage } from "@inertiajs/vue3";
+import { ref, watchEffect, computed } from "vue";
+import { usePage, Link } from "@inertiajs/vue3";
 
 const page = usePage();
 const show = ref(true);
 const style = ref("success");
 const message = ref("");
+const link = ref(null);
 
-watchEffect(async () => {
-    style.value = page.props.jetstream.flash?.bannerStyle || "success";
-    message.value = page.props.jetstream.flash?.banner || "";
-    show.value = true;
+watchEffect(() => {
+    // Check flash store first
+    const flashBanner = page.props.jetstream.flash?.banner;
+    const flashStyle = page.props.jetstream.flash?.bannerStyle;
+
+    // Then check page error
+    const pageErrors = page.props.errors;
+
+    link.value = null;
+    if (flashBanner) {
+        message.value = flashBanner;
+        style.value = flashStyle || "success";
+    } else if ("quota" in pageErrors) {
+        // Get the first error message
+        message.value = pageErrors.quota;
+        style.value = "danger";
+        link.value = {
+            text: "View Quotas",
+            href: route("teams.billing.quotas", {
+                team: page.props.auth.user.current_team_id,
+            }),
+        };
+    } else {
+        // Apply defaults
+        message.value = "";
+        style.value = "success";
+    }
+
+    show.value = !!message.value;
 });
 </script>
 
@@ -84,9 +110,16 @@ watchEffect(async () => {
                             </svg>
                         </span>
 
-                        <p class="ms-3 font-medium text-sm text-white truncate">
-                            {{ message }}
-                        </p>
+                        <div class="ms-3 font-medium text-sm text-white">
+                            <span class="truncate">{{ message }}</span>
+                            <Link
+                                v-if="link"
+                                :href="link.href"
+                                class="underline ml-2"
+                            >
+                                {{ link.text }}
+                            </Link>
+                        </div>
                     </div>
 
                     <div class="shrink-0 sm:ms-3">

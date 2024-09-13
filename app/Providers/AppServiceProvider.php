@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Listeners\ScheduleTrialEndNotifications;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Lorisleiva\Actions\Facades\Actions;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        Actions::registerRoutes();
     }
 
     /**

@@ -3,19 +3,23 @@
 namespace App\Models\PricingPlan;
 
 use Closure;
-use RuntimeException;
+use Illuminate\Validation\ValidationException;
 
 class ItemQuota
 {
     public function __construct(
+        public string $name,
         public int $maxUsage,
         protected Closure $getCurrentUsage,
+        public bool $isSoftQuota = false
     ) {}
 
     public function ensureQuota(): void
     {
         if ($this->quotaReached()) {
-            throw new RuntimeException('Invalid State - The team is at its node limit');
+            throw ValidationException::withMessages([
+                'quota' => "The maximum limit of {$this->maxUsage} {$this->name} has been reached.",
+            ]);
         }
     }
 
@@ -29,7 +33,7 @@ class ItemQuota
         return $this->currentUsage() >= $this->maxUsage;
     }
 
-    protected function currentUsage(): int
+    public function currentUsage(): int
     {
         return call_user_func($this->getCurrentUsage);
     }

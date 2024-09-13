@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\PricingPlan\ItemQuota;
+use App\Models\PricingPlan\Plan;
 use App\Models\PricingPlan\UsageQuotas;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -89,6 +90,11 @@ class Team extends JetstreamTeam
         return $this->hasMany(Service::class);
     }
 
+    public function deployments(): HasMany
+    {
+        return $this->hasMany(Deployment::class);
+    }
+
     /**
      * Get the name of the team.
      */
@@ -131,36 +137,60 @@ class Team extends JetstreamTeam
         return [$this->customer->email => $this->customer->name];
     }
 
-    public function quotas(): UsageQuotas
+    public function currentPlan(): Plan
     {
+        $plans = config('billing.paddle.plans');
+        $trialPlan = config('billing.paddle.trialPlan');
+        $selfHostedPlan = config('billing.paddle.selfHostedPlan');
+        $subscription = $this->subscription();
+
         if (! config('billing.enabled')) {
-            return new UsageQuotas(
-                new ItemQuota(PHP_INT_MAX, fn () => 0),
-                new ItemQuota(PHP_INT_MAX, fn () => 0),
-            );
+            return Plan::from($selfHostedPlan);
         }
 
-        if ($this->subscription() === null || ! $this->subscription()->valid()) {
-            return new UsageQuotas(
-                new ItemQuota(0, fn () => 0),
-                new ItemQuota(0, fn () => 0),
-            );
+        if ($subscription->onTrial() || ! $this->hasValidSubscription()) {
+            return Plan::from($trialPlan);
         }
 
-        foreach (config('billing.paddle.plans') as $plan) {
-            if ($this->subscription()->hasProduct($plan['product_id'])) {
-                $quotas = $plan['quotas'];
-
-                return new UsageQuotas(
-                    new ItemQuota($quotas['nodes'], fn () => $this->nodes()->count()),
-                    new ItemQuota($quotas['swarms'], fn () => $this->swarms()->count()),
-                );
+        foreach ($plans as $plan) {
+            if ($subscription->hasProduct($plan['product_id'])) {
+                return Plan::from($plan);
             }
         }
 
+        // If no matching plan found, return the trial plan as default
+        return Plan::from($trialPlan);
+    }
+
+    public function quotas(): UsageQuotas
+    {
+        $plan = $this->currentPlan();
+
         return new UsageQuotas(
-            new ItemQuota(0, fn () => 0),
-            new ItemQuota(0, fn () => 0),
+            new ItemQuota(
+                name: 'Nodes',
+                maxUsage: $plan->quotas['nodes']['limit'],
+                getCurrentUsage: fn () => $this->nodes()->count(),
+                isSoftQuota: $plan->quotas['nodes']['soft']
+            ),
+            new ItemQuota(
+                name: 'Swarms',
+                maxUsage: $plan->quotas['swarms']['limit'],
+                getCurrentUsage: fn () => $this->swarms()->count(),
+                isSoftQuota: $plan->quotas['swarms']['soft']
+            ),
+            new ItemQuota(
+                name: 'Services',
+                maxUsage: $plan->quotas['services']['limit'],
+                getCurrentUsage: fn () => $this->services()->count(),
+                isSoftQuota: $plan->quotas['services']['soft']
+            ),
+            new ItemQuota(
+                name: 'Deployments',
+                maxUsage: $plan->quotas['deployments']['limit'],
+                getCurrentUsage: fn () => $this->deployments()->count(),
+                isSoftQuota: $plan->quotas['deployments']['soft']
+            )
         );
     }
 

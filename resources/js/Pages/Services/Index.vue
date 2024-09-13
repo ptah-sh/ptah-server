@@ -10,6 +10,7 @@ import { FwbTooltip } from "flowbite-vue";
 const props = defineProps({
     services: Array,
     swarmExists: Boolean,
+    quotaReached: Boolean,
 });
 </script>
 
@@ -25,22 +26,34 @@ const props = defineProps({
 
         <template #actions>
             <PrimaryButton
-                v-if="props.swarmExists"
+                v-if="props.swarmExists && !props.quotaReached"
                 type="button"
                 @click="router.get(route('services.create'))"
                 >Create</PrimaryButton
             >
             <fwb-tooltip v-else>
                 <template #trigger>
-                    <PrimaryButton
-                        type="button"
-                        @click="router.get(route('services.create'))"
-                        disabled="disabled"
-                        >Create</PrimaryButton
-                    >
+                    <PrimaryButton type="button" disabled>Create</PrimaryButton>
                 </template>
-
-                <template #content> Please initialize a Swarm first </template>
+                <template #content>
+                    <span v-if="!props.swarmExists"
+                        >Please initialize a Swarm first</span
+                    >
+                    <span v-else>
+                        Service quota reached. Visit the
+                        <a
+                            :href="
+                                route('teams.show', {
+                                    team: $page.props.auth.user.current_team_id,
+                                })
+                            "
+                            class="text-blue-500 hover:underline"
+                        >
+                            Team Quotas page
+                        </a>
+                        to see the options to increase the quota.
+                    </span>
+                </template>
             </fwb-tooltip>
         </template>
 

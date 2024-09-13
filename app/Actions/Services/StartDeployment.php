@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Lorisleiva\Actions\ActionRequest;
 use Lorisleiva\Actions\Concerns\AsAction;
+use Symfony\Component\HttpFoundation\Response;
 
 class StartDeployment
 {
@@ -18,17 +19,12 @@ class StartDeployment
 
     public function rules(): array
     {
-        return [
-            'service_id' => ['required', 'exists:services,id'],
-            'deployment_data' => ['required', DeploymentData::class],
-        ];
+        return DeploymentData::getValidationRules([]);
     }
 
     public function authorize(ActionRequest $request): bool
     {
-        $service = Service::with('team')->findOrFail($request->service_id);
-
-        return $request->user()->belongsToTeam($service->team);
+        return true;
     }
 
     public function handle(User $user, Service $service, DeploymentData $deploymentData): Deployment
@@ -52,11 +48,17 @@ class StartDeployment
         });
     }
 
-    public function asController(ActionRequest $request)
+    public function asController(Service $service, ActionRequest $request): Response
     {
-        $service = Service::findOrFail($request->service_id);
         $deploymentData = DeploymentData::make($request->validated());
 
+        $team = $service->team;
+        $quotas = $team->quotas();
+
+        $quotas->deployments->ensureQuota();
+
         $this->handle($request->user(), $service, $deploymentData);
+
+        return to_route('services.deployments', $service);
     }
 }

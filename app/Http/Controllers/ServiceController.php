@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Services\StartDeployment;
-use App\Http\Requests\StoreServiceRequest;
 use App\Http\Requests\UpdateServiceRequest;
 use App\Models\DeploymentData;
 use App\Models\Service;
@@ -26,7 +24,16 @@ class ServiceController extends Controller
 
         $swarmExists = Swarm::exists();
 
-        return Inertia::render('Services/Index', ['services' => $services, 'swarmExists' => $swarmExists]);
+        // Check if the quota is reached using ItemQuota
+        $team = auth()->user()->currentTeam;
+        $serviceQuota = $team->quotas()->services;
+        $quotaReached = $serviceQuota->quotaReached();
+
+        return Inertia::render('Services/Index', [
+            'services' => $services,
+            'swarmExists' => $swarmExists,
+            'quotaReached' => $quotaReached,
+        ]);
     }
 
     /**
@@ -53,30 +60,6 @@ class ServiceController extends Controller
             's3Storages' => $s3Storages,
             'marketplaceUrl' => config('ptah.marketplace_url'),
         ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreServiceRequest $request)
-    {
-        $deploymentData = DeploymentData::validateAndCreate($request->get('deploymentData'));
-
-        $team = auth()->user()->currentTeam;
-        $swarm = $team->swarms()->firstOrFail();
-
-        $service = Service::make($request->validated());
-        $service->team_id = $team->id;
-        $service->swarm_id = $swarm->id;
-
-        DB::transaction(function () use ($service, $deploymentData) {
-            $service->save();
-
-            StartDeployment::run(auth()->user(), $service, $deploymentData);
-        });
-
-        return to_route('services.deployments', $service)
-            ->with('success', 'Service created and deployment scheduled successfully.');
     }
 
     /**
@@ -111,13 +94,6 @@ class ServiceController extends Controller
         }]);
 
         return Inertia::render('Services/Deployments', ['service' => $service]);
-    }
-
-    public function deploy(Service $service, DeploymentData $deploymentData)
-    {
-        StartDeployment::run(auth()->user(), $service, $deploymentData);
-
-        return to_route('services.deployments', $service);
     }
 
     /**
