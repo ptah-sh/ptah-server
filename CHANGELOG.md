@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.28.0](https://github.com/ptah-sh/ptah-server/compare/v0.27.6...v0.28.0) (2024-09-13)
+
+
+### Features
+
+* [#88](https://github.com/ptah-sh/ptah-server/issues/88) add the quotas page, ensure quotas for deployments ([dce31ac](https://github.com/ptah-sh/ptah-server/commit/dce31ac07c64aee39355f01da2abd06af1cf1bc3))
+
+
+### Bug Fixes
+
+* [#191](https://github.com/ptah-sh/ptah-server/issues/191) correct subsequent deployments ([588417b](https://github.com/ptah-sh/ptah-server/commit/588417bb0e3348e25285ff2fbea2bd305d901c0c))
+* license name and rewrite rules form location ([1e75e6c](https://github.com/ptah-sh/ptah-server/commit/1e75e6c03b7042fda2e017fbd212b7c708ad43c2))
+
 ## [0.27.6](https://github.com/ptah-sh/ptah-server/compare/v0.27.5...v0.27.6) (2024-09-08)
 
 
