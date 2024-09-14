@@ -48,8 +48,8 @@ class TrialEndsSoonNotification extends Notification implements ShouldQueue
             ->subject("Your free trial ends in {$dateDiff}")
             ->greeting("Hello {$this->team->customer->name}!")
             ->line('Your trial for team '.$this->team->name.' ends soon.')
-            ->line("You will be charged {$nextPayment->amount()} on {$nextPayment->date->toDateTimeString()} ({$dateDiff}).")
-            ->action('Manage Subscription', url(route('teams.billing.show', $this->team)))
+            ->line("You will be not able to use Ptah.sh after {$nextPayment->date->toDateTimeString()} ({$dateDiff}).")
+            ->action('Choose a Plan', url(route('teams.billing.show', $this->team)))
             ->line('Any other questions? Contact us at '.config('app.email'));
     }
 
