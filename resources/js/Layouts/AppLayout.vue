@@ -103,6 +103,18 @@ const logout = () => {
                                                             $page.props.auth
                                                                 .user
                                                                 .current_team
+                                                                .billing ===
+                                                            null
+                                                        "
+                                                        class="text-xs text-red-600"
+                                                        >Subscription
+                                                        Required</span
+                                                    >
+                                                    <span
+                                                        v-else-if="
+                                                            $page.props.auth
+                                                                .user
+                                                                .current_team
                                                                 .billing
                                                                 ?.ends_at
                                                         "

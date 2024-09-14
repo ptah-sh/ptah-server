@@ -121,6 +121,14 @@ class Team extends JetstreamTeam
 
     protected function getBillingAttribute(): ?array
     {
+        if ($this->onTrial()) {
+            return [
+                'status' => 'trialing',
+                'trial_ends_at' => $this->trialEndsAt(),
+                'ends_at' => null,
+            ];
+        }
+
         if ($this->subscription() === null) {
             return null;
         }
@@ -148,7 +156,7 @@ class Team extends JetstreamTeam
             return Plan::from($selfHostedPlan);
         }
 
-        if ($subscription->onTrial() || ! $this->hasValidSubscription()) {
+        if ($this->onTrial() || ! $this->hasValidSubscription()) {
             return Plan::from($trialPlan);
         }
 

@@ -2,12 +2,10 @@
 
 namespace App\Listeners;
 
-use App\Models\Team;
 use App\Notifications\TrialEndsSoonNotification;
 use Carbon\CarbonInterval;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Events\Dispatcher;
-use Laravel\Paddle\Events\SubscriptionCreated;
-use Laravel\Paddle\Events\SubscriptionUpdated;
 
 class ScheduleTrialEndNotifications
 {
@@ -25,26 +23,26 @@ class ScheduleTrialEndNotifications
     public function subscribe(Dispatcher $dispatcher): array
     {
         return [
-            SubscriptionCreated::class => 'scheduleNotifications',
-            SubscriptionUpdated::class => 'scheduleNotifications',
+            Verified::class => 'scheduleNotifications',
         ];
     }
 
-    public function scheduleNotifications(SubscriptionCreated|SubscriptionUpdated $event): void
+    public function scheduleNotifications(Verified $event): void
     {
-        if (! $event->subscription->trial_ends_at) {
+        $team = $event->user->currentTeam;
+
+        $team->createAsCustomer([
+            'trial_ends_at' => now()->addDays(14),
+        ]);
+
+        if (! $team->onTrial()) {
             return;
         }
 
-        $subscription = $event->subscription;
-
-        /* @var Team $team */
-        $team = $subscription->billable;
-
-        $days3 = $subscription->trial_ends_at->sub(CarbonInterval::days(3))->diffAsDateInterval(now(), absolute: true);
+        $days3 = $team->trialEndsAt()->sub(CarbonInterval::days(3))->diffAsDateInterval(now(), absolute: true);
         $team->notify((new TrialEndsSoonNotification($team))->delay($days3));
 
-        $days1 = $subscription->trial_ends_at->sub(CarbonInterval::day())->diffAsDateInterval(now(), absolute: true);
+        $days1 = $team->trialEndsAt()->sub(CarbonInterval::day())->diffAsDateInterval(now(), absolute: true);
         $team->notify((new TrialEndsSoonNotification($team))->delay($days1));
     }
 }

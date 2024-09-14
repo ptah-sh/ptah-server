@@ -191,9 +191,7 @@ const updatePaymentMethod = () => {
                                     "
                                     :priceId="plan.price_id"
                                     :name="plan.name"
-                                >
-                                    Start Free Trial
-                                </PaddleButton>
+                                />
                             </div>
                         </div>
                     </template>

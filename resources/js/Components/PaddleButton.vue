@@ -33,7 +33,7 @@ const openCheckout = () => {
         type="button"
         @click="openCheckout()"
         ><span class="w-full text-center"
-            >{{ name }} - Start Free Trial</span
+            >Pick {{ name }} Plan</span
         ></PrimaryButton
     >
 </template>
