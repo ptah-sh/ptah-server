@@ -105,6 +105,7 @@ const mapProcessTemplate = (templateSlug, process, newIndex) => {
     return {
         id: makeId("process"),
         name: "process_" + newIndex,
+        placementNodeId: null,
         dockerRegistryId: null,
         dockerImage: "",
         releaseCommand: {
@@ -148,14 +149,6 @@ const applyTemplate = () => {
 
     validateForm(form.data, state.template.form, form.errors);
     state.extends.forEach((template) => {
-        console.log(
-            JSON.stringify({
-                data: form.data,
-                form: template.form,
-                errors: form.errors,
-                slug: template.slug,
-            }),
-        );
         validateForm(form.data, template.form, form.errors, template.slug);
     });
 
@@ -197,8 +190,6 @@ const validateForm = (formData, schema, errors, scope) => {
 
             break;
         case "text-field":
-            console.log(JSON.stringify({ formData, schema, errors, scope }));
-
             const itemName = scope ? `${scope}/${schema.name}` : schema.name;
             if (
                 schema.required &&

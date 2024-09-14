@@ -48,7 +48,17 @@ const hideTemplatePicker = () => {
 const applyTemplate = (template) => {
     form.name = template.name;
 
-    form.deploymentData.processes = template.deploymentData.processes;
+    const processes = template.deploymentData.processes.map((process) => {
+        return {
+            ...process,
+            placementNodeId:
+                process.volumes.length > 0 && props.nodes.length === 1
+                    ? props.nodes[0].id
+                    : null,
+        };
+    });
+
+    form.deploymentData.processes = processes;
 
     hideTemplatePicker();
 };
