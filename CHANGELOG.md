@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.29.0](https://github.com/ptah-sh/ptah-server/compare/v0.28.0...v0.29.0) (2024-09-14)
+
+
+### Features
+
+* [#192](https://github.com/ptah-sh/ptah-server/issues/192) move paywall to the end of the trial period ([6684c32](https://github.com/ptah-sh/ptah-server/commit/6684c32e045207a10d0dea9732b962a1e43995ed))
+
 ## [0.28.0](https://github.com/ptah-sh/ptah-server/compare/v0.27.6...v0.28.0) (2024-09-13)
 
 
