@@ -111,6 +111,14 @@ class SelfHostPtah extends Command
                         'command' => null,
                     ],
                     'command' => null,
+                    'healthcheck' => [
+                        'command' => null,
+                        'interval' => 10,
+                        'timeout' => 5,
+                        'retries' => 3,
+                        'startPeriod' => 30,
+                        'startInterval' => 5,
+                    ],
                     'backups' => [],
                     'workers' => [],
                     'envVars' => [
@@ -155,6 +163,14 @@ class SelfHostPtah extends Command
                         'command' => null,
                     ],
                     'command' => null,
+                    'healthcheck' => [
+                        'command' => null,
+                        'interval' => 10,
+                        'timeout' => 5,
+                        'retries' => 3,
+                        'startPeriod' => 30,
+                        'startInterval' => 5,
+                    ],
                     'backups' => [],
                     'workers' => [],
                     'envVars' => [
@@ -209,6 +225,14 @@ class SelfHostPtah extends Command
                         'command' => 'php artisan config:cache && php artisan migrate --no-interaction --verbose --ansi --force',
                     ],
                     'command' => null,
+                    'healthcheck' => [
+                        'command' => null,
+                        'interval' => 10,
+                        'timeout' => 5,
+                        'retries' => 3,
+                        'startPeriod' => 30,
+                        'startInterval' => 5,
+                    ],
                     'backups' => [],
                     'workers' => [
                         [

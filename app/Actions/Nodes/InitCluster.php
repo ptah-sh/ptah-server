@@ -201,6 +201,14 @@ class InitCluster
                 'command' => null,
             ],
             'command' => 'sh /start.sh',
+            'healthcheck' => [
+                'command' => null,
+                'interval' => 10,
+                'timeout' => 5,
+                'retries' => 3,
+                'startPeriod' => 30,
+                'startInterval' => 5,
+            ],
             'backups' => [],
             'workers' => [],
             'envVars' => [
