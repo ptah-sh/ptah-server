@@ -15,6 +15,7 @@ import AddComponentButton from "@/Components/Service/AddComponentButton.vue";
 import RemoveComponentButton from "@/Components/Service/RemoveComponentButton.vue";
 import ComponentBlock from "@/Components/Service/ComponentBlock.vue";
 import BackupSchedule from "@/Components/BackupSchedule.vue";
+import ToggleComponent from "@/Components/Service/ToggleComponent.vue";
 
 const model = defineModel();
 
@@ -141,9 +142,17 @@ const addProcess = () => {
         dockerRegistryId: null,
         dockerImage: "",
         releaseCommand: {
-            command: "",
+            command: null,
         },
-        command: "",
+        command: null,
+        healthcheck: {
+            command: null,
+            interval: 10,
+            timeout: 5,
+            retries: 10,
+            startPeriod: 60,
+            startInterval: 10,
+        },
         backups: [],
         workers: [],
         launchMode: "daemon",
@@ -284,6 +293,60 @@ const extractFieldErrors = (basePath) => {
             ]),
     );
 };
+
+const toggleReleaseCommand = () => {
+    model.value.processes[
+        state.selectedProcessIndex["processes"]
+    ].releaseCommand.command =
+        model.value.processes[state.selectedProcessIndex["processes"]]
+            .releaseCommand.command === null
+            ? ""
+            : null;
+};
+
+const toggleCommand = () => {
+    model.value.processes[state.selectedProcessIndex["processes"]].command =
+        model.value.processes[state.selectedProcessIndex["processes"]]
+            .command === null
+            ? ""
+            : null;
+};
+
+const toggleHealthcheck = () => {
+    const currentHealthcheck =
+        model.value.processes[state.selectedProcessIndex["processes"]]
+            .healthcheck;
+    model.value.processes[state.selectedProcessIndex["processes"]].healthcheck =
+        {
+            command: currentHealthcheck.command === null ? "" : null,
+            interval: 10,
+            timeout: 5,
+            retries: 10,
+            startPeriod: 60,
+            startInterval: 10,
+        };
+};
+
+const calculateHealthcheckTimes = computed(() => {
+    const healthcheck =
+        model.value.processes[state.selectedProcessIndex["processes"]]
+            .healthcheck;
+    if (healthcheck.command === null) return null;
+
+    const interval = Number(healthcheck.interval) || 10;
+    const timeout = Number(healthcheck.timeout) || 5;
+    const retries = Number(healthcheck.retries) || 10;
+    const startPeriod = Number(healthcheck.startPeriod) || 60;
+
+    const optimisticTime = interval;
+    const pessimisticTime =
+        retries * interval + retries * timeout + startPeriod;
+
+    return {
+        optimistic: optimisticTime,
+        pessimistic: pessimisticTime,
+    };
+});
 </script>
 
 <template>
@@ -619,6 +682,10 @@ const extractFieldErrors = (basePath) => {
             </FormField>
 
             <FormField
+                v-if="
+                    model.processes[state.selectedProcessIndex['processes']]
+                        .releaseCommand.command !== null
+                "
                 class="col-span-6"
                 :error="
                     props.errors[
@@ -670,6 +737,10 @@ const extractFieldErrors = (basePath) => {
             </FormField>
 
             <FormField
+                v-if="
+                    model.processes[state.selectedProcessIndex['processes']]
+                        .command !== null
+                "
                 class="col-span-6"
                 :error="
                     props.errors[
@@ -719,6 +790,187 @@ const extractFieldErrors = (basePath) => {
                     placeholder="php artisan queue:work"
                 />
             </FormField>
+
+            <FormField
+                v-if="
+                    model.processes[state.selectedProcessIndex['processes']]
+                        .healthcheck.command !== null
+                "
+                class="col-span-6"
+                :error="
+                    props.errors[
+                        `processes.${state.selectedProcessIndex['processes']}.healthcheck.command`
+                    ]
+                "
+            >
+                <template #label>
+                    <hr class="col-span-full mb-2" />
+                    <fwb-tooltip class="">
+                        <template #trigger>
+                            <div class="flex items-center">
+                                Healthcheck Command
+                                <svg
+                                    class="ms-1 w-4 h-4 text-blue-600 dark:text-white"
+                                    aria-hidden="true"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="24"
+                                    height="24"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke="currentColor"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+                                    />
+                                </svg>
+                            </div>
+                        </template>
+                        <template #content>
+                            Specify a command to check the health of your
+                            container. This command will be run inside the
+                            defined container and will override any default
+                            healthcheck provided by the container's image
+                            Dockerfile.
+                        </template>
+                    </fwb-tooltip>
+                </template>
+
+                <TextInput
+                    v-model="
+                        model.processes[state.selectedProcessIndex['processes']]
+                            .healthcheck.command
+                    "
+                    class="block w-full"
+                    placeholder="curl -f http://localhost/ || exit 1"
+                />
+            </FormField>
+
+            <div
+                v-if="
+                    model.processes[state.selectedProcessIndex['processes']]
+                        .healthcheck.command !== null
+                "
+                class="col-span-6 grid grid-cols-5 gap-4"
+            >
+                <FormField
+                    :error="
+                        props.errors[
+                            `processes.${state.selectedProcessIndex['processes']}.healthcheck.interval`
+                        ]
+                    "
+                    class="col-span-1"
+                >
+                    <template #label>Interval, s</template>
+                    <TextInput
+                        v-model="
+                            model.processes[
+                                state.selectedProcessIndex['processes']
+                            ].healthcheck.interval
+                        "
+                        class="block w-full"
+                        placeholder="10"
+                    />
+                </FormField>
+
+                <FormField
+                    :error="
+                        props.errors[
+                            `processes.${state.selectedProcessIndex['processes']}.healthcheck.timeout`
+                        ]
+                    "
+                    class="col-span-1"
+                >
+                    <template #label>Timeout, s</template>
+                    <TextInput
+                        v-model="
+                            model.processes[
+                                state.selectedProcessIndex['processes']
+                            ].healthcheck.timeout
+                        "
+                        class="block w-full"
+                        placeholder="5"
+                    />
+                </FormField>
+
+                <FormField
+                    :error="
+                        props.errors[
+                            `processes.${state.selectedProcessIndex['processes']}.healthcheck.retries`
+                        ]
+                    "
+                    class="col-span-1"
+                >
+                    <template #label>Retries</template>
+                    <TextInput
+                        v-model="
+                            model.processes[
+                                state.selectedProcessIndex['processes']
+                            ].healthcheck.retries
+                        "
+                        class="block w-full"
+                        type="number"
+                        placeholder="10"
+                    />
+                </FormField>
+
+                <FormField
+                    :error="
+                        props.errors[
+                            `processes.${state.selectedProcessIndex['processes']}.healthcheck.startPeriod`
+                        ]
+                    "
+                    class="col-span-1"
+                >
+                    <template #label>Start Period, s</template>
+                    <TextInput
+                        v-model="
+                            model.processes[
+                                state.selectedProcessIndex['processes']
+                            ].healthcheck.startPeriod
+                        "
+                        class="block w-full"
+                        placeholder="60"
+                    />
+                </FormField>
+
+                <FormField
+                    :error="
+                        props.errors[
+                            `processes.${state.selectedProcessIndex['processes']}.healthcheck.startInterval`
+                        ]
+                    "
+                    class="col-span-1"
+                >
+                    <template #label>Start Interval, s</template>
+                    <TextInput
+                        v-model="
+                            model.processes[
+                                state.selectedProcessIndex['processes']
+                            ].healthcheck.startInterval
+                        "
+                        class="block w-full"
+                        placeholder="10"
+                    />
+                </FormField>
+
+                <div class="col-span-full" v-if="calculateHealthcheckTimes">
+                    <p class="text-sm text-gray-600">
+                        Healthcheck pass time:
+                        <span class="font-semibold"
+                            >Optimistic:
+                            {{ calculateHealthcheckTimes.optimistic }}s</span
+                        >
+                        |
+                        <span class="font-semibold"
+                            >Pessimistic:
+                            {{ calculateHealthcheckTimes.pessimistic }}s</span
+                        >
+                    </p>
+                </div>
+            </div>
 
             <template
                 v-for="(worker, index) in model.processes[
@@ -893,6 +1145,30 @@ const extractFieldErrors = (basePath) => {
         </template>
 
         <template #actions>
+            <ToggleComponent
+                :checked="
+                    model.processes[state.selectedProcessIndex['processes']]
+                        .releaseCommand.command !== null
+                "
+                @checked="toggleReleaseCommand"
+                >Release CMD</ToggleComponent
+            >
+            <ToggleComponent
+                :checked="
+                    model.processes[state.selectedProcessIndex['processes']]
+                        .command !== null
+                "
+                @checked="toggleCommand"
+                >CMD</ToggleComponent
+            >
+            <ToggleComponent
+                :checked="
+                    model.processes[state.selectedProcessIndex['processes']]
+                        .healthcheck.command !== null
+                "
+                @checked="toggleHealthcheck"
+                >Healthcheck</ToggleComponent
+            >
             <AddComponentButton @click="addWorker"> Worker </AddComponentButton>
             <AddComponentButton
                 v-if="props.s3Storages.length > 0"

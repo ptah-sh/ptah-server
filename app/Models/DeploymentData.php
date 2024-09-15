@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\DeploymentData\Healthcheck;
 use App\Models\DeploymentData\LaunchMode;
 use App\Models\DeploymentData\Process;
 use App\Models\DeploymentData\ReleaseCommand;
@@ -35,6 +36,9 @@ class DeploymentData extends Data
                 'command' => null,
             ]),
             'command' => '',
+            'healthcheck' => Healthcheck::from([
+                'command' => null,
+            ]),
             'backups' => [],
             'workers' => [],
             'launchMode' => LaunchMode::Daemon->value,

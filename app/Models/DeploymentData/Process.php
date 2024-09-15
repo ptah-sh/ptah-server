@@ -33,6 +33,7 @@ class Process extends Data
         public string $dockerImage,
         public ReleaseCommand $releaseCommand,
         public ?string $command,
+        public Healthcheck $healthcheck,
         #[DataCollectionOf(ProcessBackup::class)]
         /* @var ProcessBackup[] */
         public array $backups,
@@ -343,6 +344,14 @@ class Process extends Data
                                     "node.labels.sh.ptah.node.id=={$this->placementNodeId}",
                                 ],
                             ] : [],
+                            'HealthCheck' => $this->healthcheck->command ? [
+                                'Test' => ['CMD-SHELL', $this->healthcheck->command],
+                                'Interval' => $this->healthcheck->interval * 1000000000, // Convert to nanoseconds
+                                'Timeout' => $this->healthcheck->timeout * 1000000000, // Convert to nanoseconds
+                                'Retries' => $this->healthcheck->retries,
+                                'StartPeriod' => $this->healthcheck->startPeriod * 1000000000, // Convert to nanoseconds
+                                'StartInterval' => $this->healthcheck->startInterval * 1000000000, // Convert to nanoseconds
+                            ] : null,
                         ],
                         'Networks' => [
                             [
