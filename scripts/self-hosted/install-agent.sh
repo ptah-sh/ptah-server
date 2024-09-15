@@ -108,12 +108,20 @@ if [ -z "$SKIP_CORE_INSTALL" ]; then
     header "Install System Packages"
 
     $PKG_UPDATE_REGISTRIES
-    $PKG_INSTALL sudo curl unzip ca-certificates apache2-utils
+    $PKG_INSTALL sudo curl unzip ca-certificates apache2-utils netfilter-persistent
 
     header "Install Docker"
     help_text "installation script provided by Docker and available at https://get.docker.com/"
 
     curl -fsSL https://get.docker.com/ | sh
+
+    header "Configure Docker"
+    help_text "Adding Caddy admin port to iptables"
+
+    iptables -I DOCKER-USER -p tcp -s 127.0.0.1 --dport 2019 -j ACCEPT
+    iptables -I DOCKER-USER -p tcp --dport 2019 -j REJECT --reject-with tcp-reset
+
+    netfilter-persistent save
 
     rm -f /tmp/ptah-agent
     
