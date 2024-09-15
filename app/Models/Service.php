@@ -80,7 +80,7 @@ class Service extends Model
 
     protected function generateUniqueSlug($id)
     {
-        $slug = Str::slug($this->name);
+        $slug = Str::slug($this->name, '_');
         $vocabulary = config('ptah.services.slug.vocabulary');
         $adjectives = config('ptah.services.slug.adjectives');
 
