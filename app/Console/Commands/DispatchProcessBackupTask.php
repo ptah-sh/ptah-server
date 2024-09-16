@@ -9,6 +9,7 @@ use App\Models\Service;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DispatchProcessBackupTask extends Command
 {
@@ -67,8 +68,9 @@ class DispatchProcessBackupTask extends Command
         ]);
 
         $date = now()->format('Y-m-d_His');
-        $backupFileName = dockerize_name("svc-{$service->id}-{$process->name}_backup-{$backupCmd->name}-{$date}").'.tar.gz';
-        $archivePath = "{$process->backupVolume->path}/$backupFileName";
+        $backupFilePath = "svc_{$service->id}/{$process->name}/cmd/{$backupCmd->name}/{$process->name}-cmd-{$backupCmd->name}-{$date}.tar.gz";
+        $backupFileSlug = Str::slug($backupFilePath, separator: '_');
+        $archivePath = "{$process->backupVolume->path}/$backupFileSlug";
         $backupCommand = "mkdir -p /tmp/{$backupCmd->id} && cd /tmp/{$backupCmd->id} && {$backupCmd->command} && tar czfv $archivePath -C /tmp/{$backupCmd->id} . && rm -rf /tmp/{$backupCmd->id}";
 
         $s3Storage = $node->swarm->data->findS3Storage($backupCmd->backupSchedule->s3StorageId);
@@ -105,7 +107,7 @@ class DispatchProcessBackupTask extends Command
                         'Target' => $process->backupVolume->path,
                     ],
                     'SrcFilePath' => $archivePath,
-                    'DestFilePath' => $s3Storage->pathPrefix.'/'.$backupFileName,
+                    'DestFilePath' => $s3Storage->pathPrefix.'/'.$backupFilePath,
                 ],
             ],
         ]);

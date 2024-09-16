@@ -10,6 +10,7 @@ use App\Models\Service;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class DispatchVolumeBackupTask extends Command
 {
@@ -54,7 +55,7 @@ class DispatchVolumeBackupTask extends Command
 
         $volume = $process->findVolume($this->option('volume-id'));
         if ($volume === null) {
-            throw new Exception("Could not find volume {$this->option('volume')} in process {$process->name}.");
+            throw new Exception("Could not find volume {$this->option('volume-id')} in process {$process->name}.");
         }
 
         $node = Node::withoutGlobalScope(TeamScope::class)->findOrFail($process->placementNodeId);
@@ -68,8 +69,9 @@ class DispatchVolumeBackupTask extends Command
         ]);
 
         $date = now()->format('Y-m-d_His');
-        $backupFileName = dockerize_name("svc-{$service->id}-{$process->name}-vol-{$volume->name}-{$date}").'.tar.gz';
-        $archivePath = "{$process->backupVolume->path}/$backupFileName";
+        $backupFilePath = "svc_{$service->id}/{$process->name}/vol/{$volume->name}/{$process->name}-vol-{$volume->name}-{$date}.tar.gz";
+        $backupFileSlug = Str::slug($backupFilePath, separator: '_');
+        $archivePath = "{$process->backupVolume->path}/$backupFileSlug";
         $backupCommand = "tar czfv $archivePath -C {$volume->path} .";
 
         // TODO: get rid of copy-pasted code.
@@ -108,7 +110,7 @@ class DispatchVolumeBackupTask extends Command
                         'Target' => $process->backupVolume->path,
                     ],
                     'SrcFilePath' => $archivePath,
-                    'DestFilePath' => $s3Storage->pathPrefix.'/'.$backupFileName,
+                    'DestFilePath' => $s3Storage->pathPrefix.'/'.$backupFilePath,
                 ],
             ],
         ]);
