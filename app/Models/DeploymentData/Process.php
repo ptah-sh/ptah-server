@@ -6,10 +6,9 @@ use App\Models\Deployment;
 use App\Models\Node;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
-use App\Models\NodeTasks\CreateService\CreateServiceMeta;
 use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
+use App\Models\NodeTasks\LaunchService\LaunchServiceMeta;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
-use App\Models\NodeTasks\UpdateService\UpdateServiceMeta;
 use App\Models\NodeTaskType;
 use App\Rules\RequiredIfArrayHas;
 use App\Util\ResourceId;
@@ -290,16 +289,11 @@ class Process extends Data
             'value' => $internalDomain,
         ]);
 
-        // FIXME: this is going to work wrong if the initial deployment is pending.
-        //   Don't allow to schedule deployments if the service has not been created yet?
-        //   This code is duplicated in the next block
-        $actionUpdate = $deployment->service->tasks()->ofType(NodeTaskType::CreateService)->where('meta__docker_name', $this->dockerName)->completed()->exists();
-
         $serviceSecretVars = $this->getSecretVars();
 
         $tasks[] = [
-            'type' => $actionUpdate ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
-            'meta' => $actionUpdate ? UpdateServiceMeta::from($serviceTaskMeta) : CreateServiceMeta::from($serviceTaskMeta),
+            'type' => NodeTaskType::LaunchService,
+            'meta' => LaunchServiceMeta::from($serviceTaskMeta),
             'payload' => [
                 'AuthConfigName' => $authConfigName,
                 'ReleaseCommand' => $this->getReleaseCommandPayload($deployment, $labels),
@@ -378,16 +372,14 @@ class Process extends Data
         ];
 
         foreach ($this->workers as $worker) {
-            $actionUpdate = $deployment->service->tasks()->ofType(NodeTaskType::CreateService)->where('meta__docker_name', $worker->dockerName)->completed()->exists();
-
             $workerTaskMeta = [
                 ...$serviceTaskMeta,
                 'dockerName' => $worker->dockerName,
             ];
 
             $tasks[] = [
-                'type' => $actionUpdate ? NodeTaskType::UpdateService : NodeTaskType::CreateService,
-                'meta' => $actionUpdate ? UpdateServiceMeta::from($workerTaskMeta) : CreateServiceMeta::from($workerTaskMeta),
+                'type' => NodeTaskType::LaunchService,
+                'meta' => LaunchServiceMeta::from($workerTaskMeta),
                 'payload' => [
                     'AuthConfigName' => $authConfigName,
                     'ReleaseCommand' => (object) [],

@@ -28,6 +28,8 @@ use App\Events\NodeTasks\InitSwarm\InitSwarmCompleted;
 use App\Events\NodeTasks\InitSwarm\InitSwarmFailed;
 use App\Events\NodeTasks\JoinSwarm\JoinSwarmCompleted;
 use App\Events\NodeTasks\JoinSwarm\JoinSwarmFailed;
+use App\Events\NodeTasks\LaunchService\LaunchServiceCompleted;
+use App\Events\NodeTasks\LaunchService\LaunchServiceFailed;
 use App\Events\NodeTasks\PullDockerImage\PullDockerImageCompleted;
 use App\Events\NodeTasks\PullDockerImage\PullDockerImageFailed;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigCompleted;
@@ -72,6 +74,8 @@ use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmResult;
 use App\Models\NodeTasks\JoinSwarm\JoinSwarmMeta;
 use App\Models\NodeTasks\JoinSwarm\JoinSwarmResult;
+use App\Models\NodeTasks\LaunchService\LaunchServiceMeta;
+use App\Models\NodeTasks\LaunchService\LaunchServiceResult;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageResult;
 use App\Models\NodeTasks\ServiceExec\ServiceExecMeta;
@@ -111,6 +115,7 @@ enum NodeTaskType: int
     case UploadS3File = 18;
     case JoinSwarm = 19;
     case UpdateDirdConfig = 20;
+    case LaunchService = 21;
 
     public function meta(): string
     {
@@ -136,6 +141,7 @@ enum NodeTaskType: int
             self::UploadS3File => UploadS3FileMeta::class,
             self::JoinSwarm => JoinSwarmMeta::class,
             self::UpdateDirdConfig => UpdateDirdConfigMeta::class,
+            self::LaunchService => LaunchServiceMeta::class,
         };
     }
 
@@ -163,6 +169,7 @@ enum NodeTaskType: int
             self::UploadS3File => UploadS3FileResult::class,
             self::JoinSwarm => JoinSwarmResult::class,
             self::UpdateDirdConfig => UpdateDirdConfigResult::class,
+            self::LaunchService => LaunchServiceResult::class,
         };
     }
 
@@ -190,6 +197,7 @@ enum NodeTaskType: int
             self::UploadS3File => UploadS3FileCompleted::class,
             self::JoinSwarm => JoinSwarmCompleted::class,
             self::UpdateDirdConfig => UpdateDirdConfigCompleted::class,
+            self::LaunchService => LaunchServiceCompleted::class,
         };
     }
 
@@ -217,6 +225,7 @@ enum NodeTaskType: int
             self::UploadS3File => UploadS3FileFailed::class,
             self::JoinSwarm => JoinSwarmFailed::class,
             self::UpdateDirdConfig => UpdateDirdConfigFailed::class,
+            self::LaunchService => LaunchServiceFailed::class,
         };
     }
 }

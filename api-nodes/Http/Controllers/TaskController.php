@@ -20,7 +20,7 @@ class TaskController
         }
 
         $resultClass = $task->type->result();
-
+        var_dump($request->all());
         $result = $resultClass::validateAndCreate($request->all());
 
         $task->complete($result);
