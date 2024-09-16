@@ -41,7 +41,7 @@ class Deployment extends Model
 
     public function latestTaskGroup(): HasOneThrough
     {
-        return $this->hasOneThrough(NodeTaskGroup::class, NodeTask::class, 'meta__deployment_id', 'id', 'id', 'task_group_id')->latest();
+        return $this->hasOneThrough(NodeTaskGroup::class, NodeTask::class, 'meta__deployment_id', 'id', 'id', 'task_group_id')->latest('id');
     }
 
     public function previousDeployment(): ?Deployment

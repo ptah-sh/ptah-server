@@ -105,7 +105,7 @@ class Service extends Model
 
     public function latestDeployment(): HasOne
     {
-        return $this->hasOne(Deployment::class)->latest();
+        return $this->hasOne(Deployment::class)->latest('id');
     }
 
     public function tasks(): HasMany
