@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Actions\Nodes\RebuildCaddy;
 use App\Models\DeploymentData\Process;
 use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
 use App\Traits\HasOwningTeam;
@@ -72,9 +73,9 @@ class Service extends Model
                 ];
             })->toArray();
 
-            // TODO: apply caddy config after the services deletion
-            //   https://github.com/ptah-sh/ptah-server/issues/117
             $taskGroup->tasks()->createMany($deleteProcessesTasks);
+
+            RebuildCaddy::run($service->team, $taskGroup, $service->latestDeployment);
         });
     }
 
@@ -84,12 +85,12 @@ class Service extends Model
         $vocabulary = config('ptah.services.slug.vocabulary');
         $adjectives = config('ptah.services.slug.adjectives');
 
-        shuffle($vocabulary);
-        shuffle($adjectives);
+        $entity = $vocabulary[array_rand($vocabulary)];
+        $adjective = $adjectives[array_rand($adjectives)];
 
         $hexId = dechex($id);
 
-        return $slug.'_'.$adjectives[0].'_'.$vocabulary[0].'_'.$hexId;
+        return $slug.'_'.$adjective.'_'.$entity.'_'.$hexId;
     }
 
     public function swarm(): BelongsTo

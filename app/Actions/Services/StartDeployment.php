@@ -2,6 +2,7 @@
 
 namespace App\Actions\Services;
 
+use App\Actions\Nodes\RebuildCaddy;
 use App\Models\Deployment;
 use App\Models\DeploymentData;
 use App\Models\NodeTaskGroup;
@@ -44,6 +45,8 @@ class StartDeployment
             ]);
 
             $taskGroup->tasks()->createMany($deployment->asNodeTasks());
+
+            RebuildCaddy::run($service->team, $taskGroup, $deployment);
 
             return $deployment;
         });

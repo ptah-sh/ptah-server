@@ -14,6 +14,18 @@ namespace App\Actions\Nodes;
  * @method static mixed run(\App\Models\User $user, \App\Models\Node $node, string $advertiseAddr)
  */
 class InitCluster {}
+/**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
+ * @method static dispatchSync(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
+ * @method static dispatchNow(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
+ * @method static dispatchAfterResponse(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
+ * @method static mixed run(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
+ */
+class RebuildCaddy {}
 
 namespace App\Actions\Services;
 
