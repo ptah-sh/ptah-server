@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Listeners\ScheduleTrialEndNotifications;
+use App\Listeners\StartTrialFeedbackFlow;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Lorisleiva\Actions\Facades\Actions;
@@ -22,6 +22,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Event::subscribe(ScheduleTrialEndNotifications::class);
+        Event::subscribe(StartTrialFeedbackFlow::class);
     }
 }

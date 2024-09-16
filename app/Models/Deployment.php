@@ -259,7 +259,6 @@ class Deployment extends Model
                 'payload' => [
                     'caddy' => $caddy,
                 ],
-
             ];
         }
 
