@@ -37,7 +37,7 @@ class NodeTaskGroup extends Model
 
     public function latestTask(): HasOne
     {
-        return $this->hasOne(NodeTask::class, 'task_group_id')->latest('id');
+        return $this->hasOne(NodeTask::class, 'task_group_id')->whereNot('status', TaskStatus::Canceled)->latest('id');
     }
 
     public function allTasksEnded(): bool
