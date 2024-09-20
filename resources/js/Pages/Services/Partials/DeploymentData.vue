@@ -16,6 +16,7 @@ import RemoveComponentButton from "@/Components/Service/RemoveComponentButton.vu
 import ComponentBlock from "@/Components/Service/ComponentBlock.vue";
 import BackupSchedule from "@/Components/BackupSchedule.vue";
 import ToggleComponent from "@/Components/Service/ToggleComponent.vue";
+import { evaluate } from "@/expr-lang.js";
 
 const model = defineModel();
 
@@ -347,6 +348,44 @@ const calculateHealthcheckTimes = computed(() => {
         pessimistic: pessimisticTime,
     };
 });
+
+const errors = ref({});
+
+const evaluateEnvVarTemplate = (envVar, index) => {
+    if (envVar.value) {
+        try {
+            envVar.value = evaluate(envVar.value, model.value);
+            // Clear any previous error for this field
+            delete errors.value[
+                `processes.${state.selectedProcessIndex["envVars"]}.envVars.${index}.value`
+            ];
+        } catch (error) {
+            console.error("Error evaluating env var template:", error);
+            // Set an error for this specific field
+            errors.value[
+                `processes.${state.selectedProcessIndex["envVars"]}.envVars.${index}.value`
+            ] = error.message; // 'Invalid template expression';
+        }
+    }
+};
+
+const evaluateSecretVarTemplate = (secretVar, index) => {
+    if (secretVar.value) {
+        try {
+            secretVar.value = evaluate(secretVar.value, model.value);
+            // Clear any previous error for this field
+            delete errors.value[
+                `processes.${state.selectedProcessIndex["secretVars"]}.secretVars.vars.${index}.value`
+            ];
+        } catch (error) {
+            console.error("Error evaluating secret var template:", error);
+            // Set an error for this specific field
+            errors.value[
+                `processes.${state.selectedProcessIndex["secretVars"]}.secretVars.vars.${index}.value`
+            ] = error.message; // 'Invalid template expression';
+        }
+    }
+};
 </script>
 
 <template>
@@ -1230,6 +1269,9 @@ const calculateHealthcheckTimes = computed(() => {
                     ] ||
                     props.errors[
                         `processes.${state.selectedProcessIndex['envVars']}.envVars.${index}.value`
+                    ] ||
+                    errors[
+                        `processes.${state.selectedProcessIndex['envVars']}.envVars.${index}.value`
                     ]
                 "
             >
@@ -1247,6 +1289,7 @@ const calculateHealthcheckTimes = computed(() => {
                         v-model="envVar.value"
                         class="grow"
                         placeholder="Value"
+                        @blur="evaluateEnvVarTemplate(envVar, index)"
                     />
 
                     <SecondaryButton
@@ -1348,6 +1391,9 @@ const calculateHealthcheckTimes = computed(() => {
                     ] ||
                     props.errors[
                         `processes.${state.selectedProcessIndex['secretVars']}.secretVars.vars.${index}.value`
+                    ] ||
+                    errors[
+                        `processes.${state.selectedProcessIndex['secretVars']}.secretVars.vars.${index}.value`
                     ]
                 "
                 class="col-span-full"
@@ -1364,6 +1410,7 @@ const calculateHealthcheckTimes = computed(() => {
                         v-model="secretVar.value"
                         class="grow"
                         placeholder="Value"
+                        @blur="evaluateSecretVarTemplate(secretVar, index)"
                     />
 
                     <SecondaryButton
