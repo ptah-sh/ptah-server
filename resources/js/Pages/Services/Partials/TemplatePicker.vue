@@ -7,6 +7,8 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import { makeId } from "@/id.js";
 import useSWRV from "swrv";
 import DynamicForm from "./DynamicForm.vue";
+import set from "lodash.set";
+import { evaluate } from "@/expr-lang.js";
 
 const props = defineProps({
     marketplaceUrl: String,
@@ -62,26 +64,67 @@ const selectTemplate = async (template) => {
         }
     }
 
+    populateDefaultValues(state.template.form, state.template.slug);
+    state.extends.forEach((extendedTemplate) => {
+        populateDefaultValues(extendedTemplate.form, extendedTemplate.slug);
+    });
+
     state.step = "configure";
 };
 
-const fillPlaceholders = (slug, value) => {
-    return Object.entries({
-        ...form.data,
-        "service/internalDomainName":
-            state.template.slug.replace(/[^a-zA-Z0-9]/g, "-") + ".local",
-    }).reduce((acc, [key, value]) => {
-        return acc
-            .replace(`{{${key.replace(`${slug}/`, "")}}}`, value)
-            .replace(`{{${key}}}`, value);
-    }, value);
+const populateDefaultValues = (schema, scope) => {
+    if (Array.isArray(schema.items)) {
+        schema.items.forEach((item) => populateDefaultValues(item, scope));
+    } else if (schema.default != null) {
+        const itemName = `${scope}/${schema.name}`;
+
+        form.data[itemName] = schema.default;
+    }
 };
 
-const mapProcessTemplate = (templateSlug, process, newIndex) => {
+function convertToNestedObject(flatObj) {
+    const result = {};
+
+    Object.entries(flatObj).forEach(([key, value]) => {
+        const path = key.replace(/\//g, ".");
+
+        set(result, path, value);
+    });
+
+    return result;
+}
+
+const evaluateForm = (form) => {
+    const entries = Object.entries(form).map(([key, value]) => {
+        return [key, evaluate(value, {})];
+    });
+
+    return Object.fromEntries(entries);
+};
+
+const fillPlaceholders = (formData, slug, value) => {
+    const scopedFormData = Object.fromEntries(
+        Object.entries(formData).map(([key, value]) => {
+            return [key.replace(slug + "/", ""), value];
+        }),
+    );
+
+    const templateData = convertToNestedObject({
+        ...scopedFormData,
+        service: {
+            internalDomainName:
+                state.template.slug.replace(/[^a-zA-Z0-9]/g, "-") + ".local",
+        },
+    });
+
+    return evaluate(value, templateData);
+};
+
+const mapProcessTemplate = (formData, templateSlug, process, newIndex) => {
     const envVars = process.data.envVars.map((envVar) => {
         return {
             name: envVar.name,
-            value: fillPlaceholders(templateSlug, envVar.value),
+            value: fillPlaceholders(formData, templateSlug, envVar.value),
         };
     });
 
@@ -90,7 +133,7 @@ const mapProcessTemplate = (templateSlug, process, newIndex) => {
             return {
                 ...caddy,
                 id: makeId("caddy"),
-                domain: fillPlaceholders(templateSlug, caddy.domain),
+                domain: fillPlaceholders(formData, templateSlug, caddy.domain),
             };
         }) || [];
 
@@ -98,7 +141,11 @@ const mapProcessTemplate = (templateSlug, process, newIndex) => {
         process.data.secretVars?.vars.map((secretVar) => {
             return {
                 name: secretVar.name,
-                value: fillPlaceholders(templateSlug, secretVar.value),
+                value: fillPlaceholders(
+                    formData,
+                    templateSlug,
+                    secretVar.value,
+                ),
             };
         }) || [];
 
@@ -112,6 +159,14 @@ const mapProcessTemplate = (templateSlug, process, newIndex) => {
             command: "",
         },
         command: "",
+        healthcheck: {
+            command: null,
+            interval: 10,
+            timeout: 5,
+            retries: 10,
+            startPeriod: 60,
+            startInterval: 10,
+        },
         backups: [],
         workers: [],
         launchMode: "daemon",
@@ -147,7 +202,12 @@ const mapProcessTemplate = (templateSlug, process, newIndex) => {
 const applyTemplate = () => {
     form.errors = {};
 
-    validateForm(form.data, state.template.form, form.errors);
+    validateForm(
+        form.data,
+        state.template.form,
+        form.errors,
+        state.template.slug,
+    );
     state.extends.forEach((template) => {
         validateForm(form.data, template.form, form.errors, template.slug);
     });
@@ -156,11 +216,13 @@ const applyTemplate = () => {
         return;
     }
 
+    const formData = evaluateForm(form.data);
+
     const extendedTemplates = state.extends.reduce((acc, template) => {
         return [
             ...acc,
             ...template.processes.map((process, index) =>
-                mapProcessTemplate(template.slug, process, index),
+                mapProcessTemplate(formData, template.slug, process, index),
             ),
         ];
     }, []);
@@ -168,7 +230,7 @@ const applyTemplate = () => {
     const processes = [
         ...extendedTemplates,
         ...state.template.processes.map((process, index) =>
-            mapProcessTemplate(state.template.slug, process, index),
+            mapProcessTemplate(formData, state.template.slug, process, index),
         ),
     ];
 
@@ -181,26 +243,21 @@ const applyTemplate = () => {
 };
 
 const validateForm = (formData, schema, errors, scope) => {
-    switch (schema.type) {
-        case "v-stack":
-        case "h-stack":
-            for (const item of schema.items) {
-                validateForm(formData, item, errors, scope);
-            }
+    if (Array.isArray(schema.items)) {
+        for (const item of schema.items) {
+            validateForm(formData, item, errors, scope);
+        }
+    } else {
+        const itemName = `${scope}/${schema.name}`;
 
-            break;
-        case "text-field":
-            const itemName = scope ? `${scope}/${schema.name}` : schema.name;
-            if (
-                schema.required &&
-                schema.format === "string" &&
-                (formData[itemName] == null || formData[itemName].trim() === "")
-            ) {
-                errors[itemName] =
-                    `The ${schema.label.toLowerCase()} field is required`;
-            }
-
-            break;
+        if (
+            schema.required &&
+            schema.format === "string" &&
+            (formData[itemName] == null || formData[itemName].trim() === "")
+        ) {
+            errors[itemName] =
+                `The ${schema.label.toLowerCase()} field is required`;
+        }
     }
 
     return Object.keys(errors).length === 0;
@@ -339,6 +396,7 @@ const validateForm = (formData, schema, errors, scope) => {
                 <DynamicForm
                     :item="state.template.form"
                     :form="form.data"
+                    :scope="state.template.slug"
                     :errors="form.errors"
                 />
 

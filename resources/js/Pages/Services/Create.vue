@@ -1,16 +1,10 @@
 <script setup>
-import InputError from "@/Components/InputError.vue";
-import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
-import TextInput from "@/Components/TextInput.vue";
 import ActionSection from "@/Components/ActionSection.vue";
 import { useForm } from "@inertiajs/vue3";
-import FormField from "@/Components/FormField.vue";
-import Select from "@/Components/Select.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
-import TextArea from "@/Components/TextArea.vue";
-import { computed, effect, reactive } from "vue";
+import { reactive } from "vue";
 import ServiceDetailsForm from "@/Pages/Services/Partials/ServiceDetailsForm.vue";
 import DeploymentData from "@/Pages/Services/Partials/DeploymentData.vue";
 import TemplatePicker from "@/Pages/Services/Partials/TemplatePicker.vue";
