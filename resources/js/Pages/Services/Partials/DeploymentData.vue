@@ -17,6 +17,7 @@ import ComponentBlock from "@/Components/Service/ComponentBlock.vue";
 import BackupSchedule from "@/Components/BackupSchedule.vue";
 import ToggleComponent from "@/Components/Service/ToggleComponent.vue";
 import { evaluate } from "@/expr-lang.js";
+import ExternalLink from "@/Components/ExternalLink.vue";
 
 const model = defineModel();
 
@@ -1233,9 +1234,21 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
         <template #title> Environment Variables </template>
 
         <template #description>
-            Add environment variables to the service. These variables will be
-            stored on the Ptah.sh database and will be fully accessible to edit
-            them via UI.
+            <p>
+                Add environment variables to the service. These variables will
+                be stored on the Ptah.sh database and will be fully accessible
+                to edit them via UI.
+            </p>
+            <p>
+                Values of environment variables support the Ptah.sh expression
+                language. You can use built-in functions to generate or
+                manipulate values.
+                <ExternalLink
+                    href="https://ptah.sh/concepts/expression-language/"
+                >
+                    Learn more about the expression language
+                </ExternalLink>
+            </p>
         </template>
 
         <template #tabs>
@@ -1358,6 +1371,15 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
             <p>
                 Secret Variables are stored as Docker Configs and you will be
                 able to see it's contents via Docker CLI.
+            </p>
+            <p>
+                Values of secret variables also support the Ptah.sh expression
+                language, allowing you to use built-in functions.
+                <ExternalLink
+                    href="https://ptah.sh/concepts/expression-language/"
+                >
+                    Learn more about the expression language
+                </ExternalLink>
             </p>
         </template>
 
