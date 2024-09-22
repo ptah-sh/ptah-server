@@ -28,6 +28,7 @@ const props = defineProps({
     dockerRegistries: Array,
     s3Storages: Array,
     errors: Object,
+    initialSecretVars: Array,
 });
 
 const state = reactive({
@@ -62,7 +63,7 @@ const addEnvVar = () => {
 const addSecretVar = () => {
     model.value.processes[
         state.selectedProcessIndex["secretVars"]
-    ].secretVars.vars.push({ id: makeId("secret-var"), name: "", value: "" });
+    ].secretVars.push({ id: makeId("secret-var"), name: "", value: "" });
 };
 
 const addConfigFile = () => {
@@ -159,9 +160,7 @@ const addProcess = () => {
         workers: [],
         launchMode: "daemon",
         envVars: [],
-        secretVars: {
-            vars: [],
-        },
+        secretVars: [],
         configFiles: [],
         secretFiles: [],
         volumes: [],
@@ -376,13 +375,13 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
             secretVar.value = evaluate(secretVar.value, model.value);
             // Clear any previous error for this field
             delete errors.value[
-                `processes.${state.selectedProcessIndex["secretVars"]}.secretVars.vars.${index}.value`
+                `processes.${state.selectedProcessIndex["secretVars"]}.secretVars.${index}.value`
             ];
         } catch (error) {
             console.error("Error evaluating secret var template:", error);
             // Set an error for this specific field
             errors.value[
-                `processes.${state.selectedProcessIndex["secretVars"]}.secretVars.vars.${index}.value`
+                `processes.${state.selectedProcessIndex["secretVars"]}.secretVars.${index}.value`
             ] = error.message; // 'Invalid template expression';
         }
     }
@@ -1395,7 +1394,7 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
             <div
                 v-if="
                     model.processes[state.selectedProcessIndex['secretVars']]
-                        .secretVars.vars.length === 0
+                        .secretVars.length === 0
                 "
                 class="col-span-full"
             >
@@ -1405,17 +1404,14 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
                 v-else
                 v-for="(secretVar, index) in model.processes[
                     state.selectedProcessIndex['secretVars']
-                ].secretVars.vars"
+                ].secretVars"
                 :key="secretVar.id"
                 :error="
                     props.errors[
-                        `processes.${state.selectedProcessIndex['secretVars']}.secretVars.vars.${index}.name`
+                        `processes.${state.selectedProcessIndex['secretVars']}.secretVars.${index}.name`
                     ] ||
                     props.errors[
-                        `processes.${state.selectedProcessIndex['secretVars']}.secretVars.vars.${index}.value`
-                    ] ||
-                    errors[
-                        `processes.${state.selectedProcessIndex['secretVars']}.secretVars.vars.${index}.value`
+                        `processes.${state.selectedProcessIndex['secretVars']}.secretVars.${index}.value`
                     ]
                 "
                 class="col-span-full"
@@ -1431,7 +1427,11 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
                     <TextInput
                         v-model="secretVar.value"
                         class="grow"
-                        placeholder="Value"
+                        :placeholder="
+                            initialSecretVars.includes(secretVar.name)
+                                ? 'keep existing secret value'
+                                : 'Value'
+                        "
                         @blur="evaluateSecretVarTemplate(secretVar, index)"
                     />
 
@@ -1439,7 +1439,7 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
                         @click="
                             model.processes[
                                 state.selectedProcessIndex['secretVars']
-                            ].secretVars.vars.splice(index, 1)
+                            ].secretVars.splice(index, 1)
                         "
                         tabindex="-1"
                     >
@@ -1718,6 +1718,11 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
                         v-model="secretFile.content"
                         class="block w-full"
                         rows="3"
+                        :placeholder="
+                            secretFile.dockerName
+                                ? 'keep existing secret'
+                                : 'enter secret content'
+                        "
                     />
                 </FormField>
             </template>

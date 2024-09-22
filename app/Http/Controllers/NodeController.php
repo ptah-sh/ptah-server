@@ -79,6 +79,11 @@ class NodeController extends Controller
 
         $node->load('swarm');
 
+        $s3TaskGroup = $node->actualTaskGroup(NodeTaskGroupType::UpdateS3Storages);
+        if ($s3TaskGroup?->is_completed) {
+            $s3TaskGroup = null;
+        }
+
         $registryTaskGroup = $node->actualTaskGroup(NodeTaskGroupType::UpdateDockerRegistries);
         if ($registryTaskGroup?->is_completed) {
             $registryTaskGroup = null;
@@ -91,6 +96,7 @@ class NodeController extends Controller
             'lastAgentVersion' => $lastAgentVersion,
             'agentUpgradeTaskGroup' => $taskGroup?->is_completed ? null : $taskGroup,
             'registryUpdateTaskGroup' => $registryTaskGroup?->is_completed ? null : $registryTaskGroup,
+            's3SUpdateTaskGroup' => $s3TaskGroup?->is_completed ? null : $s3TaskGroup,
         ]);
     }
 

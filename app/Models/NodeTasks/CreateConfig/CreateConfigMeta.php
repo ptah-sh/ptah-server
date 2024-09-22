@@ -10,7 +10,6 @@ class CreateConfigMeta extends AbstractTaskMeta
         public int $deploymentId,
         public string $processName,
         public string $path,
-        public string $hash
     ) {
         //
     }

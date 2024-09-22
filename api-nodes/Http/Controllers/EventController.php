@@ -24,6 +24,7 @@ class EventController
 
                 $swarm->data->joinTokens = $data->swarm->joinTokens;
                 $swarm->data->managerNodes = $data->swarm->managerNodes;
+                $swarm->data->encryptionKey = $data->swarm->encryptionKey;
 
                 $nodeAddresses = $swarm->nodes->pluck('data.address')->toArray();
                 $dockerServices = collect($swarm->services)

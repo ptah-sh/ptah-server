@@ -20,6 +20,7 @@ const props = defineProps([
     "lastAgentVersion",
     "agentUpgradeTaskGroup",
     "registryUpdateTaskGroup",
+    "s3SUpdateTaskGroup",
 ]);
 
 const destroyNode = () => router.delete(route("nodes.destroy", props.node.id));
@@ -67,7 +68,7 @@ const destroyNode = () => router.delete(route("nodes.destroy", props.node.id));
 
                 <S3Storages
                     :swarm="$props.node.swarm"
-                    :task-group="$props.s3StoragesTaskGroup"
+                    :task-group="$props.s3SUpdateTaskGroup"
                 />
 
                 <SectionBorder />

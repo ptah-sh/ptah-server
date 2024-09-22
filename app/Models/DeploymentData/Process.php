@@ -44,12 +44,14 @@ class Process extends Data
         #[DataCollectionOf(EnvVar::class)]
         /* @var EnvVar[] */
         public array $envVars,
-        public SecretVars $secretVars,
+        #[DataCollectionOf(SecretVar::class)]
+        /* @var SecretVar[] */
+        public array $secretVars,
         #[DataCollectionOf(ConfigFile::class)]
         /* @var ConfigFile[] */
         public array $configFiles,
-        #[DataCollectionOf(ConfigFile::class)]
-        /* @var ConfigFile[] */
+        #[DataCollectionOf(SecretFile::class)]
+        /* @var SecretFile[] */
         public array $secretFiles,
         #[DataCollectionOf(Volume::class)]
         /* @var Volume[] */
@@ -87,9 +89,14 @@ class Process extends Data
         return collect($this->configFiles)->first(fn (ConfigFile $file) => $file->path === $path);
     }
 
-    public function findSecretFile(string $path): ?ConfigFile
+    public function findSecretFile(string $path): ?SecretFile
     {
-        return collect($this->secretFiles)->first(fn (ConfigFile $file) => $file->path === $path);
+        return collect($this->secretFiles)->first(fn (SecretFile $file) => $file->path === $path);
+    }
+
+    public function findSecretVar(string $name): ?SecretVar
+    {
+        return collect($this->secretVars)->first(fn (SecretVar $var) => $var->name === $name);
     }
 
     /**
@@ -142,7 +149,6 @@ class Process extends Data
                     'deploymentId' => $deployment->id,
                     'processName' => $this->dockerName,
                     'path' => $configFile->path,
-                    'hash' => $configFile->hash(),
                 ]),
                 'payload' => [
                     'SwarmConfigSpec' => [
@@ -151,7 +157,6 @@ class Process extends Data
                         'Labels' => dockerize_labels([
                             ...$labels,
                             'kind' => 'config',
-                            'content.hash' => $configFile->hash(),
                         ]),
                     ],
                 ],
@@ -160,13 +165,13 @@ class Process extends Data
 
         foreach ($this->secretFiles as $secretFile) {
             $previousSecret = $previous?->findSecretFile($secretFile->path);
-            if ($previousSecret && ($secretFile->content === null || $secretFile->sameAs($previousSecret))) {
-                $secretFile->dockerName = $previousSecret->dockerName;
+            if ($secretFile->sameAs($previousSecret)) {
+                $secretFile->content = $previousSecret->content;
 
                 continue;
             }
 
-            $secretFile->dockerName = $this->makeResourceName('dpl_'.$deployment->id.'_cfg_'.$secretFile->path);
+            $secretFile->dockerName = $this->makeResourceName('dpl_'.$deployment->id.'_secret_'.$secretFile->path);
 
             $tasks[] = [
                 'type' => NodeTaskType::CreateSecret,
@@ -174,7 +179,6 @@ class Process extends Data
                     'deploymentId' => $deployment->id,
                     'processName' => $this->dockerName,
                     'path' => $secretFile->path,
-                    'hash' => $secretFile->hash(),
                 ]),
                 'payload' => [
                     'SwarmSecretSpec' => [
@@ -182,7 +186,7 @@ class Process extends Data
                         'Data' => $secretFile->base64(),
                         'Labels' => dockerize_labels([
                             ...$labels,
-                            'content.hash' => $secretFile->hash(),
+                            'kind' => 'secret',
                         ]),
                     ],
                 ],
@@ -289,7 +293,7 @@ class Process extends Data
             'value' => $internalDomain,
         ]);
 
-        $serviceSecretVars = $this->getSecretVars();
+        $serviceSecretVars = $this->getSecretVars($previous);
 
         $tasks[] = [
             'type' => NodeTaskType::LaunchService,
@@ -313,7 +317,7 @@ class Process extends Data
                             'Hosts' => [
                                 $internalDomain,
                             ],
-                            'Secrets' => collect($this->secretFiles)->map(fn (ConfigFile $secretFile) => [
+                            'Secrets' => collect($this->secretFiles)->map(fn (SecretFile $secretFile) => [
                                 'File' => [
                                     'Name' => $secretFile->path,
                                     // TODO: figure out better permissions settings (if any)
@@ -404,7 +408,7 @@ class Process extends Data
                                 'Hosts' => [
                                     "{$worker->name}.{$internalDomain}",
                                 ],
-                                'Secrets' => collect($this->secretFiles)->map(fn (ConfigFile $secretFile) => [
+                                'Secrets' => collect($this->secretFiles)->map(fn (SecretFile $secretFile) => [
                                     'File' => [
                                         'Name' => $secretFile->path,
                                         // TODO: figure out better permissions settings (if any)
@@ -454,12 +458,16 @@ class Process extends Data
         return $tasks;
     }
 
-    protected function getSecretVars(): array
+    protected function getSecretVars(?Process $previous): object
     {
-        return [
-            'Values' => (object) collect($this->secretVars->vars)
-                ->reduce(fn ($carry, EnvVar $var) => [...$carry, $var->name => $var->value ?? ''], []),
-        ];
+        return (object) collect($this->secretVars)
+            ->reduce(function ($carry, SecretVar $var) use ($previous) {
+                $prevVar = $previous?->findSecretVar($var->name);
+
+                $carry[$var->name] = ($var->sameAs($prevVar) ? $prevVar->value : $var->value) ?? '';
+
+                return $carry;
+            }, []);
     }
 
     public function makeResourceName(string $name): string

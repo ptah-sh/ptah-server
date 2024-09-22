@@ -2,6 +2,7 @@
 
 namespace App\Models\SwarmData;
 
+use Spatie\LaravelData\Attributes\Validation\RequiredWithout;
 use Spatie\LaravelData\Data;
 
 class S3Storage extends Data
@@ -11,20 +12,25 @@ class S3Storage extends Data
         public string $name,
         public string $endpoint,
         public string $accessKey,
-        public string $secretKey,
+        #[RequiredWithout('dockerName')]
+        public ?string $secretKey,
         public string $region,
         public string $bucket,
         public string $pathPrefix,
         public ?string $dockerName,
     ) {}
 
-    public function sameAs(S3Storage $s3Storage): bool
+    public function sameAs(?S3Storage $s3Storage): bool
     {
+        if ($s3Storage === null) {
+            return false;
+        }
+
         return $this->endpoint === $s3Storage->endpoint
             && $this->region === $s3Storage->region
             && $this->bucket === $s3Storage->bucket
             && $this->pathPrefix === $s3Storage->pathPrefix
-            && empty($this->accessKey)
-            && empty($this->secretKey);
+            && $this->accessKey === $s3Storage->accessKey
+            && is_null($this->secretKey);
     }
 }

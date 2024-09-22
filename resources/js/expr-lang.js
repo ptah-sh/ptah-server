@@ -4,15 +4,15 @@ Handlebars.registerHelper("base64Encode", (context) => {
     return btoa(context);
 });
 
-Handlebars.registerHelper("randomBytes", (context) => {
-    const buffer = new Uint8Array(context.length);
+Handlebars.registerHelper("randomBytes", ({ hash }) => {
+    const buffer = new Uint8Array(hash.length);
 
     self.crypto.getRandomValues(buffer);
 
     return String.fromCharCode.apply(null, buffer);
 });
 
-Handlebars.registerHelper("randomUsername", (context) => {
+Handlebars.registerHelper("randomUsername", () => {
     const adjectives = [
         "happy",
         "sad",
@@ -44,7 +44,7 @@ Handlebars.registerHelper("randomUsername", (context) => {
     return `${adjective}_${noun}`;
 });
 
-Handlebars.registerHelper("randomPassword", (context) => {
+Handlebars.registerHelper("randomPassword", ({ hash }) => {
     // TODO: add an option to use special characters - !@#$%^&*()_+~`|[]:;?><,./-=
     //   current alphabet is safe for most use cases (i.e. as "database URL" in form postgresql://user:pass@host:port/db)
 
@@ -52,19 +52,19 @@ Handlebars.registerHelper("randomPassword", (context) => {
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     const password = Array.from(
-        { length: context.length || 42 },
+        { length: hash.length || 42 },
         () => characters[Math.floor(Math.random() * characters.length)],
     ).join("");
 
     return password;
 });
 
-Handlebars.registerHelper("randomString", (context) => {
+Handlebars.registerHelper("randomString", ({ hash }) => {
     const characters =
         "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()_+~`|[]:;?><,./-=";
 
     const string = Array.from(
-        { length: context.length || 64 },
+        { length: hash.length || 64 },
         () => characters[Math.floor(Math.random() * characters.length)],
     ).join("");
 

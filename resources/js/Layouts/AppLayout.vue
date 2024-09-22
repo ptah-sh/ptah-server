@@ -38,6 +38,10 @@ const logout = () => {
 
         <Banner />
 
+        <!-- <div v-if="$page.props.flash.message" class="alert">
+        {{ $page.props.flash.message }}
+      </div> -->
+
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             <nav
                 class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700"

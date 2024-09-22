@@ -82,6 +82,7 @@ class InitCluster
                     'manager' => '-',
                 ],
                 'managerNodes' => [],
+                'encryptionKey' => '-',
             ]),
         ]);
     }
@@ -217,9 +218,7 @@ class InitCluster
                     'value' => '0.0.0.0:2019',
                 ],
             ],
-            'secretVars' => [
-                'vars' => [],
-            ],
+            'secretVars' => [],
             'configFiles' => [
                 [
                     'path' => '/ptah/caddy/tls/.keep',

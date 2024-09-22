@@ -138,7 +138,7 @@ const mapProcessTemplate = (formData, templateSlug, process, newIndex) => {
         }) || [];
 
     const secretVars =
-        process.data.secretVars?.vars.map((secretVar) => {
+        process.data.secretVars?.map((secretVar) => {
             return {
                 name: secretVar.name,
                 value: fillPlaceholders(
@@ -192,9 +192,7 @@ const mapProcessTemplate = (formData, templateSlug, process, newIndex) => {
                 };
             }) || [],
         envVars,
-        secretVars: {
-            vars: secretVars,
-        },
+        secretVars,
         caddy,
     };
 };

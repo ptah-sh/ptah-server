@@ -7,12 +7,16 @@ import ServiceDetailsForm from "@/Pages/Services/Partials/ServiceDetailsForm.vue
 import FormSection from "@/Components/FormSection.vue";
 import SectionBorder from "@/Components/SectionBorder.vue";
 import DeleteResourceSection from "@/Components/DeleteResourceSection.vue";
+import { useCrypto } from "@/encryption";
+import { computed } from "vue";
 
 const props = defineProps({
     service: Object,
     dockerRegistries: Array,
     s3Storages: Array,
 });
+
+const { encryptDeploymentData } = useCrypto();
 
 const serviceForm = useForm({
     id: props.service.id,
@@ -23,10 +27,43 @@ const updateService = () => {
     serviceForm.put(route("services.update", props.service));
 };
 
-const deploymentForm = useForm(props.service.latest_deployment.data);
+const deploymentForm = useForm({
+    ...props.service.latest_deployment.data,
+    processes: props.service.latest_deployment.data.processes.map((process) => {
+        return {
+            ...process,
+            secretFiles: process.secretFiles.map((secretFile) => {
+                return {
+                    ...secretFile,
+                    content: "",
+                };
+            }),
+            secretVars: process.secretVars.map((secretVar) => {
+                return {
+                    ...secretVar,
+                    value: "",
+                };
+            }),
+        };
+    }),
+});
 
-const deploy = () => {
-    deploymentForm.post(route("services.deploy", props.service));
+const initialSecretVars = computed(() => {
+    return props.service.latest_deployment.data.processes
+        .flatMap((process) => process.secretVars)
+        .map((secretVar) => secretVar.name);
+});
+
+const deploy = async () => {
+    deploymentForm.processing = true;
+
+    const formData = deploymentForm.data();
+
+    const encryptedDeploymentData = await encryptDeploymentData(formData);
+
+    deploymentForm
+        .transform(() => encryptedDeploymentData)
+        .post(route("services.deploy", props.service));
 };
 
 const deletionForm = useForm({
@@ -78,6 +115,7 @@ const destroyService = () => {
                 :errors="deploymentForm.errors"
                 :docker-registries="props.dockerRegistries"
                 :s3-storages="props.s3Storages"
+                :initial-secret-vars="initialSecretVars"
             />
 
             <div class="flex justify-end">

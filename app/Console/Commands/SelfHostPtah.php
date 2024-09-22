@@ -135,9 +135,7 @@ class SelfHostPtah extends Command
                             'value' => 'ptah_sh',
                         ],
                     ],
-                    'secretVars' => [
-                        'vars' => [],
-                    ],
+                    'secretVars' => [],
                     'configFiles' => [],
                     'secretFiles' => [],
                     'volumes' => [
@@ -203,9 +201,7 @@ class SelfHostPtah extends Command
                             'value' => 'ptah_sh',
                         ],
                     ],
-                    'secretVars' => [
-                        'vars' => [],
-                    ],
+                    'secretVars' => [],
                     'configFiles' => [],
                     'secretFiles' => [],
                     'volumes' => [],
@@ -292,9 +288,7 @@ class SelfHostPtah extends Command
                             'value' => 'false',
                         ],
                     ],
-                    'secretVars' => [
-                        'vars' => [],
-                    ],
+                    'secretVars' => [],
                     'configFiles' => [],
                     'secretFiles' => [],
                     'volumes' => [],

@@ -89,13 +89,11 @@ class SwarmController extends Controller
             $tasks = [];
 
             foreach ($swarmData->registries as $registry) {
-                $previous = $registry->dockerName ? $swarm->data->findRegistry($registry->dockerName) : null;
-                if ($previous) {
-                    if ($registry->sameAs($previous)) {
-                        $registry->dockerName = $previous->dockerName;
+                $previous = $swarm->data->findRegistry($registry->id);
+                if ($registry->sameAs($previous)) {
+                    $registry->password = $previous->password;
 
-                        continue;
-                    }
+                    continue;
                 }
 
                 $registry->dockerName = dockerize_name('registry_r'.$swarmData->registriesRev.'_'.$registry->name);
@@ -108,7 +106,6 @@ class SwarmController extends Controller
                     'type' => NodeTaskType::CreateRegistryAuth,
                     'meta' => CreateRegistryAuthMeta::validateAndCreate($taskMeta),
                     'payload' => [
-                        'PrevConfigName' => $previous?->dockerName,
                         'AuthConfigSpec' => [
                             'ServerAddress' => $registry->serverAddress,
                             'Username' => $registry->username,
@@ -163,10 +160,10 @@ class SwarmController extends Controller
 
             foreach ($swarmData->s3Storages as $s3Storage) {
                 $previous = $swarm->data->findS3Storage($s3Storage->id);
-                if ($previous) {
-                    if ($s3Storage->sameAs($previous)) {
-                        continue;
-                    }
+                if ($s3Storage->sameAs($previous)) {
+                    $s3Storage->secretKey = $previous->secretKey;
+
+                    continue;
                 }
 
                 $s3Storage->dockerName = dockerize_name('s3_r'.$swarmData->s3StoragesRev.'_'.$s3Storage->name);

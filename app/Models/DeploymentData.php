@@ -6,7 +6,6 @@ use App\Models\DeploymentData\Healthcheck;
 use App\Models\DeploymentData\LaunchMode;
 use App\Models\DeploymentData\Process;
 use App\Models\DeploymentData\ReleaseCommand;
-use App\Models\DeploymentData\SecretVars;
 use App\Rules\UniqueInArray;
 use App\Util\Arrays;
 use Illuminate\Validation\ValidationException;
@@ -43,9 +42,7 @@ class DeploymentData extends Data
             'workers' => [],
             'launchMode' => LaunchMode::Daemon->value,
             'envVars' => [],
-            'secretVars' => SecretVars::from([
-                'vars' => [],
-            ]),
+            'secretVars' => [],
             'configFiles' => [],
             'secretFiles' => [],
             'volumes' => [],

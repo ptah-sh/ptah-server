@@ -59,6 +59,9 @@ class ServiceController extends Controller
             'dockerRegistries' => $dockerRegistries,
             's3Storages' => $s3Storages,
             'marketplaceUrl' => config('ptah.marketplace_url'),
+            'node' => [
+                'swarm' => $swarm,
+            ],
         ]);
     }
 
@@ -73,6 +76,7 @@ class ServiceController extends Controller
         $nodes = $service->swarm->nodes;
         $dockerRegistries = $service->swarm->data->registries;
         $s3Storages = $service->swarm->data->s3Storages;
+        $swarm = $service->swarm;
 
         return Inertia::render('Services/Show', [
             'service' => $service,
@@ -80,6 +84,9 @@ class ServiceController extends Controller
             'nodes' => $nodes,
             'dockerRegistries' => $dockerRegistries,
             's3Storages' => $s3Storages,
+            'node' => [
+                'swarm' => $swarm,
+            ],
         ]);
     }
 

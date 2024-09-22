@@ -2,29 +2,29 @@
 
 namespace App\Models\DeploymentData;
 
+use Spatie\LaravelData\Attributes\Validation\RequiredWithout;
 use Spatie\LaravelData\Data;
 
-class ConfigFile extends Data
+class SecretFile extends Data
 {
     public function __construct(
         public string $path,
-        public string $content,
+        #[RequiredWithout('dockerName')]
+        public ?string $content,
         public ?string $dockerName,
-    ) {
-        $this->content = $content ?? '';
-    }
+    ) {}
 
     public function base64(): string
     {
         return base64_encode($this->content);
     }
 
-    public function sameAs(?ConfigFile $older): bool
+    public function sameAs(?SecretFile $older): bool
     {
         if ($older === null) {
             return false;
         }
 
-        return $this->content === $older->content;
+        return $this->path === $older->path && is_null($this->content);
     }
 }
