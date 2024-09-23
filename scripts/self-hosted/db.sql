@@ -826,7 +826,8 @@ CREATE TABLE public.teams (
     updated_at timestamp(0) without time zone,
     billing_name character varying(255) NOT NULL,
     billing_email character varying(255) NOT NULL,
-    activating_subscription boolean DEFAULT false NOT NULL
+    activating_subscription boolean DEFAULT false NOT NULL,
+    quotas_override json DEFAULT '{"nodes":0,"swarms":0,"services":0,"deployments":0}'::json NOT NULL
 );
 
 
@@ -1192,6 +1193,7 @@ COPY public.migrations (id, migration, batch) FROM stdin;
 50	2024_09_09_000000_update_processes_structure_in_deployments	1
 51	2024_09_21_123609_alter_swarms_update_data_with_fake_encryption_key	1
 52	2024_09_22_083731_update_deployments_move_secret_vars_to_process	1
+53	2024_09_22_235703_alter_teams_add_quotas_override	1
 \.
 
 
@@ -1328,8 +1330,8 @@ COPY public.team_user (id, team_id, user_id, role, created_at, updated_at) FROM 
 -- Data for Name: teams; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY public.teams (id, user_id, name, personal_team, created_at, updated_at, billing_name, billing_email, activating_subscription) FROM stdin;
-1	1	Self Host	t	2024-09-01 00:00:00	2024-09-01 00:00:00	Self Host	self-host@localhost	f
+COPY public.teams (id, user_id, name, personal_team, created_at, updated_at, billing_name, billing_email, activating_subscription, quotas_override) FROM stdin;
+1	1	Self Host	t	2024-09-01 00:00:00	2024-09-01 00:00:00	Self Host	self-host@localhost	f	{"nodes":0,"swarms":0,"services":0,"deployments":0}
 \.
 
 
@@ -1389,7 +1391,7 @@ SELECT pg_catalog.setval('public.jobs_id_seq', 1, false);
 -- Name: migrations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('public.migrations_id_seq', 52, true);
+SELECT pg_catalog.setval('public.migrations_id_seq', 53, true);
 
 
 --
