@@ -22,9 +22,15 @@ onMounted(() => {
 
 <template>
     <div v-auto-animate>
-        <InputLabel :for="state.domId">
-            <slot name="label" />
-        </InputLabel>
+        <div class="flex justify-between items-center">
+            <InputLabel :for="state.domId">
+                <slot name="label" />
+            </InputLabel>
+
+            <InputLabel class="text-xs">
+                <slot name="counter" />
+            </InputLabel>
+        </div>
 
         <div ref="slot">
             <slot />

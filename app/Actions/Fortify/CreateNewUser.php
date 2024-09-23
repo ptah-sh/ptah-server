@@ -2,6 +2,7 @@
 
 namespace App\Actions\Fortify;
 
+use App\Models\QuotasOverride;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -50,6 +51,7 @@ class CreateNewUser implements CreatesNewUsers
             'personal_team' => true,
             'billing_email' => $user->email,
             'billing_name' => $user->name,
+            'quotas_override' => QuotasOverride::from([]),
         ]));
     }
 }

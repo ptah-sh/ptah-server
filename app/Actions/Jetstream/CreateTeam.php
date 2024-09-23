@@ -2,6 +2,7 @@
 
 namespace App\Actions\Jetstream;
 
+use App\Models\QuotasOverride;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
@@ -34,6 +35,7 @@ class CreateTeam implements CreatesTeams
             'personal_team' => false,
             'billing_name' => $input['billing_name'],
             'billing_email' => $input['billing_email'],
+            'quotas_override' => QuotasOverride::from([]),
         ]));
 
         return $team;

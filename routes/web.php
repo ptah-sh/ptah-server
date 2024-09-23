@@ -58,5 +58,9 @@ Route::middleware([
         Route::resource('services', ServiceController::class)->except(['store']);
         Route::post('/services', CreateService::class)->name('services.store');
         Route::get('/services/{service}/deployments', [ServiceController::class, 'deployments'])->name('services.deployments');
+
+        Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
+            require_once __DIR__.'/admin.php';
+        });
     });
 });

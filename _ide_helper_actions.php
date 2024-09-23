@@ -1,5 +1,20 @@
 <?php
 
+namespace App\Actions\Admin\Teams;
+
+/**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\Team $team, \App\Models\QuotasOverride $quotasOverride)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\Team $team, \App\Models\QuotasOverride $quotasOverride)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\Team $team, \App\Models\QuotasOverride $quotasOverride)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\Team $team, \App\Models\QuotasOverride $quotasOverride)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\Team $team, \App\Models\QuotasOverride $quotasOverride)
+ * @method static dispatchSync(\App\Models\Team $team, \App\Models\QuotasOverride $quotasOverride)
+ * @method static dispatchNow(\App\Models\Team $team, \App\Models\QuotasOverride $quotasOverride)
+ * @method static dispatchAfterResponse(\App\Models\Team $team, \App\Models\QuotasOverride $quotasOverride)
+ * @method static mixed run(\App\Models\Team $team, \App\Models\QuotasOverride $quotasOverride)
+ */
+class OverrideTeamQuotas {}
+
 namespace App\Actions\Nodes;
 
 /**

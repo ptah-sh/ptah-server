@@ -64,4 +64,9 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function isAdmin(): bool
+    {
+        return in_array($this->email, config('auth.admin.emails'));
+    }
 }

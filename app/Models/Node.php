@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\HasOwningTeam;
 use App\Util\AgentToken;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -58,6 +59,11 @@ class Node extends Model
     public function tasks(): HasManyThrough
     {
         return $this->hasManyThrough(NodeTask::class, NodeTaskGroup::class, 'node_id', 'task_group_id', 'id', 'id');
+    }
+
+    public function scopeOnline(Builder $query): Builder
+    {
+        return $query->where('last_seen_at', '>', now()->subSeconds(35));
     }
 
     public function getOnlineAttribute()

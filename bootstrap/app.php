@@ -3,6 +3,7 @@
 use ApiNodes\Http\Middleware\AgentTokenAuth;
 use App\Console\Commands\DispatchProcessBackupTask;
 use App\Console\Commands\DispatchVolumeBackupTask;
+use App\Http\Middleware\AdminAccess;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\CheckAgentUpdates;
 use App\Models\Scopes\TeamScope;
@@ -41,6 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
             ->alias([
                 'abilities' => CheckAbilities::class,
                 'ability' => CheckForAnyAbility::class,
+                'admin' => AdminAccess::class,
             ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

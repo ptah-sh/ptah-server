@@ -59,6 +59,7 @@ class Team extends JetstreamTeam
     {
         return [
             'personal_team' => 'boolean',
+            'quotas_override' => QuotasOverride::class,
         ];
     }
 
@@ -83,6 +84,11 @@ class Team extends JetstreamTeam
     public function nodes(): HasMany
     {
         return $this->hasMany(Node::class);
+    }
+
+    public function onlineNodes(): HasMany
+    {
+        return $this->hasMany(Node::class)->online();
     }
 
     public function services(): HasMany
@@ -173,38 +179,34 @@ class Team extends JetstreamTeam
     public function quotas(): UsageQuotas
     {
         $plan = $this->currentPlan();
+        $override = $this->quotas_override;
 
         return new UsageQuotas(
             new ItemQuota(
                 name: 'Nodes',
-                maxUsage: $plan->quotas['nodes']['limit'],
+                maxUsage: max($plan->quotas['nodes']['limit'], $override->nodes),
                 getCurrentUsage: fn () => $this->nodes()->count(),
                 isSoftQuota: $plan->quotas['nodes']['soft']
             ),
             new ItemQuota(
                 name: 'Swarms',
-                maxUsage: $plan->quotas['swarms']['limit'],
+                maxUsage: max($plan->quotas['swarms']['limit'], $override->swarms),
                 getCurrentUsage: fn () => $this->swarms()->count(),
                 isSoftQuota: $plan->quotas['swarms']['soft']
             ),
             new ItemQuota(
                 name: 'Services',
-                maxUsage: $plan->quotas['services']['limit'],
+                maxUsage: max($plan->quotas['services']['limit'], $override->services),
                 getCurrentUsage: fn () => $this->services()->count(),
                 isSoftQuota: $plan->quotas['services']['soft']
             ),
             new ItemQuota(
                 name: 'Deployments',
-                maxUsage: $plan->quotas['deployments']['limit'],
+                maxUsage: max($plan->quotas['deployments']['limit'], $override->deployments),
                 getCurrentUsage: fn () => $this->deployments()->count(),
                 isSoftQuota: $plan->quotas['deployments']['soft']
             )
         );
-    }
-
-    public function nodesLimitReached(): bool
-    {
-        return $this->nodes()->count() >= $this->quotas()->nodes;
     }
 
     public function validSubscription(): ?Subscription
