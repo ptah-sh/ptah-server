@@ -7,10 +7,11 @@ return [
         'plans' => [
             [
                 'name' => 'Hobby',
-                'price' => 14,
+                'price' => 57,
                 'description' => 'Perfect plan to try the service or host non-critical applications',
                 'product_id' => env('PADDLE_PLAN_HOBBY_PRODUCT_ID'),
                 'price_id' => env('PADDLE_PLAN_HOBBY_PRICE_ID'),
+                'billing_cycle' => 'yearly', // Added billing cycle
                 'quotas' => [
                     'nodes' => ['limit' => 1, 'soft' => false],
                     'swarms' => ['limit' => 1, 'soft' => false],
@@ -20,10 +21,11 @@ return [
             ],
             [
                 'name' => 'Startup',
-                'price' => 29,
-                'description' => 'Need more power or an improved stability? This is your choice!',
+                'price' => 27,
+                'description' => 'Need more power or an additional features? This is your choice!',
                 'product_id' => env('PADDLE_PLAN_STARTUP_PRODUCT_ID'),
                 'price_id' => env('PADDLE_PLAN_STARTUP_PRICE_ID'),
+                'billing_cycle' => 'monthly', // Added billing cycle
                 'quotas' => [
                     'nodes' => ['limit' => 5, 'soft' => true],
                     'swarms' => ['limit' => 1, 'soft' => false],

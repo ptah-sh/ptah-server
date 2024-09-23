@@ -160,28 +160,49 @@ const updatePaymentMethod = () => {
                             <div
                                 v-for="plan in props.plans"
                                 :key="plan.price_id"
-                                class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center"
+                                class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 text-center flex flex-col justify-between"
                             >
-                                <h3 class="text-lg font-semibold mb-2">
-                                    {{ plan.name }}
-                                </h3>
-                                <p
-                                    class="text-gray-600 dark:text-gray-400 mb-4 text-balance"
-                                >
-                                    {{ plan.description }}
-                                </p>
-                                <div
-                                    class="flex items-baseline mb-4 justify-center"
-                                >
-                                    <span class="text-gray-500 text-sm mr-1"
-                                        >$</span
+                                <div>
+                                    <h3 class="text-lg font-semibold mb-2">
+                                        {{ plan.name }}
+                                    </h3>
+                                    <p
+                                        class="text-gray-600 dark:text-gray-400 mb-4 text-balance"
                                     >
-                                    <span class="text-4xl font-extrabold">{{
-                                        plan.price
-                                    }}</span>
-                                    <span class="text-gray-500 text-sm ml-1"
-                                        >/month</span
+                                        {{ plan.description }}
+                                    </p>
+                                    <div
+                                        class="flex items-baseline mb-4 justify-center"
                                     >
+                                        <span class="text-gray-500 text-sm mr-1"
+                                            >$</span
+                                        >
+                                        <span class="text-4xl font-extrabold">
+                                            {{
+                                                plan.billing_cycle === "yearly"
+                                                    ? (plan.price / 12).toFixed(
+                                                          2,
+                                                      )
+                                                    : plan.price
+                                            }}
+                                        </span>
+                                        <span
+                                            class="text-gray-500 text-sm ml-1"
+                                        >
+                                            /month
+                                        </span>
+                                    </div>
+                                    <p
+                                        class="text-gray-500 text-xs mt-2 italic"
+                                    >
+                                        (price excludes tax)
+                                    </p>
+                                    <p
+                                        v-if="plan.billing_cycle === 'yearly'"
+                                        class="text-gray-500 text-sm font-bold m-2"
+                                    >
+                                        Billed yearly at ${{ plan.price }}
+                                    </p>
                                 </div>
 
                                 <PaddleButton
