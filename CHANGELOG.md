@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.30.0](https://github.com/ptah-sh/ptah-server/compare/v0.29.0...v0.30.0) (2024-09-23)
+
+
+### Features
+
+* [#117](https://github.com/ptah-sh/ptah-server/issues/117) rebuild caddy config once the service has been deleted ([bfe9996](https://github.com/ptah-sh/ptah-server/commit/bfe999664c4a8a945b786a1dfe6b7f6e78ac1256))
+* [#135](https://github.com/ptah-sh/ptah-server/issues/135) add link to expression language docs ([7f2a705](https://github.com/ptah-sh/ptah-server/commit/7f2a705e6710abbbc910df0523627be8d854c8a8))
+* [#135](https://github.com/ptah-sh/ptah-server/issues/135) add support for generated secrets in templates ([aa23493](https://github.com/ptah-sh/ptah-server/commit/aa23493328426bba84a8d4e0b7eccfc6e4393cf9))
+* [#135](https://github.com/ptah-sh/ptah-server/issues/135) add support for generated values for custom env and secret vars ([f65af67](https://github.com/ptah-sh/ptah-server/commit/f65af67e023c4422e7cc3b780d4d47fa3a24704d))
+* [#137](https://github.com/ptah-sh/ptah-server/issues/137), [#161](https://github.com/ptah-sh/ptah-server/issues/161) ask mid and end -trial feedback ([c2f0482](https://github.com/ptah-sh/ptah-server/commit/c2f04824c3e8cd265009bf9d9267f1f70c5b12a2))
+* [#17](https://github.com/ptah-sh/ptah-server/issues/17) support secrets encryption ([2b44d94](https://github.com/ptah-sh/ptah-server/commit/2b44d94e3f0600f49bf09abcd3b26519f0146894))
+* [#189](https://github.com/ptah-sh/ptah-server/issues/189) pick a single node as a placement server for volume'd templates ([efc958a](https://github.com/ptah-sh/ptah-server/commit/efc958ad9a6c0857019fe25aaa01797d17bb1baf))
+* [#192](https://github.com/ptah-sh/ptah-server/issues/192) correct wording in a trial ends notification ([59e4def](https://github.com/ptah-sh/ptah-server/commit/59e4def2f19de00ae1beb40387f64d4213e19537))
+* [#195](https://github.com/ptah-sh/ptah-server/issues/195) improve backups folder layout ([735797f](https://github.com/ptah-sh/ptah-server/commit/735797fcbdd5c8663e0aa3de0dda1148c8a42855))
+* [#196](https://github.com/ptah-sh/ptah-server/issues/196) replace create/update service with a launch service task ([a4313b0](https://github.com/ptah-sh/ptah-server/commit/a4313b026a7889e2a164424c54a697793e1b1ca1))
+* [#197](https://github.com/ptah-sh/ptah-server/issues/197) switch hobby plan to the yearly payment ([93aa08d](https://github.com/ptah-sh/ptah-server/commit/93aa08d2b67a4f9b8de51e201e38710aed1b7b8b))
+* [#51](https://github.com/ptah-sh/ptah-server/issues/51) allow to specify healthchecks ([0a1fb42](https://github.com/ptah-sh/ptah-server/commit/0a1fb42f15b0e0dc57e14c30994d199877684831))
+* [#98](https://github.com/ptah-sh/ptah-server/issues/98) bootstrap admin suite ([71d5049](https://github.com/ptah-sh/ptah-server/commit/71d504934e9b8993c63569d81ae539afda1cf15a))
+* pricing test ([82c0687](https://github.com/ptah-sh/ptah-server/commit/82c068726789573d12640fde3f028e5e43071a97))
+
+
+### Bug Fixes
+
+* [#179](https://github.com/ptah-sh/ptah-server/issues/179) protect caddy admin port from an outside actors ([91df9f8](https://github.com/ptah-sh/ptah-server/commit/91df9f8b6929c1e7e3e44cef18e703c6c17b2cf6))
+* [#192](https://github.com/ptah-sh/ptah-server/issues/192) fix trial end date calculation ([b2cef50](https://github.com/ptah-sh/ptah-server/commit/b2cef50d068451f48c31f09639d5314d7fa1ab7b))
+* [#39](https://github.com/ptah-sh/ptah-server/issues/39) display correct latest task ([1e03b6c](https://github.com/ptah-sh/ptah-server/commit/1e03b6c89fe39900ef3b1a0e3e769b5f8ad93bc9))
+* [#39](https://github.com/ptah-sh/ptah-server/issues/39) display correct latest task 2 ([d9e1aab](https://github.com/ptah-sh/ptah-server/commit/d9e1aab26422b65f262ecf9424ea0fca55362404))
+* [#51](https://github.com/ptah-sh/ptah-server/issues/51) self-hosted configurator ([ca15de3](https://github.com/ptah-sh/ptah-server/commit/ca15de3bf86e6b07b6dbf87be1e859b9ad694ab6))
+
+
+### Miscellaneous Chores
+
+* update installation data ([c829d16](https://github.com/ptah-sh/ptah-server/commit/c829d162f38225c838a26f362bd299abdcc051ca))
+* update installation data ([2bdf780](https://github.com/ptah-sh/ptah-server/commit/2bdf780fb066141cfe5f4d24771014dbd18cb0e6))
+* update installation data ([ce4d5b2](https://github.com/ptah-sh/ptah-server/commit/ce4d5b2711c1e8f1a6a5657049397a9385eb4653))
+* update installation data ([dfdcb34](https://github.com/ptah-sh/ptah-server/commit/dfdcb349e3195f7c674045748cc5a25697a77d5f))
+* update installation data ([a461ecc](https://github.com/ptah-sh/ptah-server/commit/a461eccbb1004a8474de55529a46c95392e65abb))
+* update installation data ([b051b65](https://github.com/ptah-sh/ptah-server/commit/b051b658b7edbf9d02d50f7af1136bc92e72413a))
+
 ## [0.29.0](https://github.com/ptah-sh/ptah-server/compare/v0.28.0...v0.29.0) (2024-09-14)
 
 
