@@ -11,7 +11,8 @@ class ItemQuota
         public string $name,
         public int $maxUsage,
         protected Closure $getCurrentUsage,
-        public bool $isSoftQuota = false
+        public bool $isSoftQuota = false,
+        public ?string $resetPeriod = null
     ) {}
 
     public function ensureQuota(): void

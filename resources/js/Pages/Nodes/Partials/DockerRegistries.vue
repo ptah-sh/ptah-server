@@ -16,7 +16,10 @@ const props = defineProps({
 const { encrypt } = useCrypto();
 
 const form = useForm({
-    registries: props.swarm.data.registries,
+    registries: props.swarm.data.registries.map((registry) => ({
+        ...registry,
+        password: null,
+    })),
 });
 
 const makeId = (prefix) => prefix + "-" + Math.random().toString(36).slice(2);

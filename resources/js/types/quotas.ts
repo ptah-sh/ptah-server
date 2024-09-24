@@ -4,6 +4,7 @@ export interface ItemQuota {
   isSoftQuota: boolean;
   almostQuotaReached: boolean;
   isIntrinsic: boolean;
+  resetPeriod: string;
 }
 
 export interface UsageQuotas {

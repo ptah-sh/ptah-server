@@ -186,25 +186,29 @@ class Team extends JetstreamTeam
                 name: 'Nodes',
                 maxUsage: max($plan->quotas['nodes']['limit'], $override->nodes),
                 getCurrentUsage: fn () => $this->nodes()->count(),
-                isSoftQuota: $plan->quotas['nodes']['soft']
+                isSoftQuota: $plan->quotas['nodes']['soft'],
+                resetPeriod: $plan->quotas['nodes']['reset_period']
             ),
             new ItemQuota(
                 name: 'Swarms',
                 maxUsage: max($plan->quotas['swarms']['limit'], $override->swarms),
                 getCurrentUsage: fn () => $this->swarms()->count(),
-                isSoftQuota: $plan->quotas['swarms']['soft']
+                isSoftQuota: $plan->quotas['swarms']['soft'],
+                resetPeriod: $plan->quotas['swarms']['reset_period']
             ),
             new ItemQuota(
                 name: 'Services',
                 maxUsage: max($plan->quotas['services']['limit'], $override->services),
                 getCurrentUsage: fn () => $this->services()->count(),
-                isSoftQuota: $plan->quotas['services']['soft']
+                isSoftQuota: $plan->quotas['services']['soft'],
+                resetPeriod: $plan->quotas['services']['reset_period']
             ),
             new ItemQuota(
                 name: 'Deployments',
                 maxUsage: max($plan->quotas['deployments']['limit'], $override->deployments),
-                getCurrentUsage: fn () => $this->deployments()->count(),
-                isSoftQuota: $plan->quotas['deployments']['soft']
+                getCurrentUsage: fn () => $this->deployments()->where('created_at', '>=', now()->startOfDay())->count(),
+                isSoftQuota: $plan->quotas['deployments']['soft'],
+                resetPeriod: $plan->quotas['deployments']['reset_period']
             )
         );
     }

@@ -19,6 +19,7 @@ class TeamQuotasController extends Controller
                 'currentUsage' => $quota->currentUsage(),
                 'maxUsage' => $quota->maxUsage,
                 'isSoftQuota' => $quota->isSoftQuota,
+                'resetPeriod' => $quota->resetPeriod,
                 'almostQuotaReached' => $quota->almostQuotaReached(),
                 'isIntrinsic' => $key === 'swarms', // Mark swarms as intrinsic
             ];

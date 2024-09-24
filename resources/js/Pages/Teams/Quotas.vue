@@ -46,8 +46,12 @@ const quotaDescriptions = {
     swarms: "The maximum number of swarms you can create for your team.",
     services:
         "The maximum number of services you can deploy across all swarms.",
-    deployments: "The maximum number of deployments you can perform.",
+    deployments: "The maximum number of deployments you can perform per day.",
 };
+
+function getResetPeriodText(quota: ItemQuota): string | null {
+    return quota.resetPeriod === "daily" ? "Resets daily" : null;
+}
 </script>
 
 <template>
@@ -116,7 +120,7 @@ const quotaDescriptions = {
                             </span>
                         </div>
                         <div
-                            class="mt-1 text-xs text-gray-500 dark:text-gray-400"
+                            class="mt-1 text-xs text-gray-500 dark:text-gray-400 flex items-center"
                         >
                             {{
                                 quotaDescriptions[
@@ -130,13 +134,19 @@ const quotaDescriptions = {
                                 contact
                                 <a
                                     href="mailto:contact@ptah.sh"
-                                    class="text-blue-600 hover:text-blue-800"
+                                    class="text-blue-600 hover:text-blue-800 ml-1"
                                     >contact@ptah.sh</a
                                 >.
                             </span>
                             <span v-if="quota.isIntrinsic">
                                 This limit is set by the system architecture and
                                 cannot be increased.
+                            </span>
+                            <span
+                                v-if="getResetPeriodText(quota)"
+                                class="ml-2 px-2 py-0.5 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full font-medium"
+                            >
+                                {{ getResetPeriodText(quota) }}
                             </span>
                         </div>
                         <div class="mt-2">

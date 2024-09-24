@@ -17,7 +17,10 @@ const props = defineProps({
 const { encrypt } = useCrypto();
 
 const form = useForm({
-    s3Storages: props.swarm.data.s3Storages,
+    s3Storages: props.swarm.data.s3Storages.map((storage) => ({
+        ...storage,
+        secretKey: null,
+    })),
 });
 
 const addStorage = () => {
