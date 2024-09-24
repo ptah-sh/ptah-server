@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.31.0](https://github.com/ptah-sh/ptah-server/compare/v0.30.0...v0.31.0) (2024-09-24)
+
+
+### Features
+
+* [#199](https://github.com/ptah-sh/ptah-server/issues/199) support docker registry username encryption ([4241af6](https://github.com/ptah-sh/ptah-server/commit/4241af61aa0c4bb2c90781cd188f2946793d55b0))
+* [#200](https://github.com/ptah-sh/ptah-server/issues/200) reset deployments quota each day ([a6490df](https://github.com/ptah-sh/ptah-server/commit/a6490df6653454d3d38cac3eccc2156aad367cf6))
+
+
+### Miscellaneous Chores
+
+* update installation data ([21371d9](https://github.com/ptah-sh/ptah-server/commit/21371d9c1ac296e50e9e19de84e21b6e76256a2f))
+
 ## [0.30.0](https://github.com/ptah-sh/ptah-server/compare/v0.29.0...v0.30.0) (2024-09-23)
 
 
