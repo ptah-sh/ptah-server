@@ -146,8 +146,13 @@ const submitForm = async () => {
 
                     <TextInput
                         v-model="registry.username"
+                        type="password"
                         class="w-full"
-                        placeholder="glpat-*******"
+                        :placeholder="
+                            registry.dockerName
+                                ? 'keep username'
+                                : 'glpat-*******'
+                        "
                     />
                 </FormField>
 

@@ -167,7 +167,9 @@ const submitForm = async () => {
                         v-model="item.secretKey"
                         type="password"
                         class="w-full"
-                        placeholder="**********"
+                        :placeholder="
+                            item.dockerName ? 'keep secret key' : '**********'
+                        "
                     />
                 </FormField>
             </ComponentBlock>

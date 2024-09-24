@@ -15,8 +15,8 @@ return [
                 'quotas' => [
                     'nodes' => ['limit' => 1, 'soft' => false, 'reset_period' => null],
                     'swarms' => ['limit' => 1, 'soft' => false, 'reset_period' => null],
-                    'services' => ['limit' => 20, 'soft' => true, 'reset_period' => null],
-                    'deployments' => ['limit' => 100, 'soft' => true, 'reset_period' => 'daily'],
+                    'services' => ['limit' => 10, 'soft' => true, 'reset_period' => null],
+                    'deployments' => ['limit' => 20, 'soft' => true, 'reset_period' => 'daily'],
                 ],
             ],
             [
@@ -30,7 +30,7 @@ return [
                     'nodes' => ['limit' => 5, 'soft' => true, 'reset_period' => null],
                     'swarms' => ['limit' => 1, 'soft' => false, 'reset_period' => null],
                     'services' => ['limit' => 10, 'soft' => true, 'reset_period' => null],
-                    'deployments' => ['limit' => 100, 'soft' => true, 'reset_period' => 'daily'],
+                    'deployments' => ['limit' => 20, 'soft' => true, 'reset_period' => 'daily'],
                 ],
             ],
         ],
