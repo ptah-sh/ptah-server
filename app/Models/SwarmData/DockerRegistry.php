@@ -12,6 +12,7 @@ class DockerRegistry extends Data
         public string $name,
         public ?string $dockerName,
         public string $serverAddress,
+        #[RequiredWithout('dockerName')]
         public string $username,
         #[RequiredWithout('dockerName')]
         public ?string $password
@@ -23,6 +24,6 @@ class DockerRegistry extends Data
             return false;
         }
 
-        return $this->serverAddress === $other->serverAddress && $this->username === $other->username && is_null($this->password);
+        return $this->serverAddress === $other->serverAddress && is_null($this->username) && is_null($this->password);
     }
 }

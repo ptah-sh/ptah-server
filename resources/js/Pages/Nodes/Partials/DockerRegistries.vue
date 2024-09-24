@@ -18,6 +18,7 @@ const { encrypt } = useCrypto();
 const form = useForm({
     registries: props.swarm.data.registries.map((registry) => ({
         ...registry,
+        username: null,
         password: null,
     })),
 });
@@ -41,6 +42,9 @@ const submitForm = async () => {
     for (const registry of formData.registries) {
         const registryData = {
             ...registry,
+            username: registry.username
+                ? await encrypt(registry.username)
+                : null,
             password: registry.password
                 ? await encrypt(registry.password)
                 : null,
