@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.31.1](https://github.com/ptah-sh/ptah-server/compare/v0.31.0...v0.31.1) (2024-09-26)
+
+
+### Bug Fixes
+
+* [#205](https://github.com/ptah-sh/ptah-server/issues/205) preserve secret vars value ([4cc6dc1](https://github.com/ptah-sh/ptah-server/commit/4cc6dc11245927e7a29a24c0187fc08a33a899a9))
+* minor inconsistencies ([e1c238b](https://github.com/ptah-sh/ptah-server/commit/e1c238be8b5f233e294530c289dbd0b947f826ec))
+
 ## [0.31.0](https://github.com/ptah-sh/ptah-server/compare/v0.30.0...v0.31.0) (2024-09-24)
 
 
