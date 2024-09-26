@@ -147,6 +147,7 @@ const submitForm = async () => {
                     <TextInput
                         v-model="registry.username"
                         type="password"
+                        autocomplete="off"
                         class="w-full"
                         :placeholder="
                             registry.dockerName
@@ -165,6 +166,7 @@ const submitForm = async () => {
                     <TextInput
                         v-model="registry.password"
                         type="password"
+                        autocomplete="off"
                         class="w-full"
                         :placeholder="
                             registry.dockerName

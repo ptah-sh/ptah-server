@@ -26,7 +26,6 @@ class Service extends Model
         'team_id',
     ];
 
-    // Add this line to make slug the routing key
     public function getRouteKeyName()
     {
         return 'slug';

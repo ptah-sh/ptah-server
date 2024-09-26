@@ -163,6 +163,13 @@ class Process extends Data
             ];
         }
 
+        foreach ($this->secretVars as $secretVar) {
+            $previousSecret = $previous?->findSecretVar($secretVar->name);
+            if ($secretVar->sameAs($previousSecret)) {
+                $secretVar->value = $previousSecret->value;
+            }
+        }
+
         foreach ($this->secretFiles as $secretFile) {
             $previousSecret = $previous?->findSecretFile($secretFile->path);
             if ($secretFile->sameAs($previousSecret)) {
@@ -293,7 +300,7 @@ class Process extends Data
             'value' => $internalDomain,
         ]);
 
-        $serviceSecretVars = $this->getSecretVars($previous);
+        $serviceSecretVars = $this->getSecretVars();
 
         $tasks[] = [
             'type' => NodeTaskType::LaunchService,
@@ -458,13 +465,11 @@ class Process extends Data
         return $tasks;
     }
 
-    protected function getSecretVars(?Process $previous): object
+    protected function getSecretVars(): object
     {
         return (object) collect($this->secretVars)
-            ->reduce(function ($carry, SecretVar $var) use ($previous) {
-                $prevVar = $previous?->findSecretVar($var->name);
-
-                $carry[$var->name] = ($var->sameAs($prevVar) ? $prevVar->value : $var->value) ?? '';
+            ->reduce(function ($carry, SecretVar $var) {
+                $carry[$var->name] = $var->value;
 
                 return $carry;
             }, []);

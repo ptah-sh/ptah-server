@@ -1427,6 +1427,7 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
                     <TextInput
                         v-model="secretVar.value"
                         class="grow"
+                        autocomplete="off"
                         :placeholder="
                             initialSecretVars.includes(secretVar.name)
                                 ? 'keep existing secret value'

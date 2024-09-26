@@ -31,6 +31,9 @@ class StartDeployment
 
     public function handle(User $user, Service $service, DeploymentData $deploymentData): Deployment
     {
+        // TODO: Call this in Authorize? In rules?
+        $service->team->quotas()->deployments->ensureQuota();
+
         return DB::transaction(function () use ($service, $deploymentData, $user) {
             $taskGroup = NodeTaskGroup::create([
                 'swarm_id' => $service->swarm_id,
@@ -55,11 +58,6 @@ class StartDeployment
     public function asController(Service $service, ActionRequest $request): Response
     {
         $deploymentData = DeploymentData::make($request->validated());
-
-        $team = $service->team;
-        $quotas = $team->quotas();
-
-        $quotas->deployments->ensureQuota();
 
         $this->handle($request->user(), $service, $deploymentData);
 
