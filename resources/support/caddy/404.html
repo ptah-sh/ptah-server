@@ -15,6 +15,7 @@
 
         .home-btn {
             display: inline-block;
+            visibility: hidden;
             background-color: #007bff;
             color: #fff;
             padding: 10px 20px;
@@ -35,8 +36,8 @@
 
     <script>
         window.addEventListener('DOMContentLoaded', () => {
-            if (window.location.pathname === "/") {
-                document.getElementById('goHome').remove();
+            if (window.location.pathname !== "/") {
+                document.getElementById('goHome').style.visibility = 'visible';
             }
         })
     </script>

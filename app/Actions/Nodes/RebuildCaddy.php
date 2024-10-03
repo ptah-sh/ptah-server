@@ -27,6 +27,13 @@ class RebuildCaddy extends Action
 
                     $handlers = [];
 
+                    $handlers[] = [
+                        'handler' => 'ptah_observer',
+                        'service_id' => strval($deployment->service->id),
+                        'process_id' => $process->name,
+                        'rule_id' => $caddy->id,
+                    ];
+
                     $pathRegexps = [];
                     foreach ($process->rewriteRules as $rewriteRule) {
                         $pathRegexps[] = [
@@ -64,6 +71,7 @@ class RebuildCaddy extends Action
                     ];
 
                     $routes[] = [
+                        'group' => $process->dockerName,
                         'match' => [
                             [
                                 'host' => [$caddy->domain],
@@ -73,12 +81,14 @@ class RebuildCaddy extends Action
                         'handle' => $handlers,
                     ];
 
+                    // FIXME: Here goes a big "OOPS": redirect rules are repeated for each caddy rule in the process
                     foreach ($process->redirectRules as $redirectRule) {
                         $regexpName = dockerize_name($redirectRule->id);
 
                         $pathTo = preg_replace("/\\$(\d+)/", "{http.regexp.$regexpName.$1}", $redirectRule->pathTo);
 
                         $routes[] = [
+                            'group' => $process->dockerName,
                             'match' => [
                                 [
                                     'host' => [$redirectRule->domainFrom],
@@ -89,6 +99,12 @@ class RebuildCaddy extends Action
                                 ],
                             ],
                             'handle' => [
+                                [
+                                    'handler' => 'ptah_observer',
+                                    'service_id' => strval($deployment->service->id),
+                                    'process_id' => $process->name,
+                                    'rule_id' => $redirectRule->id,
+                                ],
                                 [
                                     'handler' => 'static_response',
                                     'status_code' => (string) $redirectRule->statusCode,
@@ -102,11 +118,17 @@ class RebuildCaddy extends Action
                         ];
                     }
 
+                    $serverName = match ($caddy->publishedPort) {
+                        80 => 'http',
+                        443 => 'https',
+                        default => "listen_{$caddy->publishedPort}",
+                    };
+
                     return [
                         'apps' => [
                             'http' => [
                                 'servers' => [
-                                    "listen_{$caddy->publishedPort}" => [
+                                    $serverName => [
                                         'listen' => [
                                             "0.0.0.0:{$caddy->publishedPort}",
                                         ],
@@ -125,7 +147,16 @@ class RebuildCaddy extends Action
         $caddy = [
             'apps' => [
                 'http' => [
-                    'servers' => (object) [],
+                    'servers' => [
+                        'http' => [
+                            'listen' => ['0.0.0.0:80'],
+                            'routes' => [],
+                        ],
+                        'https' => [
+                            'listen' => ['0.0.0.0:443'],
+                            'routes' => [],
+                        ],
+                    ],
                 ],
             ],
         ];
@@ -146,6 +177,12 @@ class RebuildCaddy extends Action
                     ],
                 ],
                 'handle' => [
+                    [
+                        'handler' => 'ptah_observer',
+                        'service_id' => 'ptah_404',
+                        'process_id' => 'ptah_404',
+                        'rule_id' => 'ptah_404',
+                    ],
                     [
                         'handler' => 'static_response',
                         'status_code' => '404',

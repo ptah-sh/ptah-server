@@ -1,6 +1,7 @@
 <?php
 
 use ApiNodes\Http\Controllers\EventController;
+use ApiNodes\Http\Controllers\MetricsController;
 use ApiNodes\Http\Controllers\NextTaskController;
 use ApiNodes\Http\Controllers\TaskController;
 use App\Api\Controllers\ServiceController;
@@ -16,6 +17,8 @@ Route::group(['prefix' => '/_nodes/v1'], function () {
         Route::post('/{task}/complete', [TaskController::class, 'complete']);
         Route::post('/{task}/fail', [TaskController::class, 'fail']);
     });
+
+    Route::post('/metrics', MetricsController::class);
 });
 
 Route::group(['prefix' => '/v0', 'middleware' => ['auth:sanctum']], function () {

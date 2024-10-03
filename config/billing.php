@@ -44,7 +44,7 @@ return [
                 'nodes' => ['limit' => 1, 'soft' => false, 'reset_period' => null],
                 'swarms' => ['limit' => 1, 'soft' => false, 'reset_period' => null],
                 'services' => ['limit' => 3, 'soft' => false, 'reset_period' => null],
-                'deployments' => ['limit' => 20, 'soft' => false, 'reset_period' => 'daily'],
+                'deployments' => ['limit' => 20000, 'soft' => false, 'reset_period' => 'daily'],
             ],
         ],
         'selfHostedPlan' => [
