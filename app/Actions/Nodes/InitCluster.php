@@ -197,7 +197,7 @@ class InitCluster
             'placementNodeId' => $node->id,
             'launchMode' => LaunchMode::Daemon->value,
             'dockerRegistryId' => null,
-            'dockerImage' => 'caddy:2.8-alpine',
+            'dockerImage' => 'ghcr.io/ptah-sh/ptah-caddy:latest',
             'releaseCommand' => [
                 'command' => null,
             ],

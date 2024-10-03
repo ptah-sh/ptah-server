@@ -16,11 +16,12 @@ class TaskController
         }
 
         if ($task->is_pending) {
+            // TODO: change to ???, 409 (Conflict) should be used for completed tasks
             return new Response(['error' => "Task didn't start yet."], 409);
         }
 
         $resultClass = $task->type->result();
-        var_dump($request->all());
+
         $result = $resultClass::validateAndCreate($request->all());
 
         $task->complete($result);
@@ -35,6 +36,7 @@ class TaskController
         }
 
         if ($task->is_pending) {
+            // TODO: change to ???, 409 (Conflict) should be used for completed tasks
             return new Response(['error' => "Task didn't start yet."], 409);
         }
 
