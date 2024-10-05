@@ -4,11 +4,11 @@ namespace ApiNodes\Http\Controllers;
 
 use App\Models\DeploymentData\Process;
 use App\Models\Node;
+use App\Services\Metrics;
 use App\Util\Promexport;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Log\Logger;
-use Illuminate\Support\Facades\Http;
 
 class MetricsController
 {
@@ -96,10 +96,6 @@ class MetricsController
             if ($metricsDoc === null) {
                 continue;
             }
-
-            $query = '';
-            $query .= '?extra_label=swarm_id='.$node->swarm->id;
-            $query .= '&extra_label=node_id='.$node->id;
 
             $ingestMetrics = [];
 
@@ -192,9 +188,9 @@ class MetricsController
                             $ingestMetrics[] = $line;
 
                             break;
-                        case 'ptah_node_disk_usage_free':
-                        case 'ptah_node_disk_usage_total':
-                        case 'ptah_node_disk_usage_used':
+                        case 'ptah_node_disk_free_bytes':
+                        case 'ptah_node_disk_total_bytes':
+                        case 'ptah_node_disk_used_bytes':
                             if (empty($labels['path'])) {
                                 break;
                             }
@@ -211,13 +207,16 @@ class MetricsController
                         case 'ptah_node_cpu_system':
                         case 'ptah_node_cpu_total':
                         case 'ptah_node_cpu_user':
-                        case 'ptah_node_load_avg_1':
-                        case 'ptah_node_load_avg_5':
-                        case 'ptah_node_load_avg_15':
-                        case 'ptah_node_memory_free':
-                        case 'ptah_node_memory_total':
-                        case 'ptah_node_memory_used':
-                        case 'ptah_node_uptime':
+                        case 'ptah_node_load_avg_1m':
+                        case 'ptah_node_load_avg_5m':
+                        case 'ptah_node_load_avg_15m':
+                        case 'ptah_node_memory_total_bytes':
+                        case 'ptah_node_memory_used_bytes':
+                        case 'ptah_node_memory_free_bytes':
+                        case 'ptah_node_swap_total_bytes':
+                        case 'ptah_node_swap_used_bytes':
+                        case 'ptah_node_swap_free_bytes':
+                        case 'ptah_node_uptime_seconds':
                             $ingestMetrics[] = $line;
 
                             break;
@@ -229,17 +228,7 @@ class MetricsController
                 }
             }
 
-            $log->info('Metrics:', [
-                'metrics' => $ingestMetrics,
-            ]);
-
-            // TODO: use value from config (/env vars)
-            $response = Http::withBody(implode("\n", $ingestMetrics), 'text/plain')->post("http://127.0.0.1:8080/api/v1/import/prometheus$query");
-
-            $log->info('VictoriaMetrics response:', [
-                'status' => $response->status(),
-                'body' => $response->body(),
-            ]);
+            $response = Metrics::importPrometheusMetrics($node->swarm->id, $node->id, $ingestMetrics);
         }
 
         $response = new Response('{}', 204);

@@ -16,6 +16,16 @@ Ptah.sh takes the pain out of deployment by easing common tasks used in many pro
 -   Load balancing of an incoming traffic and SSL auto-provisioning via Caddy Server.
 -   And many more features.
 
+## Components
+
+Ptah.sh is a collection of several interdependent services:
+
+-   [Ptah.sh Server](https://github.com/ptah-sh/ptah-server) - the core of the platform, responsible for managing the infrastructure, scaling, and load balancing.
+-   [Ptah.sh Agent](https://github.com/ptah-sh/ptah-agent) - the component installed on the target machine, responsible for running the containers and services.
+-   [Ptah.sh Caddy](https://github.com/ptah-sh/ptah-caddy) - the component installed on the target machine, responsible for running the Caddy Server and providing metrics to the Ptah.sh Server.
+-   [Ptah.sh GitHub Action](https://github.com/ptah-sh/deploy-action) - the component responsible for deploying the application to the target machine.
+-   [Ptah.sh Website](https://github.com/ptah-sh/ptah-sh.github.io) - the website of the Ptah.sh platform available at [ptah.sh](https://ptah.sh), containing the documentation, 1-Click Apps templates and the public-facing information.
+
 ## Ptah.sh Sponsors
 
 We would like to extend our thanks to the following sponsors for funding Ptah.sh development. If you are interested in becoming a sponsor, please send an e-mail to Bohdan Shulha via [contact@ptah.sh](mailto:contact@ptah.sh).
