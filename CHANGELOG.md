@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.1](https://github.com/ptah-sh/ptah-server/compare/v0.33.0...v0.33.1) (2024-10-05)
+
+
+### Bug Fixes
+
+* [#206](https://github.com/ptah-sh/ptah-server/issues/206) sum requests count by status code ([870fbc4](https://github.com/ptah-sh/ptah-server/commit/870fbc4473ec46c9e58bd3ec8f2cc5347faeed99))
+
 ## [0.33.0](https://github.com/ptah-sh/ptah-server/compare/v0.32.0...v0.33.0) (2024-10-05)
 
 
