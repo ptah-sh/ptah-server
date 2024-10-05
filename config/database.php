@@ -170,4 +170,7 @@ return [
 
     ],
 
+    'victoriametrics' => [
+        'url' => rtrim(env('VICTORIAMETRICS_URL', 'http://localhost:8428'), '/'),
+    ],
 ];
