@@ -83,7 +83,7 @@ class NodeController extends Controller
             alias(round(ptah_node_disk_used_bytes{path="/"} / ptah_node_disk_total_bytes{path="/"} * 100), "disk_usage"),
             alias(round(rate(ptah_node_network_rx_bytes / 1024)), "network_rx_bytes"),
             alias(round(rate(ptah_node_network_tx_bytes / 1024)), "network_tx_bytes"),
-            alias(round(increase(ptah_caddy_http_requests_count)), "http_requests_count"),
+            alias(round(sum(increase(ptah_caddy_http_requests_count)) by (status_code)), "http_requests_count"),
             alias(sum(increase(ptah_caddy_http_requests_duration_bucket)) by (le), "http_requests_duration"),
         )
         QUERY;
