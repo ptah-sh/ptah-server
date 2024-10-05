@@ -52,6 +52,7 @@ Route::middleware([
         Route::post('/node-task-groups/{taskGroup}/retry', [NodeTaskGroupController::class, 'retry'])->name('node-task-groups.retry');
 
         Route::resource('nodes', NodeController::class);
+        Route::get('/nodes/{node}/settings', [NodeController::class, 'settings'])->name('nodes.settings');
         Route::post('/nodes/{node}/upgrade-agent', [NodeController::class, 'upgradeAgent'])->name('nodes.upgrade-agent');
 
         Route::post('/services/{service:slug}/deployments', StartDeployment::class)->name('services.deploy');

@@ -6,6 +6,7 @@ import { initFlowbite } from "flowbite";
 
 import { createApp, h } from "vue";
 import { createInertiaApp } from "@inertiajs/vue3";
+import VueApexCharts from "vue3-apexcharts";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { autoAnimatePlugin } from "@formkit/auto-animate/vue";
 import { ZiggyVue } from "../../vendor/tightenco/ziggy";
@@ -33,6 +34,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue)
             .use(autoAnimatePlugin)
+            .use(VueApexCharts)
             .mount(el);
     },
     progress: {

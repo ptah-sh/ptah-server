@@ -1,6 +1,6 @@
 <script setup>
 import { router } from "@inertiajs/vue3";
-
+import { ref, computed, onMounted, onUnmounted } from "vue";
 import AppLayout from "@/Layouts/AppLayout.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import NodeStatus from "@/Components/NodeStatus.vue";
@@ -8,9 +8,56 @@ import ValueCard from "@/Components/ValueCard.vue";
 import NoDataYet from "@/Components/NoDataYet.vue";
 import { FwbTooltip } from "flowbite-vue";
 
-defineProps({
+const props = defineProps({
     nodes: Array,
     nodesLimitReached: Boolean,
+    metrics: Object,
+});
+
+const metrics = ref(props.metrics);
+
+function getMetric(metric) {
+    return metrics.value.data.result
+        .filter((m) => m.metric.__name__ === metric)
+        .map((m) => m.value[1])[0];
+}
+
+const avgLoad = computed(() => {
+    return `${getMetric("ptah_node_load_avg_1m")} / ${getMetric("ptah_node_load_avg_5m")} / ${getMetric("ptah_node_load_avg_15m")}`;
+});
+
+const cpuUsage = computed(() => {
+    return getMetric("cpu_usage") + "%";
+});
+
+const memoryUsage = computed(() => {
+    return getMetric("memory_usage") + "%";
+});
+
+const diskUsage = computed(() => {
+    return getMetric("disk_usage") + "%";
+});
+
+const refreshTimeoutId = ref(0);
+onMounted(() => {
+    refreshTimeoutId.value = setInterval(() => {
+        router.visit(route("nodes.index"), {
+            method: "get",
+            preserveState: true,
+            preserveScroll: true,
+            only: ["metrics"],
+            onSuccess: (page) => {
+                metrics.value = page.props.metrics;
+            },
+            onError: (errors) => {
+                // Handle errors if needed
+            },
+        });
+    }, 5000);
+});
+
+onUnmounted(() => {
+    clearTimeout(refreshTimeoutId.value);
 });
 </script>
 
@@ -57,25 +104,77 @@ defineProps({
                     v-for="node in nodes"
                     :key="node.id"
                     :href="route('nodes.show', { node: node.id })"
-                    class="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg p-4 flex justify-around"
+                    class="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg p-4 flex flex-col gap-4"
                 >
-                    <div class="flex">
-                        <div class="font-bold text-xl">{{ node.name }}</div>
-                        <NodeStatus :node="node" />
+                    <div class="flex gap-4">
+                        <div class="flex">
+                            <div class="font-bold text-xl">{{ node.name }}</div>
+                            <NodeStatus :node="node" />
+                        </div>
+                        <div class="flex flex-col">
+                            <template
+                                v-if="node.online"
+                                v-for="network in node.data.host.networks"
+                                :key="network.if_name"
+                            >
+                                <ValueCard
+                                    v-for="ip in network.ips"
+                                    :key="ip.ip"
+                                    :label="network.if_name"
+                                    :value="ip.ip"
+                                />
+                            </template>
+                        </div>
                     </div>
-                    <div class="flex flex-col">
-                        <template
-                            v-if="node.online"
-                            v-for="network in node.data.host.networks"
-                            :key="network.if_name"
-                        >
-                            <ValueCard
-                                v-for="ip in network.ips"
-                                :key="ip.ip"
-                                :label="network.if_name"
-                                :value="ip.ip"
-                            />
-                        </template>
+                    <div class="flex justify-between">
+                        <div class="flex flex-col">
+                            <div class="flex flex-row justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-gray-500"
+                                        >Load 1 / 5 / 15 min</span
+                                    >
+                                    <span class="text-lg font-bold">{{
+                                        avgLoad
+                                    }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <div class="flex flex-row justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-gray-500"
+                                        >CPU Usage</span
+                                    >
+                                    <span class="text-lg font-bold">{{
+                                        cpuUsage
+                                    }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <div class="flex flex-row justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-gray-500"
+                                        >Memory Usage</span
+                                    >
+                                    <span class="text-lg font-bold">{{
+                                        memoryUsage
+                                    }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-col">
+                            <div class="flex flex-row justify-between">
+                                <div class="flex flex-col">
+                                    <span class="text-sm text-gray-500"
+                                        >Disk Usage</span
+                                    >
+                                    <span class="text-lg font-bold">{{
+                                        diskUsage
+                                    }}</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </a>
             </div>
