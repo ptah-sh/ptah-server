@@ -9,6 +9,7 @@ use App\Util\Promexport;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Log\Logger;
+use Illuminate\Support\Str;
 
 class MetricsController
 {
@@ -46,7 +47,10 @@ class MetricsController
     public function __invoke(Request $request, Logger $log, Node $node)
     {
         // TODO: cache this with the new Laravel cache system (stale-while-revalidate from the recent release)
-        $interfaces = collect($node->data->host->networks)->pluck('if_name')->unique()->toArray();
+        $interfaces = collect($node->data->host->networks)->pluck('if_name')->filter(function ($interface) {
+            // Collect only the interfaces that start with 'eth' for now
+            return Str::startsWith($interface, 'eth');
+        })->unique()->toArray();
 
         $services = $node->team->services->mapWithKeys(function ($service) {
             $processes = collect($service->latestDeployment->data->processes);
