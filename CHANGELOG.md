@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.32.0](https://github.com/ptah-sh/ptah-server/compare/v0.31.1...v0.32.0) (2024-10-05)
+
+
+### Features
+
+* [#206](https://github.com/ptah-sh/ptah-server/issues/206) display usage graphs for nodes ([4035ef8](https://github.com/ptah-sh/ptah-server/commit/4035ef849738a6fb5787012bea6ecb5da74f285b))
+* [#207](https://github.com/ptah-sh/ptah-server/issues/207) allow to collect metrics from non-swarm nodes ([cb4f077](https://github.com/ptah-sh/ptah-server/commit/cb4f077d470994ff21af263b299986c183e00b70))
+* [#207](https://github.com/ptah-sh/ptah-server/issues/207) metrics ingestion endpoint v0.1 ([d94f130](https://github.com/ptah-sh/ptah-server/commit/d94f1302cce15c5abca1a205d5788c8ad478f2f4))
+* [#207](https://github.com/ptah-sh/ptah-server/issues/207) metrics ingestion endpoint v0.2 ([d9b1a5d](https://github.com/ptah-sh/ptah-server/commit/d9b1a5d833f5fd4776480dfa0d29f04f743185d9))
+* [#209](https://github.com/ptah-sh/ptah-server/issues/209) install victoriametrics as a part of self-hosted workflow ([b0280d2](https://github.com/ptah-sh/ptah-server/commit/b0280d200b8504620ea553ea6f11fd772f246e31))
+
+
+### Miscellaneous Chores
+
+* update installation data ([ee2f3ef](https://github.com/ptah-sh/ptah-server/commit/ee2f3efcb36b336ea4393317b0bc6ac332c476b9))
+
 ## [0.31.1](https://github.com/ptah-sh/ptah-server/compare/v0.31.0...v0.31.1) (2024-09-26)
 
 
