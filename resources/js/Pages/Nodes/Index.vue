@@ -23,19 +23,29 @@ function getMetric(metric) {
 }
 
 const avgLoad = computed(() => {
-    return `${getMetric("ptah_node_load_avg_1m")} / ${getMetric("ptah_node_load_avg_5m")} / ${getMetric("ptah_node_load_avg_15m")}`;
+    const metric1m = getMetric("ptah_node_load_avg_1m") ?? "...";
+    const metric5m = getMetric("ptah_node_load_avg_5m") ?? "...";
+    const metric15m = getMetric("ptah_node_load_avg_15m") ?? "...";
+
+    return `${metric1m} / ${metric5m} / ${metric15m}`;
 });
 
 const cpuUsage = computed(() => {
-    return getMetric("cpu_usage") + "%";
+    const metric = getMetric("cpu_usage") ?? "...";
+
+    return metric + "%";
 });
 
 const memoryUsage = computed(() => {
-    return getMetric("memory_usage") + "%";
+    const metric = getMetric("memory_usage") ?? "...";
+
+    return metric + "%";
 });
 
 const diskUsage = computed(() => {
-    return getMetric("disk_usage") + "%";
+    const metric = getMetric("disk_usage") ?? "...";
+
+    return metric + "%";
 });
 
 const refreshTimeoutId = ref(0);
@@ -126,7 +136,7 @@ onUnmounted(() => {
                             </template>
                         </div>
                     </div>
-                    <div class="flex justify-between">
+                    <div class="flex justify-between" v-if="node.online">
                         <div class="flex flex-col">
                             <div class="flex flex-row justify-between">
                                 <div class="flex flex-col">

@@ -45,10 +45,6 @@ class MetricsController
     // Please don't judge me for this code. I'm a PHP developer.
     public function __invoke(Request $request, Logger $log, Node $node)
     {
-        if ($node->swarm === null) {
-            return new Response('{}', 204);
-        }
-
         // TODO: cache this with the new Laravel cache system (stale-while-revalidate from the recent release)
         $interfaces = collect($node->data->host->networks)->pluck('if_name')->unique()->toArray();
 
@@ -228,7 +224,7 @@ class MetricsController
                 }
             }
 
-            $response = Metrics::importPrometheusMetrics($node->swarm->id, $node->id, $ingestMetrics);
+            $response = Metrics::importPrometheusMetrics($node->id, $ingestMetrics);
         }
 
         $response = new Response('{}', 204);

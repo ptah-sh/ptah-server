@@ -7,11 +7,10 @@ use Illuminate\Support\Facades\Http;
 // Multitenancy for single node: https://docs.victoriametrics.com/single-server-victoriametrics/#prometheus-querying-api-enhancements
 class Metrics
 {
-    public static function importPrometheusMetrics($swarmId, $nodeId, $metrics)
+    public static function importPrometheusMetrics($nodeId, $metrics)
     {
         $query = '';
-        $query .= '?extra_label=swarm_id='.$swarmId;
-        $query .= '&extra_label=node_id='.$nodeId;
+        $query .= '?extra_label=node_id='.$nodeId;
 
         return Http::withBody(implode("\n", $metrics), 'text/plain')->post(config('database.victoriametrics.url').'/api/v1/import/prometheus'.$query);
     }
