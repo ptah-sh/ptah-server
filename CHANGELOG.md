@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.33.0](https://github.com/ptah-sh/ptah-server/compare/v0.32.0...v0.33.0) (2024-10-05)
+
+
+### Features
+
+* [#207](https://github.com/ptah-sh/ptah-server/issues/207) ingest only eth network interfaces metrics ([95e834a](https://github.com/ptah-sh/ptah-server/commit/95e834a7416f8afb93c1eb93ca48ad2f48141cfa))
+
 ## [0.32.0](https://github.com/ptah-sh/ptah-server/compare/v0.31.1...v0.32.0) (2024-10-05)
 
 
