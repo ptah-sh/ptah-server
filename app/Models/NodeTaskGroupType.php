@@ -14,4 +14,5 @@ enum NodeTaskGroupType: int
     case CreateBackup = 7;
     case JoinSwarm = 8;
     case UpdateDirdConfig = 9;
+    case LaunchService = 10;
 }
