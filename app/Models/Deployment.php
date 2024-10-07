@@ -84,7 +84,10 @@ class Deployment extends Model
         $tasks = [];
 
         foreach ($data->processes as $process) {
-            $tasks = array_merge($tasks, $process->asNodeTasks($this));
+            $tasks = [
+                ...$tasks,
+                ...$process->asNodeTasks($this),
+            ];
         }
 
         $previousProcesses = $this->previousDeployment()?->data->processes ?? [];
@@ -101,7 +104,8 @@ class Deployment extends Model
             }
         }
 
-        // Why is this needed? :)
+        // Question: Why is this needed? :)
+        // Answer: process asNodeTasks() method makes modifications to the process object. "asNodeTasks" is not the best name.
         $this->saveQuietly();
 
         return $tasks;

@@ -2,10 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\DeploymentData\Healthcheck;
-use App\Models\DeploymentData\LaunchMode;
 use App\Models\DeploymentData\Process;
-use App\Models\DeploymentData\ReleaseCommand;
 use App\Rules\UniqueInArray;
 use App\Util\Arrays;
 use Illuminate\Validation\ValidationException;
@@ -26,38 +23,12 @@ class DeploymentData extends Data
 
     public static function make(array $attributes): static
     {
-        $processDefaults = [
-            'name' => 'svc',
-            'placementNodeId' => null,
-            'dockerRegistryId' => null,
-            'dockerImage' => '',
-            'releaseCommand' => ReleaseCommand::from([
-                'command' => null,
-            ]),
-            'command' => '',
-            'healthcheck' => Healthcheck::from([
-                'command' => null,
-            ]),
-            'backups' => [],
-            'workers' => [],
-            'launchMode' => LaunchMode::Daemon->value,
-            'envVars' => [],
-            'secretVars' => [],
-            'configFiles' => [],
-            'secretFiles' => [],
-            'volumes' => [],
-            'ports' => [],
-            'replicas' => 1,
-            'caddy' => [],
-            'fastCgi' => null,
-            'redirectRules' => [],
-            'rewriteRules' => [],
-        ];
+        $processDefaults = Process::make([]);
 
         $defaults = [
             'networkName' => '',
             'internalDomain' => '',
-            'processes' => empty($attributes['processes']) ? [$processDefaults] : $attributes['processes'],
+            'processes' => [$processDefaults],
         ];
 
         return self::from([

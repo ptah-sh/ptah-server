@@ -12,12 +12,13 @@ import ProcessTabs from "@/Pages/Services/Partials/ProcessTabs.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import DialogModal from "@/Components/DialogModal.vue";
 import AddComponentButton from "@/Components/Service/AddComponentButton.vue";
-import RemoveComponentButton from "@/Components/Service/RemoveComponentButton.vue";
+import WorkerForm from "@/Pages/Services/Partials/DeploymentData/WorkerForm.vue";
 import ComponentBlock from "@/Components/Service/ComponentBlock.vue";
 import BackupSchedule from "@/Components/BackupSchedule.vue";
-import ToggleComponent from "@/Components/Service/ToggleComponent.vue";
 import { evaluate } from "@/expr-lang.js";
 import ExternalLink from "@/Components/ExternalLink.vue";
+import cloneDeep from "lodash.clonedeep";
+import CloseButton from "@/Components/CloseButton.vue";
 
 const model = defineModel();
 
@@ -29,6 +30,8 @@ const props = defineProps({
     s3Storages: Array,
     errors: Object,
     initialSecretVars: Array,
+    blankProcess: Object,
+    blankWorker: Object,
 });
 
 const state = reactive({
@@ -41,6 +44,7 @@ const state = reactive({
         secretFiles: 0,
         volumes: 0,
         caddy: 0,
+        workers: 0,
     },
 });
 
@@ -138,70 +142,51 @@ const addFastCgiVar = () => {
 const addProcess = () => {
     const newIndex = model.value.processes.length;
 
-    model.value.processes.push({
-        id: makeId("process"),
-        name: "process_" + newIndex,
-        placementNodeId: null,
-        dockerRegistryId: null,
-        dockerImage: "",
-        releaseCommand: {
-            command: null,
-        },
-        command: null,
-        healthcheck: {
-            command: null,
-            interval: 10,
-            timeout: 5,
-            retries: 10,
-            startPeriod: 60,
-            startInterval: 10,
-        },
-        backups: [],
-        workers: [],
-        launchMode: "daemon",
-        envVars: [],
-        secretVars: [],
-        configFiles: [],
-        secretFiles: [],
-        volumes: [],
-        ports: [],
-        replicas: 1,
-        caddy: [],
-        redirectRules: [],
-        rewriteRules: [],
-        fastCgi: null,
-    });
+    const newProcess = cloneDeep(props.blankProcess);
+
+    newProcess.id = makeId("process");
+    newProcess.name = "process_" + newIndex;
+
+    model.value.processes.push(newProcess);
 
     state.selectedProcessIndex["processes"] = newIndex;
+    state.selectedProcessIndex["workers"] = 0;
 };
 
 const removeProcess = (index) => {
+    model.value.processes.splice(index, 1);
+
     for (const [key, selectedIndex] of Object.entries(
         state.selectedProcessIndex,
     )) {
         if (selectedIndex >= index) {
-            state.selectedProcessIndex[key] =
-                state.selectedProcessIndex[key] - 1;
+            state.selectedProcessIndex[key] = model.value.processes.length - 1;
         }
     }
-
-    model.value.processes.splice(index, 1);
 };
 
 const addWorker = () => {
+    const newWorker = cloneDeep(props.blankWorker);
+
+    newWorker.id = makeId("worker");
+    newWorker.name = `worker_${model.value.processes[state.selectedProcessIndex["processes"]].workers.length + 1}`;
+
     model.value.processes[state.selectedProcessIndex["processes"]].workers.push(
-        {
-            id: makeId("worker"),
-            name: `worker_${model.value.processes[state.selectedProcessIndex["processes"]].workers.length + 1}`,
-            replicas: 1,
-        },
+        newWorker,
     );
+
+    state.selectedProcessIndex["workers"] =
+        model.value.processes[state.selectedProcessIndex["processes"]].workers
+            .length - 1;
 };
 
 const removeWorker = (index) => {
-    model.value.processes[
-        state.selectedProcessIndex["processes"]
-    ].workers.splice(index, 1);
+    selectedProcess.value.workers.splice(index, 1);
+
+    const lastWorkerIndex = selectedProcess.value.workers.length - 1;
+    if (state.selectedProcessIndex["workers"] > lastWorkerIndex) {
+        state.selectedProcessIndex["workers"] = lastWorkerIndex;
+    }
 };
 
 const hasFastCgiHandlers = computed(() => {
@@ -235,19 +220,6 @@ const toggleVolumeBackups = (volume) => {
     }
 };
 
-const addProcessBackup = () => {
-    model.value.processes[state.selectedProcessIndex["processes"]].backups.push(
-        {
-            id: makeId("backup-cmd"),
-            backupSchedule: {
-                preset: "daily",
-                s3StorageId: props.s3Storages[0].id,
-                expr: "0 0 * * *",
-            },
-        },
-    );
-};
-
 const processRemoveInput = ref();
 
 const processRemoval = reactive({
@@ -257,6 +229,9 @@ const processRemoval = reactive({
 });
 
 const confirmProcessRemoval = (index) => {
+    state.selectedProcessIndex["processes"] = index;
+    state.selectedProcessIndex["workers"] = 0;
+
     processRemoval.open = true;
 
     nextTick(() => {
@@ -295,76 +270,22 @@ const extractFieldErrors = (basePath) => {
     );
 };
 
-const toggleReleaseCommand = () => {
-    model.value.processes[
-        state.selectedProcessIndex["processes"]
-    ].releaseCommand.command =
-        model.value.processes[state.selectedProcessIndex["processes"]]
-            .releaseCommand.command === null
-            ? ""
-            : null;
-};
-
-const toggleCommand = () => {
-    model.value.processes[state.selectedProcessIndex["processes"]].command =
-        model.value.processes[state.selectedProcessIndex["processes"]]
-            .command === null
-            ? ""
-            : null;
-};
-
-const toggleHealthcheck = () => {
-    const currentHealthcheck =
-        model.value.processes[state.selectedProcessIndex["processes"]]
-            .healthcheck;
-    model.value.processes[state.selectedProcessIndex["processes"]].healthcheck =
-        {
-            command: currentHealthcheck.command === null ? "" : null,
-            interval: 10,
-            timeout: 5,
-            retries: 10,
-            startPeriod: 60,
-            startInterval: 10,
-        };
-};
-
-const calculateHealthcheckTimes = computed(() => {
-    const healthcheck =
-        model.value.processes[state.selectedProcessIndex["processes"]]
-            .healthcheck;
-    if (healthcheck.command === null) return null;
-
-    const interval = Number(healthcheck.interval) || 10;
-    const timeout = Number(healthcheck.timeout) || 5;
-    const retries = Number(healthcheck.retries) || 10;
-    const startPeriod = Number(healthcheck.startPeriod) || 60;
-
-    const optimisticTime = interval;
-    const pessimisticTime =
-        retries * interval + retries * timeout + startPeriod;
-
-    return {
-        optimistic: optimisticTime,
-        pessimistic: pessimisticTime,
-    };
-});
-
 const errors = ref({});
 
 const evaluateEnvVarTemplate = (envVar, index) => {
     if (envVar.value) {
         try {
             envVar.value = evaluate(envVar.value, model.value);
-            // Clear any previous error for this field
+
             delete errors.value[
                 `processes.${state.selectedProcessIndex["envVars"]}.envVars.${index}.value`
             ];
         } catch (error) {
             console.error("Error evaluating env var template:", error);
-            // Set an error for this specific field
+
             errors.value[
                 `processes.${state.selectedProcessIndex["envVars"]}.envVars.${index}.value`
-            ] = error.message; // 'Invalid template expression';
+            ] = error.message;
         }
     }
 };
@@ -373,24 +294,44 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
     if (secretVar.value) {
         try {
             secretVar.value = evaluate(secretVar.value, model.value);
-            // Clear any previous error for this field
+
             delete errors.value[
                 `processes.${state.selectedProcessIndex["secretVars"]}.secretVars.${index}.value`
             ];
         } catch (error) {
             console.error("Error evaluating secret var template:", error);
-            // Set an error for this specific field
+
             errors.value[
                 `processes.${state.selectedProcessIndex["secretVars"]}.secretVars.${index}.value`
-            ] = error.message; // 'Invalid template expression';
+            ] = error.message;
         }
     }
 };
+
+const selectedProcess = computed(() => {
+    return model.value.processes[state.selectedProcessIndex["processes"]];
+});
+
+const selectedProcessKey = computed(() => {
+    return `processes.${state.selectedProcessIndex["processes"]}`;
+});
+
+const selectedWorker = computed(() => {
+    return selectedProcess.value.workers[state.selectedProcessIndex["workers"]];
+});
+
+const selectedWorkerKey = computed(() => {
+    return `${selectedProcessKey.value}.workers.${state.selectedProcessIndex["workers"]}`;
+});
+
+const selectedWorkerErrors = computed(() => {
+    return extractFieldErrors(selectedWorkerKey.value);
+});
 </script>
 
 <template>
     <ActionSection>
-        <template #title> Service Location </template>
+        <template #title>Service Location</template>
 
         <template #description>
             <p>
@@ -454,6 +395,8 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
                     v-model="state"
                     :processes="model.processes"
                     block="processes"
+                    :closable="true"
+                    @close="confirmProcessRemoval"
                 />
 
                 <div class="flex items-center">
@@ -488,119 +431,6 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
 
         <template #content>
             <FormField
-                class="col-span-2"
-                :error="
-                    props.errors[
-                        `processes.${state.selectedProcessIndex['processes']}.dockerRegistryId`
-                    ]
-                "
-            >
-                <template #label>Docker Registry</template>
-
-                <Select
-                    v-model="
-                        model.processes[state.selectedProcessIndex['processes']]
-                            .dockerRegistryId
-                    "
-                >
-                    <option :value="null">Docker Hub / Anonymous</option>
-                    <option
-                        v-for="registry in $props.dockerRegistries"
-                        :value="registry.id"
-                    >
-                        {{ registry.name }}
-                    </option>
-                </Select>
-            </FormField>
-
-            <FormField
-                class="col-span-4"
-                :error="
-                    props.errors[
-                        `processes.${state.selectedProcessIndex['processes']}.dockerImage`
-                    ]
-                "
-            >
-                <template #label>Docker Image</template>
-
-                <div class="flex gap-4">
-                    <TextInput
-                        v-model="
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].dockerImage
-                        "
-                        class="block w-full"
-                        placeholder="nginxdemos/hello:latest"
-                    />
-
-                    <DangerButton
-                        v-if="
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].dockerName &&
-                            model.processes.length > 1 &&
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].name
-                        "
-                        @click="
-                            confirmProcessRemoval(
-                                state.selectedProcessIndex['processes'],
-                            )
-                        "
-                        tabindex="-1"
-                    >
-                        <svg
-                            class="w-4 h-4 text-gray-800 dark:text-white"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M5 12h14"
-                            />
-                        </svg>
-                    </DangerButton>
-                    <SecondaryButton
-                        v-else
-                        @click="
-                            removeProcess(
-                                state.selectedProcessIndex['processes'],
-                            )
-                        "
-                        tabindex="-1"
-                        :disabled="model.processes.length === 1"
-                    >
-                        <svg
-                            class="w-4 h-4 text-gray-800 dark:text-white"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M5 12h14"
-                            />
-                        </svg>
-                    </SecondaryButton>
-                </div>
-            </FormField>
-
-            <FormField
                 class="col-span-2 relative"
                 :error="
                     props.errors[
@@ -608,7 +438,7 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
                     ]
                 "
             >
-                <template #label>Name</template>
+                <template #label>Process Name</template>
 
                 <TextInput
                     v-model="
@@ -626,29 +456,6 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
                     }}.{{ model.internalDomain }}</span
                 >
             </FormField>
-            <!--
-            <FormField
-                class="col-span-2"
-                :error="
-                    props.errors[
-                        `processes.${state.selectedProcessIndex['processes']}.launchMode`
-                    ]
-                "
-            >
-                <template #label>Launch Mode</template>
-
-                <Select
-                    v-model="
-                        model.processes[state.selectedProcessIndex['processes']]
-                            .launchMode
-                    "
-                >
-                    <option value="daemon">Daemon / Worker</option>
-                              <option :value="false">Schedule (crontab)</option>
-                              <option>Lifecycle Hook (before deploy / after deploy to, for example run migrations and/or upload static files)</option>
-                </Select>
-            </FormField>
-        -->
 
             <FormField
                 :error="
@@ -673,564 +480,72 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
                 </Select>
             </FormField>
 
-            <FormField
-                v-if="
-                    model.processes[state.selectedProcessIndex['processes']]
-                        .launchMode === 'scheduled'
-                "
-                class="col-span-1"
-                :error="
-                    props.errors[
-                        `processes.${state.selectedProcessIndex['processes']}.interval`
-                    ]
-                "
-            >
-                <template #label>Interval</template>
-
-                <Select
-                    v-model="
-                        model.processes[state.selectedProcessIndex['processes']]
-                            .interval
-                    "
+            <div class="flex flex-col col-span-full">
+                <label
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                    >Workers</label
                 >
-                    <option value="* * * * *">Every minute</option>
-                </Select>
-            </FormField>
-
-            <FormField
-                v-if="
-                    model.processes[state.selectedProcessIndex['processes']]
-                        .launchMode === 'daemon'
-                "
-                class="col-span-2"
-                :error="
-                    props.errors[
-                        `processes.${state.selectedProcessIndex['processes']}.replicas`
-                    ]
-                "
-            >
-                <template #label>Replicas</template>
-
-                <TextInput
-                    v-model="
-                        model.processes[state.selectedProcessIndex['processes']]
-                            .replicas
-                    "
-                    class="w-full"
-                />
-            </FormField>
-
-            <FormField
-                v-if="
-                    model.processes[state.selectedProcessIndex['processes']]
-                        .releaseCommand.command !== null
-                "
-                class="col-span-6"
-                :error="
-                    props.errors[
-                        `processes.${state.selectedProcessIndex['processes']}.releaseCommand.command`
-                    ]
-                "
-            >
-                <template #label>
-                    <fwb-tooltip class="">
-                        <template #trigger>
-                            <div class="flex items-center">
-                                Release Command
-
-                                <svg
-                                    class="ms-1 w-4 h-4 text-blue-600 dark:text-white"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke="currentColor"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                    />
-                                </svg>
-                            </div>
-                        </template>
-
-                        <template #content>
-                            This command will be executed right before the
-                            Docker Image's entrypoint. You can leave it empty.
-                        </template>
-                    </fwb-tooltip>
-                </template>
-
-                <TextInput
-                    v-model="
-                        model.processes[state.selectedProcessIndex['processes']]
-                            .releaseCommand.command
-                    "
-                    class="block w-full"
-                    placeholder="php artisan config:cache && php artisan migrate --no-interaction --verbose --ansi --force"
-                />
-            </FormField>
-
-            <FormField
-                v-if="
-                    model.processes[state.selectedProcessIndex['processes']]
-                        .command !== null
-                "
-                class="col-span-6"
-                :error="
-                    props.errors[
-                        `processes.${state.selectedProcessIndex['processes']}.command`
-                    ]
-                "
-            >
-                <template #label>
-                    <fwb-tooltip class="">
-                        <template #trigger>
-                            <div class="flex items-center">
-                                Command
-
-                                <svg
-                                    class="ms-1 w-4 h-4 text-blue-600 dark:text-white"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke="currentColor"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                    />
-                                </svg>
-                            </div>
-                        </template>
-
-                        <template #content>
-                            You can leave this field empty to use the default
-                            command defined in your Dockerfile.
-                        </template>
-                    </fwb-tooltip>
-                </template>
-
-                <TextInput
-                    v-model="
-                        model.processes[state.selectedProcessIndex['processes']]
-                            .command
-                    "
-                    class="block w-full"
-                    placeholder="php artisan queue:work"
-                />
-            </FormField>
-
-            <FormField
-                v-if="
-                    model.processes[state.selectedProcessIndex['processes']]
-                        .healthcheck.command !== null
-                "
-                class="col-span-6"
-                :error="
-                    props.errors[
-                        `processes.${state.selectedProcessIndex['processes']}.healthcheck.command`
-                    ]
-                "
-            >
-                <template #label>
-                    <hr class="col-span-full mb-2" />
-                    <fwb-tooltip class="">
-                        <template #trigger>
-                            <div class="flex items-center">
-                                Healthcheck Command
-                                <svg
-                                    class="ms-1 w-4 h-4 text-blue-600 dark:text-white"
-                                    aria-hidden="true"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    fill="none"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke="currentColor"
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                    />
-                                </svg>
-                            </div>
-                        </template>
-                        <template #content>
-                            Specify a command to check the health of your
-                            container. This command will be run inside the
-                            defined container and will override any default
-                            healthcheck provided by the container's image
-                            Dockerfile.
-                        </template>
-                    </fwb-tooltip>
-                </template>
-
-                <TextInput
-                    v-model="
-                        model.processes[state.selectedProcessIndex['processes']]
-                            .healthcheck.command
-                    "
-                    class="block w-full"
-                    placeholder="curl -f http://localhost/ || exit 1"
-                />
-            </FormField>
-
-            <div
-                v-if="
-                    model.processes[state.selectedProcessIndex['processes']]
-                        .healthcheck.command !== null
-                "
-                class="col-span-6 grid grid-cols-5 gap-4"
-            >
-                <FormField
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['processes']}.healthcheck.interval`
-                        ]
-                    "
-                    class="col-span-1"
-                >
-                    <template #label>Interval, s</template>
-                    <TextInput
-                        v-model="
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].healthcheck.interval
-                        "
-                        class="block w-full"
-                        placeholder="10"
-                    />
-                </FormField>
-
-                <FormField
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['processes']}.healthcheck.timeout`
-                        ]
-                    "
-                    class="col-span-1"
-                >
-                    <template #label>Timeout, s</template>
-                    <TextInput
-                        v-model="
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].healthcheck.timeout
-                        "
-                        class="block w-full"
-                        placeholder="5"
-                    />
-                </FormField>
-
-                <FormField
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['processes']}.healthcheck.retries`
-                        ]
-                    "
-                    class="col-span-1"
-                >
-                    <template #label>Retries</template>
-                    <TextInput
-                        v-model="
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].healthcheck.retries
-                        "
-                        class="block w-full"
-                        type="number"
-                        placeholder="10"
-                    />
-                </FormField>
-
-                <FormField
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['processes']}.healthcheck.startPeriod`
-                        ]
-                    "
-                    class="col-span-1"
-                >
-                    <template #label>Start Period, s</template>
-                    <TextInput
-                        v-model="
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].healthcheck.startPeriod
-                        "
-                        class="block w-full"
-                        placeholder="60"
-                    />
-                </FormField>
-
-                <FormField
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['processes']}.healthcheck.startInterval`
-                        ]
-                    "
-                    class="col-span-1"
-                >
-                    <template #label>Start Interval, s</template>
-                    <TextInput
-                        v-model="
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].healthcheck.startInterval
-                        "
-                        class="block w-full"
-                        placeholder="10"
-                    />
-                </FormField>
-
-                <div class="col-span-full" v-if="calculateHealthcheckTimes">
-                    <p class="text-sm text-gray-600">
-                        Healthcheck pass time:
-                        <span class="font-semibold"
-                            >Optimistic:
-                            {{ calculateHealthcheckTimes.optimistic }}s</span
+                <div class="flex flex-wrap gap-2">
+                    <div
+                        class="inline-flex rounded-md shadow-sm"
+                        role="group"
+                        v-auto-animate
+                    >
+                        <template
+                            v-for="(worker, index) in selectedProcess.workers"
+                            :key="worker.id"
                         >
-                        |
-                        <span class="font-semibold"
-                            >Pessimistic:
-                            {{ calculateHealthcheckTimes.pessimistic }}s</span
-                        >
-                    </p>
+                            <button
+                                @click="
+                                    state.selectedProcessIndex['workers'] =
+                                        index
+                                "
+                                type="button"
+                                :class="[
+                                    'px-4 py-2 text-sm font-medium border border-gray-200 first:rounded-l-lg focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 relative group last:rounded-r-lg',
+                                    state.selectedProcessIndex['workers'] ===
+                                    index
+                                        ? 'bg-gray-100 text-blue-700 dark:bg-gray-600 dark:text-white'
+                                        : 'bg-white text-gray-900 hover:bg-gray-100 hover:text-blue-700 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white',
+                                ]"
+                            >
+                                <span
+                                    v-if="worker.name.length === 0"
+                                    class="italic"
+                                >
+                                    unnamed
+                                </span>
+                                <span v-else>
+                                    {{ worker.name }}
+                                </span>
+                                <CloseButton
+                                    v-if="index > 0"
+                                    @click.stop="removeWorker(index)"
+                                />
+                            </button>
+                        </template>
+                    </div>
+                    <button
+                        @click="addWorker"
+                        type="button"
+                        class="px-4 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-2 focus:ring-blue-700 focus:text-blue-700"
+                    >
+                        + worker
+                    </button>
                 </div>
             </div>
 
-            <template
-                v-for="(worker, index) in model.processes[
-                    state.selectedProcessIndex['processes']
-                ].workers"
-            >
-                <hr class="col-span-full" />
-
-                <FormField
-                    class="col-span-2"
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['processes']}.workers.${index}.name`
-                        ]
-                    "
-                >
-                    <template #label>
-                        <fwb-tooltip class="">
-                            <template #trigger>
-                                <div class="flex items-center">
-                                    Worker Name
-
-                                    <svg
-                                        class="ms-1 w-4 h-4 text-blue-600 dark:text-white"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke="currentColor"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                        />
-                                    </svg>
-                                </div>
-                            </template>
-
-                            <template #content>
-                                Workers will be launched as a standalone Docker
-                                Service, but they will share the same Docker
-                                Image, Configs and Secrets. Volumes, Ports and
-                                Web endpoints will not be shared.
-                            </template>
-                        </fwb-tooltip>
-                    </template>
-
-                    <TextInput
-                        v-model="
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].workers[index].name
-                        "
-                        class="block w-full"
-                        :placeholder="'worker_' + (index + 1)"
-                    />
-                </FormField>
-
-                <FormField
-                    class="col-span-1"
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['processes']}.workers.${index}.replicas`
-                        ]
-                    "
-                >
-                    <template #label> Replicas </template>
-
-                    <div class="flex gap-2">
-                        <TextInput
-                            v-model="
-                                model.processes[
-                                    state.selectedProcessIndex['processes']
-                                ].workers[index].replicas
-                            "
-                            class="block w-full"
-                            placeholder="1"
-                        />
-                        <RemoveComponentButton @click="removeWorker(index)" />
-                    </div>
-                </FormField>
-
-                <FormField
-                    class="col-span-6"
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['processes']}.workers.${index}.command`
-                        ]
-                    "
-                >
-                    <template #label> Command </template>
-
-                    <TextInput
-                        v-model="
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].workers[index].command
-                        "
-                        class="block w-full"
-                        placeholder="php artisan config:cache && php artisan queue:work"
-                    />
-                </FormField>
-            </template>
-
-            <ComponentBlock
-                label="Backups"
-                v-model="
-                    model.processes[state.selectedProcessIndex['processes']]
-                        .backups
-                "
-                v-slot="{ item, $index }"
-                @remove="
-                    model.processes[
-                        state.selectedProcessIndex['processes']
-                    ].backups.splice($event, 1)
-                "
-            >
-                <FormField
-                    class="col-span-2"
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['processes']}.backups.${$index}.name`
-                        ]
-                    "
-                >
-                    <template #label> Name </template>
-
-                    <TextInput
-                        v-model="
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].backups[$index].name
-                        "
-                        class="block w-full"
-                        placeholder="daily"
-                    />
-                </FormField>
-
-                <FormField
-                    class="col-span-full"
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['processes']}.backups.${$index}.name`
-                        ]
-                    "
-                >
-                    <template #label> Command </template>
-
-                    <TextInput
-                        v-model="
-                            model.processes[
-                                state.selectedProcessIndex['processes']
-                            ].backups[$index].command
-                        "
-                        class="w-full"
-                        placeholder="PGPASSWORD=$POSTGRESQL_PASSWORD pg_dump -Fc -h $PTAH_HOSTNAME -U $POSTGRESQL_USER -d $POSTGRESQL_DATABASE > daily_backup.dump"
-                    />
-                </FormField>
-
-                <BackupSchedule
-                    :s3-storages="props.s3Storages"
-                    v-model="
-                        model.processes[state.selectedProcessIndex['processes']]
-                            .backups[$index].backupSchedule
-                    "
-                />
-            </ComponentBlock>
-        </template>
-
-        <template #actions>
-            <ToggleComponent
-                :checked="
-                    model.processes[state.selectedProcessIndex['processes']]
-                        .releaseCommand.command !== null
-                "
-                @checked="toggleReleaseCommand"
-                >Release CMD</ToggleComponent
-            >
-            <ToggleComponent
-                :checked="
-                    model.processes[state.selectedProcessIndex['processes']]
-                        .command !== null
-                "
-                @checked="toggleCommand"
-                >CMD</ToggleComponent
-            >
-            <ToggleComponent
-                :checked="
-                    model.processes[state.selectedProcessIndex['processes']]
-                        .healthcheck.command !== null
-                "
-                @checked="toggleHealthcheck"
-                >Healthcheck</ToggleComponent
-            >
-            <AddComponentButton @click="addWorker"> Worker </AddComponentButton>
-            <AddComponentButton
-                v-if="props.s3Storages.length > 0"
-                @click="addProcessBackup"
-            >
-                Backup
-            </AddComponentButton>
-
-            <FwbTooltip v-else>
-                <template #trigger>
-                    <AddComponentButton disabled>Backup</AddComponentButton>
-                </template>
-
-                <template #content
-                    >Backups can't be enabled - no S3 Storages
-                    configured</template
-                >
-            </FwbTooltip>
+            <WorkerForm
+                v-if="typeof selectedWorker === 'object'"
+                v-model="selectedWorker"
+                :errors="selectedWorkerErrors"
+                :dockerRegistries="dockerRegistries"
+            />
         </template>
     </ActionSection>
 
     <ActionSection>
-        <template #title> Environment Variables </template>
+        <template #title>Environment Variables</template>
 
         <template #description>
             <p>
@@ -2598,30 +1913,35 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
         <template #title> Delete Service </template>
 
         <template #content>
-            Are you sure you want to delete
-            <b
-                ><code>{{
-                    model.processes[state.selectedProcessIndex["processes"]]
-                        .name
-                }}</code></b
-            >? Once the process is deleted, all of its resources and data will
-            be permanently deleted. Please enter the process name to confirm you
-            would like to permanently delete it.
-
-            <div class="mt-4" v-auto-animate>
-                <TextInput
-                    ref="serviceDeleteInput"
-                    v-model="processRemoval.processName"
-                    class="mt-1 block w-3/4"
-                    :placeholder="
-                        model.processes[state.selectedProcessIndex['processes']]
+            <form
+                id="delete-process-form"
+                @submit.prevent="submitProcessRemoval"
+            >
+                Are you sure you want to delete
+                <b>
+                    <code>{{
+                        model.processes[state.selectedProcessIndex["processes"]]
                             .name
-                    "
-                    @keyup.enter="submitProcessRemoval"
-                />
+                    }}</code> </b
+                >? Once the process is deleted, all of its resources and data
+                will be permanently deleted. Please enter the process name to
+                confirm you would like to permanently delete it.
 
-                <InputError :message="processRemoval.error" class="mt-2" />
-            </div>
+                <div class="mt-4" v-auto-animate>
+                    <TextInput
+                        ref="serviceDeleteInput"
+                        v-model="processRemoval.processName"
+                        class="mt-1 block w-3/4"
+                        :placeholder="
+                            model.processes[
+                                state.selectedProcessIndex['processes']
+                            ].name
+                        "
+                    />
+
+                    <InputError :message="processRemoval.error" class="mt-2" />
+                </div>
+            </form>
         </template>
 
         <template #footer>
@@ -2629,7 +1949,7 @@ const evaluateSecretVarTemplate = (secretVar, index) => {
                 Cancel
             </SecondaryButton>
 
-            <DangerButton class="ms-3" @click="submitProcessRemoval">
+            <DangerButton form="delete-process-form" class="ms-3">
                 Delete Process
             </DangerButton>
         </template>
