@@ -70,7 +70,7 @@ class NodeController extends Controller
             $node->save();
         });
 
-        return to_route('nodes.show', ['node' => $node->id]);
+        return to_route('nodes.settings', ['node' => $node->id]);
     }
 
     public function show(Node $node)

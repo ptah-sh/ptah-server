@@ -7,12 +7,12 @@ use App\Models\Node;
 use App\Models\NodeTasks\CreateConfig\CreateConfigMeta;
 use App\Models\NodeTasks\CreateSecret\CreateSecretMeta;
 use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
-use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTaskType;
 use App\Rules\RequiredIfArrayHas;
 use App\Rules\UniqueInArray;
-use App\Util\ResourceId;
+use App\Util\Arrays;
 use Exception;
+use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Exists;
 use Spatie\LaravelData\Attributes\Validation\RequiredWith;
@@ -51,7 +51,6 @@ class Process extends Data
         #[Rule(new UniqueInArray('name'))]
         /* @var Volume[] */
         public array $volumes,
-        public ?BackupVolume $backupVolume,
         #[DataCollectionOf(NodePort::class)]
         // TODO: unique across all services of the swarm cluster
         #[Rule(new UniqueInArray('targetPort'))]
@@ -73,11 +72,6 @@ class Process extends Data
     public function findVolume(string $id): ?Volume
     {
         return collect($this->volumes)->first(fn (Volume $volume) => $volume->id === $id);
-    }
-
-    public function findProcessBackup(string $id): ?ProcessBackup
-    {
-        return collect($this->backups)->first(fn (ProcessBackup $backup) => $backup->id === $id);
     }
 
     public function findConfigFile(string $path): ?ConfigFile
@@ -195,15 +189,6 @@ class Process extends Data
             }
         }
 
-        if ($this->backupVolume == null) {
-            $this->backupVolume = BackupVolume::validateAndCreate([
-                'id' => ResourceId::make('volume'),
-                'name' => 'backups',
-                'dockerName' => $this->makeResourceName('/ptah/backups'),
-                'path' => '/ptah/backups',
-            ]);
-        }
-
         $tasks = [
             ...$tasks,
             ...$this->getPullImageTasks($deployment),
@@ -212,7 +197,7 @@ class Process extends Data
         foreach ($this->workers as $worker) {
             $tasks = [
                 ...$tasks,
-                ...$worker->asNodeTasks($deployment, $this),
+                ...$worker->asNodeTasks($deployment, $this, pullImage: false),
             ];
         }
 
@@ -242,43 +227,24 @@ class Process extends Data
         $labels = $this->resourceLabels($deployment);
 
         $mounts = collect($this->volumes)
-            ->map(fn (Volume $volume) => [
-                'Type' => 'volume',
-                'Source' => $volume->dockerName,
-                'Target' => $volume->path,
-                'VolumeOptions' => [
-                    'Labels' => dockerize_labels([
-                        ...$labels,
-                        'volume.id' => $volume->id,
-                        'volume.path' => $volume->path,
-                    ]),
-                ],
-            ])
+            ->map(fn (Volume $volume) => $volume->asMount($labels))
             ->toArray();
-
-        $mounts[] = [
-            'Type' => 'volume',
-            'Source' => $this->backupVolume->dockerName,
-            'Target' => $this->backupVolume->path,
-            'VolumeOptions' => [
-                'Labels' => dockerize_labels([
-                    ...$labels,
-                    'volume.id' => $this->backupVolume->id,
-                    'volume.path' => $this->backupVolume->path,
-                ]),
-            ],
-        ];
 
         return $mounts;
     }
 
-    private function findWorker(?string $dockerName): ?Worker
+    public function findWorker(?string $dockerName): ?Worker
     {
         if (! $dockerName) {
             return null;
         }
 
         return collect($this->workers)->first(fn (Worker $worker) => $worker->dockerName === $dockerName);
+    }
+
+    public function findWorkerByName(string $name): ?Worker
+    {
+        return collect($this->workers)->first(fn (Worker $worker) => $worker->name === $name);
     }
 
     private function getPullImageTasks(Deployment $deployment): array
@@ -294,33 +260,7 @@ class Process extends Data
 
             $pulledImages[] = $worker->dockerImage;
 
-            $dockerRegistry = $worker->dockerRegistryId
-                ? $deployment->service->swarm->data->findRegistry($worker->dockerRegistryId)
-                : null;
-
-            if ($worker->dockerRegistryId && is_null($dockerRegistry)) {
-                throw new Exception("Docker registry '{$worker->dockerRegistryId}' not found");
-            }
-
-            $authConfigName = $dockerRegistry
-                ? $dockerRegistry->dockerName
-                : '';
-
-            $tasks[] = [
-                'type' => NodeTaskType::PullDockerImage,
-                'meta' => PullDockerImageMeta::from([
-                    'deploymentId' => $deployment->id,
-                    'processName' => $this->dockerName,
-                    'serviceId' => $deployment->service_id,
-                    'serviceName' => $deployment->service->name,
-                    'dockerImage' => $worker->dockerImage,
-                ]),
-                'payload' => [
-                    'AuthConfigName' => $authConfigName,
-                    'Image' => $worker->dockerImage,
-                    'PullOptions' => (object) [],
-                ],
-            ];
+            $tasks[] = $worker->getPullImageTask($deployment);
         }
 
         return $tasks;
@@ -351,6 +291,36 @@ class Process extends Data
 
         return self::from([
             ...$defaults,
+            ...$attributes,
+        ]);
+    }
+
+    public function copyWith(array $attributes): static
+    {
+        $result = $this->toArray();
+
+        if (isset($attributes['envVars'])) {
+            $attributes['envVars'] = Arrays::niceMergeByKey($result['envVars'], $attributes['envVars'], 'name');
+        }
+
+        $errors = [];
+
+        if (isset($attributes['workers'])) {
+            foreach ($attributes['workers'] as $idx => $worker) {
+                if (! $this->findWorkerByName($worker['name'])) {
+                    $errors["workers.{$idx}.name"] = 'Worker '.$worker['name'].' does not exist';
+                }
+            }
+
+            $attributes['workers'] = Arrays::niceMergeByKey($result['workers'], $attributes['workers'], 'name');
+        }
+
+        if (! empty($errors)) {
+            throw ValidationException::withMessages($errors);
+        }
+
+        return self::validateAndCreate([
+            ...$result,
             ...$attributes,
         ]);
     }

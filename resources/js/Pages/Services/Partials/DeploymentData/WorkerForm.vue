@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from "vue";
+import { computed, ref, effect } from "vue";
 import { FwbToggle, FwbTooltip } from "flowbite-vue";
 import TextInput from "@/Components/TextInput.vue";
 import FormField from "@/Components/FormField.vue";
@@ -9,18 +9,60 @@ const props = defineProps({
     model: Object,
     errors: Object,
     dockerRegistries: Array,
+    s3Storages: Array,
 });
 
 const model = defineModel();
 
+const customCrontab = ref(null);
+
+const archiveFormat = ref(null);
+effect(() => {
+    archiveFormat.value = model.value.backupOptions?.archive?.format ?? null;
+});
+
+const defaultCrontab = "0 0 * * *";
+const crontabValues = {
+    "* * * * *": "Every minute",
+    "*/5 * * * *": "Every five minutes",
+    "0 * * * *": "Every hour",
+    "0 0 * * *": "Every day at midnight",
+    "0 0 * * 0": "Every Sunday at midnight",
+};
+
+effect(() => {
+    if (!model.value.crontab && customCrontab.value) {
+        customCrontab.value.focus();
+    }
+});
+
+const isCronjob = computed(() => {
+    return ["cronjob", "backup_create"].includes(model.value.launchMode);
+});
+
+const isBackup = computed(() => {
+    return ["backup_create", "backup_restore"].includes(model.value.launchMode);
+});
+
+const resetCrontab = () => {
+    model.value.crontab = defaultCrontab;
+};
+
 const handleLaunchModeChange = (evt) => {
-    if (
-        evt.target.value === "cronjob" ||
-        evt.target.value === "backup_create"
-    ) {
-        model.value.schedule = "* * * * *";
+    if (isCronjob.value) {
+        model.value.crontab = defaultCrontab;
     } else {
-        model.value.schedule = null;
+        model.value.replicas = 1;
+        model.value.crontab = null;
+    }
+
+    if (isBackup.value) {
+        model.value.backupOptions = {
+            s3StorageId:
+                props.s3Storages.length > 0 ? props.s3Storages[0].id : null,
+        };
+    } else {
+        model.value.backupOptions = null;
     }
 };
 
@@ -72,6 +114,16 @@ const commandPlaceholder = computed(() => {
 
     return "php artisan queue:work";
 });
+
+const handleArchiveFormatChange = () => {
+    if (archiveFormat.value) {
+        model.value.backupOptions.archive = {
+            format: archiveFormat.value,
+        };
+    } else {
+        model.value.backupOptions.archive = null;
+    }
+};
 </script>
 
 <template>
@@ -126,24 +178,52 @@ const commandPlaceholder = computed(() => {
                 <option value="daemon">Daemon or Queue Worker</option>
                 <option value="cronjob">Schedule: cronjob</option>
                 <option value="backup_create">Backup: create a backup</option>
-                <!-- <option value="manual">Manual Only</option> -->
                 <option value="backup_restore">Backup: restore a backup</option>
+                <!-- <option value="manual">Manual Only</option> -->
             </Select>
         </FormField>
 
         <FormField
-            v-if="
-                model.launchMode === 'cronjob' ||
-                model.launchMode === 'backup_create'
-            "
+            v-if="isCronjob"
             class="col-span-2"
-            :error="props.errors['cronjob']"
+            :error="props.errors['crontab']"
         >
-            <template #label>Schedule</template>
+            <template #label>
+                <span
+                    class="flex items-center justify-between pr-2"
+                    v-auto-animate
+                >
+                    <span>Schedule</span>
+                    <button
+                        v-if="!(model.crontab in crontabValues)"
+                        @click="resetCrontab"
+                        type="button"
+                        class="text-xs text-gray-500 hover:text-gray-900"
+                    >
+                        reset
+                    </button>
+                </span>
+            </template>
 
-            <Select v-model="model.schedule">
-                <option value="* * * * *">Every minute</option>
-            </Select>
+            <div v-auto-animate>
+                <Select
+                    v-if="model.crontab in crontabValues"
+                    v-model="model.crontab"
+                >
+                    <option v-for="(value, key) in crontabValues" :value="key">
+                        {{ value }}
+                    </option>
+                    <option value="">Custom</option>
+                </Select>
+
+                <TextInput
+                    v-else
+                    ref="customCrontab"
+                    v-model="model.crontab"
+                    class="block w-full"
+                    placeholder="* * * * *"
+                />
+            </div>
         </FormField>
 
         <FormField
@@ -179,6 +259,44 @@ const commandPlaceholder = computed(() => {
             />
         </div>
     </FormField>
+
+    <div
+        v-if="isBackup && model.backupOptions"
+        class="grid grid-cols-6 gap-4 col-span-full"
+    >
+        <FormField
+            class="col-span-2"
+            :error="
+                s3Storages.length > 0
+                    ? props.errors['backupOptions.s3StorageId']
+                    : 'You need to add at least one S3 Storage to use backups.'
+            "
+        >
+            <template #label>Backup S3 Storage</template>
+
+            <Select
+                v-model="model.backupOptions.s3StorageId"
+                placeholder="No S3 Storages found"
+            >
+                <option v-for="storage in s3Storages" :value="storage.id">
+                    {{ storage.name }}
+                </option>
+            </Select>
+        </FormField>
+
+        <FormField
+            class="col-span-2"
+            :error="props.errors['backupOptions.archive.format']"
+        >
+            <template #label>Archive Format</template>
+
+            <Select v-model="archiveFormat" @change="handleArchiveFormatChange">
+                <option :value="null">None</option>
+                <option value="tar.gz">tar.gz</option>
+                <option value="zip">zip</option>
+            </Select>
+        </FormField>
+    </div>
 
     <FormField class="col-span-full">
         <template #label>Advanced Options</template>

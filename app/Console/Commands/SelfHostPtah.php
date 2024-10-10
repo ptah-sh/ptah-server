@@ -97,6 +97,7 @@ class SelfHostPtah extends Command
             'swarm_id' => $node->swarm_id,
         ]);
 
+        // TODO: create processes from 1-Click App templates
         StartDeployment::run($user, $service, DeploymentData::validateAndCreate([
             'networkName' => $network->docker_name,
             'internalDomain' => 'server.ptah.local',
@@ -104,23 +105,27 @@ class SelfHostPtah extends Command
                 [
                     'name' => 'pg',
                     'placementNodeId' => $node->id,
-                    'launchMode' => LaunchMode::Daemon->value,
-                    'dockerRegistryId' => null,
-                    'dockerImage' => 'bitnami/postgresql:16',
-                    'releaseCommand' => [
-                        'command' => null,
+                    'workers' => [
+                        [
+                            'name' => 'main',
+                            'dockerImage' => 'bitnami/postgresql:16',
+                            'launchMode' => LaunchMode::Daemon->value,
+                            'replicas' => 1,
+                            'dockerRegistryId' => null,
+                            'command' => null,
+                            'releaseCommand' => [
+                                'command' => null,
+                            ],
+                            'healthcheck' => [
+                                'command' => null,
+                                'interval' => 10,
+                                'timeout' => 5,
+                                'retries' => 3,
+                                'startPeriod' => 30,
+                                'startInterval' => 5,
+                            ],
+                        ],
                     ],
-                    'command' => null,
-                    'healthcheck' => [
-                        'command' => null,
-                        'interval' => 10,
-                        'timeout' => 5,
-                        'retries' => 3,
-                        'startPeriod' => 30,
-                        'startInterval' => 5,
-                    ],
-                    'backups' => [],
-                    'workers' => [],
                     'envVars' => [
                         [
                             'name' => 'POSTGRESQL_USERNAME',
@@ -145,7 +150,6 @@ class SelfHostPtah extends Command
                             'path' => '/bitnami/postgresql',
                         ],
                     ],
-                    'replicas' => 1,
                     'ports' => [],
                     'caddy' => [],
                     'fastcgiVars' => null,
@@ -154,23 +158,27 @@ class SelfHostPtah extends Command
                 ],
                 [
                     'name' => 'pool',
-                    'launchMode' => LaunchMode::Daemon->value,
-                    'dockerRegistryId' => null,
-                    'dockerImage' => 'bitnami/pgbouncer',
-                    'releaseCommand' => [
-                        'command' => null,
+                    'workers' => [
+                        [
+                            'name' => 'main',
+                            'launchMode' => LaunchMode::Daemon->value,
+                            'replicas' => 1,
+                            'dockerRegistryId' => null,
+                            'dockerImage' => 'bitnami/pgbouncer',
+                            'releaseCommand' => [
+                                'command' => null,
+                            ],
+                            'command' => null,
+                            'healthcheck' => [
+                                'command' => null,
+                                'interval' => 10,
+                                'timeout' => 5,
+                                'retries' => 3,
+                                'startPeriod' => 30,
+                                'startInterval' => 5,
+                            ],
+                        ],
                     ],
-                    'command' => null,
-                    'healthcheck' => [
-                        'command' => null,
-                        'interval' => 10,
-                        'timeout' => 5,
-                        'retries' => 3,
-                        'startPeriod' => 30,
-                        'startInterval' => 5,
-                    ],
-                    'backups' => [],
-                    'workers' => [],
                     'envVars' => [
                         [
                             'name' => 'PGBOUNCER_POOL_MODE',
@@ -205,7 +213,6 @@ class SelfHostPtah extends Command
                     'configFiles' => [],
                     'secretFiles' => [],
                     'volumes' => [],
-                    'replicas' => 1,
                     'ports' => [],
                     'caddy' => [],
                     'fastcgiVars' => null,
@@ -215,23 +222,27 @@ class SelfHostPtah extends Command
                 [
                     'name' => 'victoriametrics',
                     'placementNodeId' => $node->id,
-                    'launchMode' => LaunchMode::Daemon->value,
-                    'dockerRegistryId' => null,
-                    'dockerImage' => 'victoriametrics/victoria-metrics',
-                    'releaseCommand' => [
-                        'command' => null,
+                    'workers' => [
+                        [
+                            'name' => 'main',
+                            'launchMode' => LaunchMode::Daemon->value,
+                            'replicas' => 1,
+                            'dockerRegistryId' => null,
+                            'dockerImage' => 'victoriametrics/victoria-metrics',
+                            'releaseCommand' => [
+                                'command' => null,
+                            ],
+                            'command' => null,
+                            'healthcheck' => [
+                                'command' => null,
+                                'interval' => 10,
+                                'timeout' => 5,
+                                'retries' => 3,
+                                'startPeriod' => 30,
+                                'startInterval' => 5,
+                            ],
+                        ],
                     ],
-                    'command' => null,
-                    'healthcheck' => [
-                        'command' => null,
-                        'interval' => 10,
-                        'timeout' => 5,
-                        'retries' => 3,
-                        'startPeriod' => 30,
-                        'startInterval' => 5,
-                    ],
-                    'backups' => [],
-                    'workers' => [],
                     'envVars' => [],
                     'secretVars' => [],
                     'configFiles' => [],
@@ -243,7 +254,6 @@ class SelfHostPtah extends Command
                             'path' => '/victoria-metrics-data',
                         ],
                     ],
-                    'replicas' => 1,
                     'ports' => [],
                     'caddy' => [],
                     'fastcgiVars' => null,
@@ -252,32 +262,65 @@ class SelfHostPtah extends Command
                 ],
                 [
                     'name' => 'ptah-server',
-                    'launchMode' => LaunchMode::Daemon->value,
-                    'dockerRegistryId' => null,
-                    'dockerImage' => 'ghcr.io/ptah-sh/ptah-server:latest',
-                    'releaseCommand' => [
-                        'command' => 'php artisan config:cache && php artisan migrate --no-interaction --verbose --ansi --force',
-                    ],
-                    'command' => null,
-                    'healthcheck' => [
-                        'command' => null,
-                        'interval' => 10,
-                        'timeout' => 5,
-                        'retries' => 3,
-                        'startPeriod' => 30,
-                        'startInterval' => 5,
-                    ],
-                    'backups' => [],
                     'workers' => [
                         [
-                            'name' => 'schedule',
+                            'name' => 'main',
+                            'launchMode' => LaunchMode::Daemon->value,
+                            'replicas' => 2,
+                            'dockerRegistryId' => null,
+                            'dockerImage' => 'ghcr.io/ptah-sh/ptah-server:latest',
+                            'releaseCommand' => [
+                                'command' => 'php artisan config:cache && php artisan migrate --no-interaction --verbose --ansi --force',
+                            ],
+                            'command' => null,
+                            'healthcheck' => [
+                                'command' => null,
+                                'interval' => 10,
+                                'timeout' => 5,
+                                'retries' => 3,
+                                'startPeriod' => 30,
+                                'startInterval' => 5,
+                            ],
+                        ],
+                        [
+                            'name' => 'scheduler',
+                            'launchMode' => LaunchMode::Daemon->value,
                             'replicas' => 1,
-                            'command' => 'php artisan config:cache && php artisan schedule:work',
+                            'dockerRegistryId' => null,
+                            'dockerImage' => 'ghcr.io/ptah-sh/ptah-server:latest',
+                            'replicas' => 1,
+                            'command' => 'APP_SCHEDULER=main php artisan config:cache && php artisan schedule:work',
+                            'releaseCommand' => [
+                                'command' => null,
+                            ],
+                            'healthcheck' => [
+                                'command' => null,
+                                'interval' => 10,
+                                'timeout' => 5,
+                                'retries' => 3,
+                                'startPeriod' => 30,
+                                'startInterval' => 5,
+                            ],
                         ],
                         [
                             'name' => 'queue',
+                            'launchMode' => LaunchMode::Daemon->value,
+                            'replicas' => 1,
+                            'dockerRegistryId' => null,
+                            'dockerImage' => 'ghcr.io/ptah-sh/ptah-server:latest',
                             'replicas' => 1,
                             'command' => 'php artisan config:cache && php artisan queue:work',
+                            'releaseCommand' => [
+                                'command' => null,
+                            ],
+                            'healthcheck' => [
+                                'command' => null,
+                                'interval' => 10,
+                                'timeout' => 5,
+                                'retries' => 3,
+                                'startPeriod' => 30,
+                                'startInterval' => 5,
+                            ],
                         ],
                     ],
                     'envVars' => [
@@ -334,7 +377,6 @@ class SelfHostPtah extends Command
                     'configFiles' => [],
                     'secretFiles' => [],
                     'volumes' => [],
-                    'replicas' => 2,
                     'ports' => [],
                     'caddy' => [
                         [
