@@ -11,6 +11,21 @@ class Volume extends Data
         public string $name,
         public ?string $dockerName,
         public string $path,
-        public ?BackupSchedule $backupSchedule
     ) {}
+
+    public function asMount(array $labels): array
+    {
+        return [
+            'Type' => 'volume',
+            'Source' => $this->dockerName,
+            'Target' => $this->path,
+            'VolumeOptions' => [
+                'Labels' => dockerize_labels([
+                    ...$labels,
+                    'volume.id' => $this->id,
+                    'volume.path' => $this->path,
+                ]),
+            ],
+        ];
+    }
 }

@@ -1,8 +1,7 @@
 <?php
 
 use ApiNodes\Http\Middleware\AgentTokenAuth;
-use App\Console\Commands\DispatchProcessBackupTask;
-use App\Console\Commands\DispatchVolumeBackupTask;
+use App\Console\Commands\ExecuteScheduledWorker;
 use App\Http\Middleware\AdminAccess;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\CheckAgentUpdates;
@@ -53,6 +52,15 @@ return Application::configure(basePath: dirname(__DIR__))
             return;
         }
 
+        if (app()->runningConsoleCommand('schedule:work') && config('app.env') === 'production') {
+            $schedule->command('schedule:run')
+                ->everyMinute()
+                ->onOneServer()
+                ->withoutOverlapping();
+
+            return;
+        }
+
         $schedule->job(CheckAgentUpdates::class)
             ->everyMinute()
             ->onOneServer()
@@ -64,35 +72,18 @@ return Application::configure(basePath: dirname(__DIR__))
         ) use ($schedule) {
             foreach ($services as $service) {
                 foreach ($service->latestDeployment->data->processes as $process) {
-                    if ($process->replicas === 0) {
-                        continue;
-                    }
-
-                    foreach ($process->volumes as $volume) {
-                        $backupSchedule = $volume->backupSchedule;
-                        if ($backupSchedule === null) {
+                    foreach ($process->workers as $worker) {
+                        if (! $worker->crontab) {
                             continue;
                         }
 
                         $schedule
-                            ->command(DispatchVolumeBackupTask::class, [
+                            ->command(ExecuteScheduledWorker::class, [
                                 '--service-id' => $service->id,
                                 '--process' => $process->dockerName,
-                                '--volume-id' => $volume->id,
+                                '--worker' => $worker->dockerName,
                             ])
-                            ->cron($backupSchedule->expr)
-                            ->onOneServer()
-                            ->withoutOverlapping();
-                    }
-
-                    foreach ($process->backups as $backup) {
-                        $schedule
-                            ->command(DispatchProcessBackupTask::class, [
-                                '--service-id' => $service->id,
-                                '--process' => $process->dockerName,
-                                '--backup-cmd-id' => $backup->id,
-                            ])
-                            ->cron($backup->backupSchedule->expr)
+                            ->cron($worker->crontab)
                             ->onOneServer()
                             ->withoutOverlapping();
                     }

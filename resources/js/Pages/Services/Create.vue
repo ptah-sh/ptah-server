@@ -17,6 +17,8 @@ const props = defineProps({
     dockerRegistries: Array,
     s3Storages: Array,
     marketplaceUrl: String,
+    blankProcess: Object,
+    blankWorker: Object,
 });
 
 const { encryptDeploymentData } = useCrypto();
@@ -126,6 +128,8 @@ const applyTemplate = (template) => {
                     :docker-registries="props.dockerRegistries"
                     :s3-storages="props.s3Storages"
                     :initial-secret-vars="[]"
+                    :blank-process="props.blankProcess"
+                    :blank-worker="props.blankWorker"
                 />
 
                 <div class="flex justify-end">

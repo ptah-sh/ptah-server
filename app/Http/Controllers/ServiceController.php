@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateServiceRequest;
 use App\Models\DeploymentData;
+use App\Models\DeploymentData\Process;
+use App\Models\DeploymentData\Worker;
 use App\Models\Service;
 use App\Models\Swarm;
 use Illuminate\Support\Facades\DB;
@@ -52,6 +54,9 @@ class ServiceController extends Controller
             'networkName' => $networks->first()->name,
         ]);
 
+        $blankProcess = Process::make([]);
+        $blankWorker = Worker::make([]);
+
         return Inertia::render('Services/Create', [
             'networks' => $networks,
             'nodes' => $nodes,
@@ -62,6 +67,8 @@ class ServiceController extends Controller
             'node' => [
                 'swarm' => $swarm,
             ],
+            'blankProcess' => $blankProcess,
+            'blankWorker' => $blankWorker,
         ]);
     }
 
@@ -78,6 +85,9 @@ class ServiceController extends Controller
         $s3Storages = $service->swarm->data->s3Storages;
         $swarm = $service->swarm;
 
+        $blankProcess = Process::make([]);
+        $blankWorker = Worker::make([]);
+
         return Inertia::render('Services/Show', [
             'service' => $service,
             'networks' => $networks,
@@ -87,6 +97,8 @@ class ServiceController extends Controller
             'node' => [
                 'swarm' => $swarm,
             ],
+            'blankProcess' => $blankProcess,
+            'blankWorker' => $blankWorker,
         ]);
     }
 

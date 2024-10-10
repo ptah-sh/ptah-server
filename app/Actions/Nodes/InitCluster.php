@@ -195,23 +195,29 @@ class InitCluster
         return [
             'name' => 'svc',
             'placementNodeId' => $node->id,
-            'launchMode' => LaunchMode::Daemon->value,
-            'dockerRegistryId' => null,
-            'dockerImage' => 'ghcr.io/ptah-sh/ptah-caddy:latest',
-            'releaseCommand' => [
-                'command' => null,
+            'workers' => [
+                [
+                    'name' => 'main',
+                    'dockerRegistryId' => null,
+                    'dockerImage' => 'ghcr.io/ptah-sh/ptah-caddy:latest',
+                    'dockerName' => 'caddy',
+                    'command' => 'sh /start.sh',
+                    'replicas' => 1,
+                    'launchMode' => LaunchMode::Daemon,
+                    'schedule' => null,
+                    'releaseCommand' => [
+                        'command' => null,
+                    ],
+                    'healthcheck' => [
+                        'command' => null,
+                        'interval' => 10,
+                        'timeout' => 5,
+                        'retries' => 3,
+                        'startPeriod' => 30,
+                        'startInterval' => 5,
+                    ],
+                ],
             ],
-            'command' => 'sh /start.sh',
-            'healthcheck' => [
-                'command' => null,
-                'interval' => 10,
-                'timeout' => 5,
-                'retries' => 3,
-                'startPeriod' => 30,
-                'startInterval' => 5,
-            ],
-            'backups' => [],
-            'workers' => [],
             'envVars' => [
                 [
                     'name' => 'CADDY_ADMIN',
@@ -242,7 +248,6 @@ class InitCluster
                     'path' => '/config',
                 ],
             ],
-            'replicas' => 1,
             'ports' => [
                 ['targetPort' => '80', 'publishedPort' => '80'],
                 ['targetPort' => '443', 'publishedPort' => '443'],

@@ -39,7 +39,7 @@ class StartDeployment
                 'swarm_id' => $service->swarm_id,
                 'team_id' => $service->team_id,
                 'invoker_id' => $user->id,
-                'type' => $service->deployments()->exists() ? NodeTaskGroupType::UpdateService : NodeTaskGroupType::CreateService,
+                'type' => NodeTaskGroupType::LaunchService,
             ]);
 
             $deployment = $service->deployments()->create([

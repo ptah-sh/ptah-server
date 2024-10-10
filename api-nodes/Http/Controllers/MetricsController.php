@@ -88,10 +88,6 @@ class MetricsController
             ],
         ];
 
-        $log->info('Services:', [
-            'services' => $services,
-        ]);
-
         foreach ($request->all() as $metricsDoc) {
             if ($metricsDoc === null) {
                 continue;

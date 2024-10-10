@@ -80,7 +80,13 @@ jobs:
           service: 'ptah-server-prod'
           processes: |
             - name: svc
-              dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
+              workers:
+                - name: main
+                  dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
+                - name: scheduler
+                  dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
+                - name: queue
+                  dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
               envVars:
                 - name: SENTRY_RELEASE
                   value: ${{ needs.release-please.outputs.tag_name }}

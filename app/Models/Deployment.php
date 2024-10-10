@@ -41,6 +41,7 @@ class Deployment extends Model
 
     public function latestTaskGroup(): HasOneThrough
     {
+        // FIXME: make sure that the "deployments" page displays only the actual daemon deployments. Keep "task launch" separate.
         return $this->hasOneThrough(NodeTaskGroup::class, NodeTask::class, 'meta__deployment_id', 'id', 'id', 'task_group_id')->latest('id');
     }
 
@@ -84,7 +85,10 @@ class Deployment extends Model
         $tasks = [];
 
         foreach ($data->processes as $process) {
-            $tasks = array_merge($tasks, $process->asNodeTasks($this));
+            $tasks = [
+                ...$tasks,
+                ...$process->asNodeTasks($this),
+            ];
         }
 
         $previousProcesses = $this->previousDeployment()?->data->processes ?? [];
@@ -101,7 +105,8 @@ class Deployment extends Model
             }
         }
 
-        // Why is this needed? :)
+        // Question: Why is this needed? :)
+        // Answer: process asNodeTasks() method makes modifications to the process object. "asNodeTasks" is not the best name.
         $this->saveQuietly();
 
         return $tasks;

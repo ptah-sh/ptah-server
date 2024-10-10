@@ -14,6 +14,8 @@ const props = defineProps({
     service: Object,
     dockerRegistries: Array,
     s3Storages: Array,
+    blankProcess: Object,
+    blankWorker: Object,
 });
 
 const { encryptDeploymentData } = useCrypto();
@@ -116,6 +118,8 @@ const destroyService = () => {
                 :docker-registries="props.dockerRegistries"
                 :s3-storages="props.s3Storages"
                 :initial-secret-vars="initialSecretVars"
+                :blank-process="props.blankProcess"
+                :blank-worker="props.blankWorker"
             />
 
             <div class="flex justify-end">
