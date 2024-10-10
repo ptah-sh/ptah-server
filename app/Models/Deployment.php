@@ -41,6 +41,7 @@ class Deployment extends Model
 
     public function latestTaskGroup(): HasOneThrough
     {
+        // FIXME: make sure that the "deployments" page displays only the actual daemon deployments. Keep "task launch" separate.
         return $this->hasOneThrough(NodeTaskGroup::class, NodeTask::class, 'meta__deployment_id', 'id', 'id', 'task_group_id')->latest('id');
     }
 

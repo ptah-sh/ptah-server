@@ -4,9 +4,16 @@ namespace App\Models\DeploymentData;
 
 use App\Models\Deployment;
 use App\Models\NodeTasks\LaunchService\LaunchServiceMeta;
+use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTaskType;
+use App\Rules\Crontab;
+use Exception;
+use Illuminate\Support\Str;
 use Spatie\LaravelData\Attributes\Validation\Enum;
 use Spatie\LaravelData\Attributes\Validation\Min;
+use Spatie\LaravelData\Attributes\Validation\ProhibitedIf;
+use Spatie\LaravelData\Attributes\Validation\RequiredUnless;
+use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Data;
 
 class Worker extends Data
@@ -17,18 +24,29 @@ class Worker extends Data
         public string $dockerImage,
         public ?string $dockerName,
         public ?string $command,
-        #[Min(1)]
+        #[Min(0)]
         public int $replicas,
         #[Enum(LaunchMode::class)]
         public LaunchMode $launchMode,
-        public ?string $schedule,
+        #[RequiredUnless('launchMode', [LaunchMode::Daemon, LaunchMode::Manual]), ProhibitedIf('launchMode', [LaunchMode::Daemon, LaunchMode::Manual]), Rule(new Crontab)]
+        public ?string $crontab,
         public ReleaseCommand $releaseCommand,
         public Healthcheck $healthcheck,
+        #[RequiredUnless('launchMode', [LaunchMode::Daemon, LaunchMode::Manual]), ProhibitedIf('launchMode', [LaunchMode::Daemon, LaunchMode::Manual])]
+        public ?BackupOptions $backupOptions,
     ) {
-        $this->replicas = min($this->replicas, $this->launchMode->maxReplicas());
+        $maxReplicas = $this->launchMode->maxReplicas();
+        if ($this->replicas > $maxReplicas) {
+            $this->replicas = $maxReplicas;
+        }
+
+        $maxInitialReplicas = $this->launchMode->maxInitialReplicas();
+        if ($this->replicas > $maxInitialReplicas) {
+            $this->replicas = $maxInitialReplicas;
+        }
     }
 
-    public function asNodeTasks(Deployment $deployment, Process $process): array
+    public function asNodeTasks(Deployment $deployment, Process $process, bool $pullImage = true, ?int $desiredReplicas = null): array
     {
         [$command, $args] = $this->getCommandAndArgs();
 
@@ -42,10 +60,29 @@ class Worker extends Data
             $this->dockerName = $process->makeResourceName('wkr_'.$this->name);
         }
 
-        $labels = [
+        if ($this->launchMode->isBackup() && ! $this->backupOptions->backupVolume) {
+            $dockerName = dockerize_name($this->dockerName.'_vol_ptah_backup');
+
+            $this->backupOptions->backupVolume = Volume::validateAndCreate([
+                'id' => 'volume-'.Str::random(11),
+                'name' => $dockerName,
+                'dockerName' => $dockerName,
+                'path' => '/ptah/backups',
+            ]);
+        }
+
+        $labels = dockerize_labels([
             ...$process->resourceLabels($deployment),
+            'kind' => 'worker',
+            // Cookie is used to filter out stale tasks for the same Docker Service on the Docker Engine's side
+            //   and avoid transferring loads of data between Ptah.sh Agent and Docker Engine.
+            'cookie' => Str::random(32),
             'worker.name' => $this->name,
-        ];
+        ]);
+
+        if ($pullImage) {
+            $tasks[] = $this->getPullImageTask($deployment);
+        }
 
         $tasks[] = [
             'type' => NodeTaskType::LaunchService,
@@ -69,7 +106,7 @@ class Worker extends Data
                             'Args' => $args,
                             'Hostname' => $hostname,
                             'Env' => collect($this->getEnvVars($deployment, $process))->map(fn (EnvVar $var) => "{$var->name}={$var->value}")->toArray(),
-                            'Mounts' => $process->getMounts($deployment),
+                            'Mounts' => $this->getMounts($deployment, $process, $labels),
                             'Hosts' => [
                                 $internalDomain,
                             ],
@@ -107,6 +144,7 @@ class Worker extends Data
                                 'StartInterval' => $this->healthcheck->startInterval * 1000000000, // Convert to nanoseconds
                             ] : null,
                         ],
+                        'RestartPolicy' => $this->getRestartPolicy(),
                         'Networks' => [
                             [
                                 'Target' => $deployment->data->networkName,
@@ -117,11 +155,7 @@ class Worker extends Data
                             ],
                         ],
                     ],
-                    'Mode' => [
-                        'Replicated' => [
-                            'Replicas' => $this->replicas,
-                        ],
-                    ],
+                    'Mode' => $this->getSchedulingMode($desiredReplicas),
                     'EndpointSpec' => [
                         'Ports' => $this->getPorts($process),
                     ],
@@ -130,6 +164,37 @@ class Worker extends Data
         ];
 
         return $tasks;
+    }
+
+    public function getPullImageTask(Deployment $deployment): array
+    {
+        $dockerRegistry = $this->dockerRegistryId
+            ? $deployment->service->swarm->data->findRegistry($this->dockerRegistryId)
+            : null;
+
+        if ($this->dockerRegistryId && is_null($dockerRegistry)) {
+            throw new Exception("Docker registry '{$this->dockerRegistryId}' not found");
+        }
+
+        $authConfigName = $dockerRegistry
+            ? $dockerRegistry->dockerName
+            : '';
+
+        return [
+            'type' => NodeTaskType::PullDockerImage,
+            'meta' => PullDockerImageMeta::from([
+                'deploymentId' => $deployment->id,
+                'processName' => $this->dockerName,
+                'serviceId' => $deployment->service_id,
+                'serviceName' => $deployment->service->name,
+                'dockerImage' => $this->dockerImage,
+            ]),
+            'payload' => [
+                'AuthConfigName' => $authConfigName,
+                'Image' => $this->dockerImage,
+                'PullOptions' => (object) [],
+            ],
+        ];
     }
 
     private function getInternalDomain(Deployment $deployment, Process $process): string
@@ -147,19 +212,24 @@ class Worker extends Data
         return "dpl-{$deployment->id}.{$this->name}.{$process->getInternalDomain($deployment)}";
     }
 
+    private function getMounts(Deployment $deployment, Process $process, array $labels): array
+    {
+        $mounts = $process->getMounts($deployment);
+
+        if ($this->backupOptions) {
+            $mounts[] = $this->backupOptions->backupVolume->asMount($labels);
+        }
+
+        return $mounts;
+    }
+
     private function getCommandAndArgs(): array
     {
         if (! $this->command) {
             return [null, null];
         }
 
-        // FIXME: use smarter CLI split - need to handle values with spaces, surrounded by the double quotes
-        $splitCmd = explode(' ', $this->command);
-
-        $command = [$splitCmd[0]];
-        $args = array_slice($splitCmd, 1);
-
-        return [$command, $args];
+        return [['sh'], ['-c', $this->command]];
     }
 
     private function getReleaseCommandPayload(Process $process, array $labels): array
@@ -199,15 +269,12 @@ class Worker extends Data
             'value' => $this->getHostname($deployment, $process),
         ]);
 
-        $envVars[] = EnvVar::validateAndCreate([
-            'name' => 'PTAH_WORKER_NAME',
-            'value' => $this->name,
-        ]);
-
-        $envVars[] = EnvVar::validateAndCreate([
-            'name' => 'PTAH_BACKUP_DIR',
-            'value' => '/ptah/backups',
-        ]);
+        if ($this->backupOptions) {
+            $envVars[] = EnvVar::validateAndCreate([
+                'name' => 'PTAH_BACKUP_DIR',
+                'value' => $this->backupOptions->backupVolume->path,
+            ]);
+        }
 
         $envVars[] = EnvVar::validateAndCreate([
             'name' => 'PTAH_DEPLOYMENT_ID',
@@ -222,6 +289,11 @@ class Worker extends Data
         $envVars[] = EnvVar::validateAndCreate([
             'name' => 'PTAH_PROCESS_NAME',
             'value' => $process->name,
+        ]);
+
+        $envVars[] = EnvVar::validateAndCreate([
+            'name' => 'PTAH_WORKER_NAME',
+            'value' => $this->name,
         ]);
 
         return $envVars;
@@ -251,6 +323,38 @@ class Worker extends Data
                 'PublishMode' => 'ingress',
             ])
             ->toArray();
+    }
+
+    private function getSchedulingMode(?int $desiredReplicas): array
+    {
+        $desiredReplicas ??= $this->replicas;
+
+        if ($this->launchMode->isDaemon()) {
+            return [
+                'Replicated' => [
+                    'Replicas' => $desiredReplicas,
+                ],
+            ];
+        }
+
+        return [
+            'ReplicatedJob' => (object) [
+                'MaxConcurrent' => $desiredReplicas,
+            ],
+        ];
+    }
+
+    public function getRestartPolicy(): array
+    {
+        if ($this->launchMode->isDaemon()) {
+            return [
+                'Condition' => 'any',
+            ];
+        }
+
+        return [
+            'Condition' => 'none',
+        ];
     }
 
     public static function make(array $attributes): static

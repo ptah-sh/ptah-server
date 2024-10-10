@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\DeploymentData\Process;
 use App\Rules\UniqueInArray;
-use App\Util\Arrays;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Rule;
@@ -50,28 +49,14 @@ class DeploymentData extends Data
                     continue;
                 }
 
-                $processExists = false;
-
-                foreach ($result['processes'] as $existingIdx => $existingProcess) {
-                    if ($existingProcess['name'] === $process['name']) {
-                        if (isset($process['envVars'])) {
-                            $updatedVars = collect($process['envVars'])->pluck('name')->toArray();
-
-                            $existingProcess['envVars'] = collect($result['processes'][$existingIdx]['envVars'])
-                                ->reject(fn ($var) => in_array($var['name'], $updatedVars))
-                                ->values()
-                                ->toArray();
-                        }
-
-                        $result['processes'][$existingIdx] = Arrays::niceMerge($existingProcess, $process);
-
-                        $processExists = true;
-                    }
-                }
-
-                if (! $processExists) {
+                $existingProcess = $this->findProcessByName($process['name']);
+                if (! $existingProcess) {
                     $errors["processes.{$idx}.name"] = "Process {$process['name']} does not exist";
+
+                    continue;
                 }
+
+                $result['processes'][$idx] = $existingProcess->copyWith($process)->toArray();
             }
         }
 
@@ -79,11 +64,16 @@ class DeploymentData extends Data
             throw ValidationException::withMessages($errors);
         }
 
-        return DeploymentData::validateAndCreate($result);
+        return self::validateAndCreate($result);
     }
 
     public function findProcess(string $dockerName): ?Process
     {
         return collect($this->processes)->first(fn (Process $process) => $process->dockerName === $dockerName);
+    }
+
+    public function findProcessByName(string $name): ?Process
+    {
+        return collect($this->processes)->first(fn (Process $process) => $process->name === $name);
     }
 }

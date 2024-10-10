@@ -20,4 +20,23 @@ enum LaunchMode: string
             self::Manual => 1,
         };
     }
+
+    public function isDaemon(): bool
+    {
+        return $this === self::Daemon;
+    }
+
+    public function isBackup(): bool
+    {
+        return $this === self::BackupCreate || $this === self::BackupRestore;
+    }
+
+    public function maxInitialReplicas(): int
+    {
+        if ($this->isDaemon()) {
+            return PHP_INT_MAX;
+        }
+
+        return 0;
+    }
 }

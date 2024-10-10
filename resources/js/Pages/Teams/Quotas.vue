@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TeamsLayout from "@/Pages/Teams/TeamsLayout.vue";
 import { UsageQuotas, ItemQuota } from "@/types/quotas";
-import { Link } from "@inertiajs/vue3";
+import Warning from "@/Components/Warning.vue";
 
 interface Props {
     team: {
@@ -65,22 +65,17 @@ function getResetPeriodText(quota: ItemQuota): string | null {
                 Team Quotas
             </h3>
 
-            <div
+            <Warning
                 v-if="quotaReached"
-                class="mb-4 p-4 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700"
+                title="Quota Limit Reached"
+                :link="{
+                    href: route('teams.billing.show', team.id),
+                    text: 'View Billing Options',
+                }"
             >
-                <p class="font-bold">Quota Limit Reached</p>
-                <p>
-                    You've reached the limit for one or more quotas. Consider
-                    upgrading your plan to increase your limits.
-                </p>
-                <Link
-                    :href="route('teams.billing.show', team.id)"
-                    class="text-blue-600 hover:text-blue-800 underline"
-                >
-                    View Billing Options
-                </Link>
-            </div>
+                You've reached the limit for one or more quotas. Consider
+                upgrading your plan to increase your limits.
+            </Warning>
 
             <div v-if="quotas">
                 <ul class="space-y-6">

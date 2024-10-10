@@ -3,6 +3,7 @@
 namespace App\Util;
 
 use Illuminate\Support\Arr;
+use InvalidArgumentException;
 
 class Arrays
 {
@@ -39,5 +40,28 @@ class Arrays
         }
 
         return $result;
+    }
+
+    public static function niceMergeByKey(array $array1, array $array2, string $keyBy): array
+    {
+        if (! Arr::isList($array1) || ! Arr::isList($array2)) {
+            throw new InvalidArgumentException('Arrays must be lists');
+        }
+
+        $array1Keys = array_flip(array_column($array1, $keyBy));
+        $array2Keys = array_flip(array_column($array2, $keyBy));
+
+        foreach ($array2Keys as $key => $value) {
+            if (isset($array1Keys[$key])) {
+                $array1[$array1Keys[$key]] = [
+                    ...$array1[$array1Keys[$key]],
+                    ...$array2[$value],
+                ];
+            } else {
+                $array1[] = $array2[$value];
+            }
+        }
+
+        return array_values($array1);
     }
 }

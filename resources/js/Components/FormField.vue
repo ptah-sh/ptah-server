@@ -27,7 +27,7 @@ onMounted(() => {
                 <slot name="label" />
             </InputLabel>
 
-            <InputLabel class="text-xs">
+            <InputLabel v-if="$slots.counter" class="text-xs">
                 <slot name="counter" />
             </InputLabel>
         </div>

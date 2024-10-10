@@ -4,6 +4,7 @@ import { ref, onMounted, onUnmounted, computed } from "vue";
 import VueApexCharts from "vue3-apexcharts";
 import { router } from "@inertiajs/vue3";
 import Card from "@/Components/Card.vue";
+import Warning from "@/Components/Warning.vue";
 
 const props = defineProps(["node", "metrics"]);
 
@@ -243,7 +244,7 @@ const httpRequestsDurationSeries = computed(() => {
             : [];
 
         return {
-            name: bucket + " ms",
+            name: bucket + " s",
             data: getSeries(metrics, "http_requests_duration", {
                 le: bucket,
             }).map((value, index) => {
@@ -274,6 +275,20 @@ const httpRequestsDurationChartOptions = {
 
 <template>
     <ShowLayout :node="props.node">
+        <Warning
+            v-if="!node.online"
+            :title="'The ' + props.node.name + ' node is offline'"
+            :link="{
+                href: route('nodes.settings', props.node),
+                text: 'Check Agent Status',
+            }"
+        >
+            The node is offline. It may be due to a temporary network issue or a
+            problem with the node itself.
+            <br />
+            You might need to start an Agent on the node.
+        </Warning>
+
         <div class="grid md:grid-cols-2 gap-8">
             <Card title="CPU Usage">
                 <VueApexCharts

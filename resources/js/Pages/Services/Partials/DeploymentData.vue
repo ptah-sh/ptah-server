@@ -14,7 +14,6 @@ import DialogModal from "@/Components/DialogModal.vue";
 import AddComponentButton from "@/Components/Service/AddComponentButton.vue";
 import WorkerForm from "@/Pages/Services/Partials/DeploymentData/WorkerForm.vue";
 import ComponentBlock from "@/Components/Service/ComponentBlock.vue";
-import BackupSchedule from "@/Components/BackupSchedule.vue";
 import { evaluate } from "@/expr-lang.js";
 import ExternalLink from "@/Components/ExternalLink.vue";
 import cloneDeep from "lodash.clonedeep";
@@ -87,7 +86,6 @@ const addVolume = () => {
         id: makeId("volume"),
         name: "",
         path: "",
-        backupSchedule: null,
     });
 };
 
@@ -207,18 +205,6 @@ effect(() => {
                   .fastCgi || defaultFastCgi
             : null;
 });
-
-const toggleVolumeBackups = (volume) => {
-    if (volume.backupSchedule === null) {
-        volume.backupSchedule = {
-            preset: "daily",
-            s3StorageId: props.s3Storages[0].id,
-            expr: "0 0 * * *",
-        };
-    } else {
-        volume.backupSchedule = null;
-    }
-};
 
 const processRemoveInput = ref();
 
@@ -536,10 +522,10 @@ const selectedWorkerErrors = computed(() => {
             </div>
 
             <WorkerForm
-                v-if="typeof selectedWorker === 'object'"
                 v-model="selectedWorker"
                 :errors="selectedWorkerErrors"
                 :dockerRegistries="dockerRegistries"
+                :s3Storages="s3Storages"
             />
         </template>
     </ActionSection>
@@ -1069,7 +1055,7 @@ const selectedWorkerErrors = computed(() => {
     </ActionSection>
 
     <ActionSection>
-        <template #title> Persistent Volumes </template>
+        <template #title>Persistent Volumes</template>
 
         <template #description>
             <p>
@@ -1101,66 +1087,6 @@ const selectedWorkerErrors = computed(() => {
             >
                 No Persistent Volumes defined
             </div>
-            <FormField
-                v-else
-                v-for="(volume, index) in model.processes[
-                    state.selectedProcessIndex['volumes']
-                ].volumes"
-                :key="volume.id"
-                :error="
-                    props.errors[
-                        `processes.${state.selectedProcessIndex['volumes']}.volumes.${index}.name`
-                    ] ||
-                    props.errors[
-                        `processes.${state.selectedProcessIndex['volumes']}.volumes.${index}.path`
-                    ]
-                "
-                class="col-span-full"
-            >
-                <template #label v-if="index === 0"
-                    >Persistent Volumes</template
-                >
-
-                <div class="flex gap-2">
-                    <TextInput
-                        v-model="volume.name"
-                        class="w-56"
-                        placeholder="Name"
-                    />
-                    <TextInput
-                        v-model="volume.path"
-                        class="grow"
-                        placeholder="Path"
-                    />
-
-                    <SecondaryButton
-                        @click="
-                            model.processes[
-                                state.selectedProcessIndex['volumes']
-                            ].volumes.splice(index, 1)
-                        "
-                        tabindex="-1"
-                    >
-                        <svg
-                            class="w-4 h-4 text-gray-800 dark:text-white"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                stroke="currentColor"
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                stroke-width="2"
-                                d="M5 12h14"
-                            />
-                        </svg>
-                    </SecondaryButton>
-                </div>
-            </FormField>
             <ComponentBlock
                 v-else
                 v-model="
@@ -1200,7 +1126,7 @@ const selectedWorkerErrors = computed(() => {
                             `processes.${state.selectedProcessIndex['volumes']}.volumes.${$index}.path`
                         ]
                     "
-                    class="col-span-3"
+                    class="col-span-4"
                 >
                     <template #label>Mount Path</template>
 
@@ -1210,69 +1136,6 @@ const selectedWorkerErrors = computed(() => {
                         placeholder="Path"
                     />
                 </FormField>
-
-                <FormField class="col-span-1">
-                    <template #label v-if="props.s3Storages.length > 0"
-                        >Enable Backups</template
-                    >
-
-                    <template #label v-else>
-                        <FwbTooltip trigger="hover">
-                            <template #trigger>
-                                <div class="flex">
-                                    Backup
-
-                                    <svg
-                                        class="ms-1 w-4 h-4 text-blue-600 dark:text-white"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width="24"
-                                        height="24"
-                                        fill="none"
-                                        viewBox="0 0 24 24"
-                                    >
-                                        <path
-                                            stroke="currentColor"
-                                            stroke-linecap="round"
-                                            stroke-linejoin="round"
-                                            stroke-width="2"
-                                            d="M9.529 9.988a2.502 2.502 0 1 1 5 .191A2.441 2.441 0 0 1 12 12.582V14m-.01 3.008H12M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                                        />
-                                    </svg>
-                                </div>
-                            </template>
-
-                            <template #content>
-                                Backups can't be enabled - no S3 Storages
-                                configured
-                            </template>
-                        </FwbTooltip>
-                    </template>
-
-                    <div class="pt-2 select-none">
-                        <FwbToggle
-                            :model-value="item.backupSchedule != null"
-                            :disabled="props.s3Storages.length === 0"
-                            :class="
-                                props.s3Storages.length === 0
-                                    ? 'cursor-not-allowed opacity-40'
-                                    : ''
-                            "
-                            @change="toggleVolumeBackups(item)"
-                        />
-                    </div>
-                </FormField>
-
-                <BackupSchedule
-                    v-if="item.backupSchedule"
-                    v-model="item.backupSchedule"
-                    :errors="
-                        extractFieldErrors(
-                            `processes.${state.selectedProcessIndex['volumes']}.volumes.${$index}.backupSchedule`,
-                        )
-                    "
-                    :s3-storages="props.s3Storages"
-                />
             </ComponentBlock>
         </template>
 
