@@ -39,10 +39,15 @@ class NextTaskController
 
     protected function getNextTaskFromGroup(Node $node, NodeTaskGroup $taskGroup)
     {
-        if ($taskGroup->tasks()->running()->first()) {
-            return new Response([
-                'error_message' => 'Another task should be already running.',
-            ], 409);
+        $runningTask = $taskGroup->tasks()->running()->first();
+        if ($runningTask) {
+            // FIXME: log an error/warning, display a message to the user
+
+            return $runningTask;
+            // FIXME: consider reverting the solution to the previous version below
+            // return new Response([
+            //     'error_message' => 'Another task should be already running.',
+            // ], 409);
         }
 
         $task = $taskGroup->tasks()->pending()->first();

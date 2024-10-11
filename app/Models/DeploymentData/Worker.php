@@ -11,8 +11,8 @@ use Exception;
 use Illuminate\Support\Str;
 use Spatie\LaravelData\Attributes\Validation\Enum;
 use Spatie\LaravelData\Attributes\Validation\Min;
-use Spatie\LaravelData\Attributes\Validation\ProhibitedIf;
-use Spatie\LaravelData\Attributes\Validation\RequiredUnless;
+use Spatie\LaravelData\Attributes\Validation\ProhibitedUnless;
+use Spatie\LaravelData\Attributes\Validation\RequiredIf;
 use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Data;
 
@@ -28,12 +28,14 @@ class Worker extends Data
         public int $replicas,
         #[Enum(LaunchMode::class)]
         public LaunchMode $launchMode,
-        #[RequiredUnless('launchMode', [LaunchMode::Daemon, LaunchMode::Manual]), ProhibitedIf('launchMode', [LaunchMode::Daemon, LaunchMode::Manual]), Rule(new Crontab)]
+        #[RequiredIf('launchMode', CRONJOB_LAUNCH_MODES), ProhibitedUnless('launchMode', CRONJOB_LAUNCH_MODES), Rule(new Crontab)]
         public ?string $crontab,
         public ReleaseCommand $releaseCommand,
         public Healthcheck $healthcheck,
-        #[RequiredUnless('launchMode', [LaunchMode::Daemon, LaunchMode::Manual]), ProhibitedIf('launchMode', [LaunchMode::Daemon, LaunchMode::Manual])]
-        public ?BackupOptions $backupOptions,
+        #[RequiredIf('launchMode', LaunchMode::BackupCreate), ProhibitedUnless('launchMode', LaunchMode::BackupCreate)]
+        public ?BackupCreateOptions $backupCreate,
+        #[RequiredIf('launchMode', LaunchMode::BackupRestore), ProhibitedUnless('launchMode', LaunchMode::BackupRestore)]
+        public ?BackupRestoreOptions $backupRestore,
     ) {
         $maxReplicas = $this->launchMode->maxReplicas();
         if ($this->replicas > $maxReplicas) {
@@ -60,14 +62,25 @@ class Worker extends Data
             $this->dockerName = $process->makeResourceName('wkr_'.$this->name);
         }
 
-        if ($this->launchMode->isBackup() && ! $this->backupOptions->backupVolume) {
+        if ($this->launchMode->value === LaunchMode::BackupCreate->value && ! $this->backupCreate->backupVolume) {
             $dockerName = dockerize_name($this->dockerName.'_vol_ptah_backup');
 
-            $this->backupOptions->backupVolume = Volume::validateAndCreate([
+            $this->backupCreate->backupVolume = Volume::validateAndCreate([
                 'id' => 'volume-'.Str::random(11),
                 'name' => $dockerName,
                 'dockerName' => $dockerName,
-                'path' => '/ptah/backups',
+                'path' => '/ptah/backup/create',
+            ]);
+        }
+
+        if ($this->launchMode->value === LaunchMode::BackupRestore->value && ! $this->backupRestore->restoreVolume) {
+            $dockerName = dockerize_name($this->dockerName.'_vol_ptah_restore');
+
+            $this->backupRestore->restoreVolume = Volume::validateAndCreate([
+                'id' => 'volume-'.Str::random(11),
+                'name' => $dockerName,
+                'dockerName' => $dockerName,
+                'path' => '/ptah/backup/restore',
             ]);
         }
 
@@ -91,6 +104,8 @@ class Worker extends Data
                 'serviceId' => $deployment->service_id,
                 'serviceName' => $deployment->service->name,
                 'dockerName' => $this->dockerName,
+                'processName' => $process->name,
+                'workerName' => $this->name,
             ]),
             'payload' => [
                 'ReleaseCommand' => $this->getReleaseCommandPayload($process, $labels),
@@ -216,8 +231,12 @@ class Worker extends Data
     {
         $mounts = $process->getMounts($deployment);
 
-        if ($this->backupOptions) {
-            $mounts[] = $this->backupOptions->backupVolume->asMount($labels);
+        if ($this->backupCreate) {
+            $mounts[] = $this->backupCreate->backupVolume->asMount($labels);
+        }
+
+        if ($this->backupRestore) {
+            $mounts[] = $this->backupRestore->restoreVolume->asMount($labels);
         }
 
         return $mounts;
@@ -269,10 +288,11 @@ class Worker extends Data
             'value' => $this->getHostname($deployment, $process),
         ]);
 
-        if ($this->backupOptions) {
+        $backupVolume = $this->backupCreate?->backupVolume ?? $this->backupRestore?->restoreVolume;
+        if ($backupVolume) {
             $envVars[] = EnvVar::validateAndCreate([
                 'name' => 'PTAH_BACKUP_DIR',
-                'value' => $this->backupOptions->backupVolume->path,
+                'value' => $backupVolume->path,
             ]);
         }
 

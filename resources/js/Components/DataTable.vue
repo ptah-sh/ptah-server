@@ -13,11 +13,19 @@ const props = defineProps({
     },
     onRowClick: {
         type: Function,
-        default: () => {},
+        default: null,
     },
 });
 
-const headers = computed(() => props.columns.map((column) => column.header));
+const headers = computed(() =>
+    props.columns.map((column) => {
+        if (typeof column.header === "object") {
+            return column.header;
+        }
+
+        return { title: column.header };
+    }),
+);
 </script>
 
 <template>
@@ -27,11 +35,14 @@ const headers = computed(() => props.columns.map((column) => column.header));
                 <tr>
                     <th
                         v-for="header in headers"
-                        :key="header"
+                        :key="header.title"
+                        :class="[
+                            header.class,
+                            'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
+                        ]"
                         scope="col"
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                     >
-                        {{ header }}
+                        {{ header.title }}
                     </th>
                 </tr>
             </thead>
@@ -39,13 +50,16 @@ const headers = computed(() => props.columns.map((column) => column.header));
                 <tr
                     v-for="item in data.data"
                     :key="item.id"
-                    @click="onRowClick(item)"
-                    class="cursor-pointer hover:bg-gray-50 transition-colors duration-150 ease-in-out"
+                    @click="onRowClick ? onRowClick(item) : null"
+                    :class="[
+                        onRowClick ? 'cursor-pointer' : '',
+                        'hover:bg-gray-50 transition-colors duration-150 ease-in-out group relative',
+                    ]"
                 >
                     <td
                         v-for="column in columns"
                         :key="column.key"
-                        class="px-6 py-4 whitespace-nowrap"
+                        :class="[column.class, 'px-6 py-4 whitespace-nowrap']"
                     >
                         <slot :name="column.key" :item="item">
                             {{
@@ -54,6 +68,14 @@ const headers = computed(() => props.columns.map((column) => column.header));
                                     : item[column.key]
                             }}
                         </slot>
+                    </td>
+                </tr>
+                <tr v-if="data.data.length === 0">
+                    <td
+                        colspan="100%"
+                        class="px-6 py-4 text-center text-gray-500 text-sm"
+                    >
+                        No data found
                     </td>
                 </tr>
             </tbody>

@@ -203,7 +203,7 @@ class InitCluster
                     'dockerName' => 'caddy',
                     'command' => 'sh /start.sh',
                     'replicas' => 1,
-                    'launchMode' => LaunchMode::Daemon,
+                    'launchMode' => LaunchMode::Daemon->value,
                     'schedule' => null,
                     'releaseCommand' => [
                         'command' => null,

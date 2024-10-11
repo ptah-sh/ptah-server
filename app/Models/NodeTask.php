@@ -152,14 +152,12 @@ class NodeTask extends Model
         $this->result = $result;
         $this->save();
 
-        if ($this->taskGroup->allTasksEnded()) {
-            $this->taskGroup->ended_at = now();
-            $this->taskGroup->status = TaskStatus::Completed;
-            $this->taskGroup->save();
-        }
-
         $event = $this->type->completed();
         event(new $event($this));
+
+        if ($this->taskGroup->allTasksEnded()) {
+            $this->taskGroup->complete();
+        }
     }
 
     public function fail(AbstractTaskResult $result): void
@@ -169,13 +167,9 @@ class NodeTask extends Model
         $this->result = $result;
         $this->save();
 
-        $this->taskGroup->ended_at = now();
-        $this->taskGroup->status = TaskStatus::Failed;
-        $this->taskGroup->save();
-
-        $this->taskGroup->tasks()->pending()->update(['status' => TaskStatus::Canceled]);
-
         $event = $this->type->failed();
         event(new $event($this));
+
+        $this->taskGroup->fail();
     }
 }

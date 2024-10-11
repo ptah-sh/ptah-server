@@ -7,7 +7,7 @@ use App\Models\NodeTasks\AbstractTaskMeta;
 class UploadS3FileMeta extends AbstractTaskMeta
 {
     public function __construct(
-        public string $serviceId,
+        public int $serviceId,
         public string $destPath,
     ) {
         //
