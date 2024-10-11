@@ -25,6 +25,10 @@ class NodeTaskGroup extends Model
         'team_id',
     ];
 
+    protected $casts = [
+        'type' => NodeTaskGroupType::class,
+    ];
+
     public function swarm(): BelongsTo
     {
         return $this->belongsTo(Swarm::class);
@@ -97,5 +101,33 @@ class NodeTaskGroup extends Model
 
             return (new NodeTask($attributes))->forceFill($attributes);
         }));
+    }
+
+    public function complete(): void
+    {
+        $this->ended_at = now();
+        $this->status = TaskStatus::Completed;
+        $this->save();
+
+        $event = $this->type->completed();
+
+        if ($event) {
+            event(new $event($this));
+        }
+    }
+
+    public function fail(): void
+    {
+        $this->ended_at = now();
+        $this->status = TaskStatus::Failed;
+        $this->save();
+
+        $this->tasks()->pending()->update(['status' => TaskStatus::Canceled]);
+
+        $event = $this->type->failed();
+
+        if ($event) {
+            event(new $event($this));
+        }
     }
 }

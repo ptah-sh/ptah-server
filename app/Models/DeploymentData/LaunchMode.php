@@ -26,11 +26,6 @@ enum LaunchMode: string
         return $this === self::Daemon;
     }
 
-    public function isBackup(): bool
-    {
-        return $this === self::BackupCreate || $this === self::BackupRestore;
-    }
-
     public function maxInitialReplicas(): int
     {
         if ($this->isDaemon()) {
@@ -40,3 +35,5 @@ enum LaunchMode: string
         return 0;
     }
 }
+
+const CRONJOB_LAUNCH_MODES = [LaunchMode::Cronjob, LaunchMode::BackupCreate];

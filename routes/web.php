@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\NodeTaskGroupController;
 use App\Http\Controllers\RefundPolicyController;
+use App\Http\Controllers\ServiceBackupController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SwarmController;
 use App\Http\Controllers\SwarmTaskController;
@@ -59,6 +60,7 @@ Route::middleware([
         Route::resource('services', ServiceController::class)->except(['store']);
         Route::post('/services', CreateService::class)->name('services.store');
         Route::get('/services/{service}/deployments', [ServiceController::class, 'deployments'])->name('services.deployments');
+        Route::get('/services/{service}/backups', [ServiceBackupController::class, 'index'])->name('services.backups');
 
         Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
             require_once __DIR__.'/admin.php';

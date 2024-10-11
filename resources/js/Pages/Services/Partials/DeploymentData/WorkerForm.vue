@@ -18,7 +18,7 @@ const customCrontab = ref(null);
 
 const archiveFormat = ref(null);
 effect(() => {
-    archiveFormat.value = model.value.backupOptions?.archive?.format ?? null;
+    archiveFormat.value = model.value.backupCreate?.archive?.format ?? null;
 });
 
 const defaultCrontab = "0 0 * * *";
@@ -41,7 +41,7 @@ const isCronjob = computed(() => {
 });
 
 const isBackup = computed(() => {
-    return ["backup_create", "backup_restore"].includes(model.value.launchMode);
+    return ["backup_create"].includes(model.value.launchMode);
 });
 
 const resetCrontab = () => {
@@ -57,12 +57,12 @@ const handleLaunchModeChange = (evt) => {
     }
 
     if (isBackup.value) {
-        model.value.backupOptions = {
+        model.value.backupCreate = {
             s3StorageId:
                 props.s3Storages.length > 0 ? props.s3Storages[0].id : null,
         };
     } else {
-        model.value.backupOptions = null;
+        model.value.backupCreate = null;
     }
 };
 
@@ -117,11 +117,11 @@ const commandPlaceholder = computed(() => {
 
 const handleArchiveFormatChange = () => {
     if (archiveFormat.value) {
-        model.value.backupOptions.archive = {
+        model.value.backupCreate.archive = {
             format: archiveFormat.value,
         };
     } else {
-        model.value.backupOptions.archive = null;
+        model.value.backupCreate.archive = null;
     }
 };
 </script>
@@ -261,21 +261,21 @@ const handleArchiveFormatChange = () => {
     </FormField>
 
     <div
-        v-if="isBackup && model.backupOptions"
+        v-if="isBackup && model.backupCreate"
         class="grid grid-cols-6 gap-4 col-span-full"
     >
         <FormField
             class="col-span-2"
             :error="
                 s3Storages.length > 0
-                    ? props.errors['backupOptions.s3StorageId']
+                    ? props.errors['backupCreate.s3StorageId']
                     : 'You need to add at least one S3 Storage to use backups.'
             "
         >
             <template #label>Backup S3 Storage</template>
 
             <Select
-                v-model="model.backupOptions.s3StorageId"
+                v-model="model.backupCreate.s3StorageId"
                 placeholder="No S3 Storages found"
             >
                 <option v-for="storage in s3Storages" :value="storage.id">
@@ -286,7 +286,7 @@ const handleArchiveFormatChange = () => {
 
         <FormField
             class="col-span-2"
-            :error="props.errors['backupOptions.archive.format']"
+            :error="props.errors['backupCreate.archive.format']"
         >
             <template #label>Archive Format</template>
 
