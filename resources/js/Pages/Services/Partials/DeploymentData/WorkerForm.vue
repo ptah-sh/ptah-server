@@ -44,15 +44,20 @@ const isBackup = computed(() => {
     return ["backup_create"].includes(model.value.launchMode);
 });
 
+const isRestore = computed(() => {
+    return ["backup_restore"].includes(model.value.launchMode);
+});
+
 const resetCrontab = () => {
     model.value.crontab = defaultCrontab;
 };
 
 const handleLaunchModeChange = (evt) => {
+    model.value.replicas = 1;
+
     if (isCronjob.value) {
         model.value.crontab = defaultCrontab;
     } else {
-        model.value.replicas = 1;
         model.value.crontab = null;
     }
 
@@ -60,9 +65,18 @@ const handleLaunchModeChange = (evt) => {
         model.value.backupCreate = {
             s3StorageId:
                 props.s3Storages.length > 0 ? props.s3Storages[0].id : null,
+            archive: {
+                format: "tar.gz",
+            },
         };
     } else {
         model.value.backupCreate = null;
+    }
+
+    if (isRestore.value) {
+        model.value.backupRestore = {};
+    } else {
+        model.value.backupRestore = null;
     }
 };
 
@@ -114,16 +128,6 @@ const commandPlaceholder = computed(() => {
 
     return "php artisan queue:work";
 });
-
-const handleArchiveFormatChange = () => {
-    if (archiveFormat.value) {
-        model.value.backupCreate.archive = {
-            format: archiveFormat.value,
-        };
-    } else {
-        model.value.backupCreate.archive = null;
-    }
-};
 </script>
 
 <template>
@@ -290,8 +294,7 @@ const handleArchiveFormatChange = () => {
         >
             <template #label>Archive Format</template>
 
-            <Select v-model="archiveFormat" @change="handleArchiveFormatChange">
-                <option :value="null">None</option>
+            <Select v-model="model.backupCreate.archive.format">
                 <option value="tar.gz">tar.gz</option>
                 <option value="zip">zip</option>
             </Select>

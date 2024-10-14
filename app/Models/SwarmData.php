@@ -15,10 +15,12 @@ class SwarmData extends Data
         public int $registriesRev,
         #[DataCollectionOf(DockerRegistry::class)]
         /* @var DockerRegistry[] */
+        // FIXME: extract registries to a separate database table
         public array $registries,
         public int $s3StoragesRev,
         #[DataCollectionOf(S3Storage::class)]
         /* @var S3Storage[] */
+        // FIXME: extract s3storages to a separate database table
         public array $s3Storages,
         public JoinTokens $joinTokens,
         #[DataCollectionOf(ManagerNode::class)]

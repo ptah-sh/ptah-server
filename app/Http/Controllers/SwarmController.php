@@ -90,9 +90,18 @@ class SwarmController extends Controller
 
             foreach ($swarmData->registries as $registry) {
                 $previous = $swarm->data->findRegistry($registry->id);
-                if ($registry->sameAs($previous)) {
-                    $registry->password = $previous->password;
 
+                if ($previous) {
+                    if (! $registry->username) {
+                        $registry->username = $previous->username;
+                    }
+
+                    if (! $registry->password) {
+                        $registry->password = $previous->password;
+                    }
+                }
+
+                if ($registry->sameAs($previous)) {
                     continue;
                 }
 
@@ -160,9 +169,12 @@ class SwarmController extends Controller
 
             foreach ($swarmData->s3Storages as $s3Storage) {
                 $previous = $swarm->data->findS3Storage($s3Storage->id);
-                if ($s3Storage->sameAs($previous)) {
-                    $s3Storage->secretKey = $previous->secretKey;
 
+                if ($previous && ! $s3Storage->secretKey) {
+                    $s3Storage->secretKey = $previous->secretKey;
+                }
+
+                if ($s3Storage->sameAs($previous)) {
                     continue;
                 }
 
@@ -177,7 +189,6 @@ class SwarmController extends Controller
                     'type' => NodeTaskType::CreateS3Storage,
                     'meta' => CreateS3StorageMeta::validateAndCreate($taskMeta),
                     'payload' => [
-                        'PrevConfigName' => $previous?->dockerName,
                         'S3StorageSpec' => [
                             'Endpoint' => $s3Storage->endpoint,
                             'AccessKey' => $s3Storage->accessKey,

@@ -2,13 +2,15 @@
 import DataTable from "@/Components/DataTable.vue";
 import ShowLayout from "./ShowLayout.vue";
 import dayjs from "dayjs";
-import DangerButton from "@/Components/DangerButton.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
+import BackupRestore from "./Partials/BackupRestore.vue";
+import { ref } from "vue";
 
 const props = defineProps({
     service: Object,
     backups: Object,
     s3Storages: Object,
+    restoreWorkers: Array,
 });
 
 const columns = [
@@ -17,6 +19,8 @@ const columns = [
     { header: "Timestamps", key: "timestamps" },
     { header: { title: "Status", class: "text-center w-40" }, key: "status" },
 ];
+
+const backup = ref(null);
 </script>
 
 <template>
@@ -89,16 +93,27 @@ const columns = [
                 </div>
 
                 <div
+                    v-if="item.status === 'succeeded'"
                     class="hidden absolute top-0 right-0 h-full w-full group-hover:flex items-center justify-center"
                 >
                     <div
                         class="absolute top-0 left-0 w-full h-full bg-white opacity-50 z-10"
                     ></div>
                     <div class="z-20 shadow-lg">
-                        <PrimaryButton>Restore</PrimaryButton>
+                        <PrimaryButton @click="backup = item"
+                            >Restore</PrimaryButton
+                        >
                     </div>
                 </div>
             </template>
         </DataTable>
+
+        <BackupRestore
+            :service="service"
+            :backup="backup"
+            @close="backup = null"
+            :restore-workers="restoreWorkers"
+            :s3-storages="s3Storages"
+        />
     </ShowLayout>
 </template>

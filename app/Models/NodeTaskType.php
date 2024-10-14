@@ -24,6 +24,8 @@ use App\Events\NodeTasks\DeleteService\DeleteServiceCompleted;
 use App\Events\NodeTasks\DeleteService\DeleteServiceFailed;
 use App\Events\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeCompleted;
 use App\Events\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeFailed;
+use App\Events\NodeTasks\DownloadS3File\DownloadS3FileCompleted;
+use App\Events\NodeTasks\DownloadS3File\DownloadS3FileFailed;
 use App\Events\NodeTasks\InitSwarm\InitSwarmCompleted;
 use App\Events\NodeTasks\InitSwarm\InitSwarmFailed;
 use App\Events\NodeTasks\JoinSwarm\JoinSwarmCompleted;
@@ -70,6 +72,8 @@ use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
 use App\Models\NodeTasks\DeleteService\DeleteServiceResult;
 use App\Models\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeMeta;
 use App\Models\NodeTasks\DownloadAgentUpgrade\DownloadAgentUpgradeResult;
+use App\Models\NodeTasks\DownloadS3File\DownloadS3FileMeta;
+use App\Models\NodeTasks\DownloadS3File\DownloadS3FileResult;
 use App\Models\NodeTasks\InitSwarm\InitSwarmMeta;
 use App\Models\NodeTasks\InitSwarm\InitSwarmResult;
 use App\Models\NodeTasks\JoinSwarm\JoinSwarmMeta;
@@ -116,6 +120,7 @@ enum NodeTaskType: int
     case JoinSwarm = 19;
     case UpdateDirdConfig = 20;
     case LaunchService = 21;
+    case DownloadS3File = 22;
 
     public function meta(): string
     {
@@ -142,6 +147,7 @@ enum NodeTaskType: int
             self::JoinSwarm => JoinSwarmMeta::class,
             self::UpdateDirdConfig => UpdateDirdConfigMeta::class,
             self::LaunchService => LaunchServiceMeta::class,
+            self::DownloadS3File => DownloadS3FileMeta::class,
         };
     }
 
@@ -170,6 +176,7 @@ enum NodeTaskType: int
             self::JoinSwarm => JoinSwarmResult::class,
             self::UpdateDirdConfig => UpdateDirdConfigResult::class,
             self::LaunchService => LaunchServiceResult::class,
+            self::DownloadS3File => DownloadS3FileResult::class,
         };
     }
 
@@ -198,6 +205,7 @@ enum NodeTaskType: int
             self::JoinSwarm => JoinSwarmCompleted::class,
             self::UpdateDirdConfig => UpdateDirdConfigCompleted::class,
             self::LaunchService => LaunchServiceCompleted::class,
+            self::DownloadS3File => DownloadS3FileCompleted::class,
         };
     }
 
@@ -226,6 +234,7 @@ enum NodeTaskType: int
             self::JoinSwarm => JoinSwarmFailed::class,
             self::UpdateDirdConfig => UpdateDirdConfigFailed::class,
             self::LaunchService => LaunchServiceFailed::class,
+            self::DownloadS3File => DownloadS3FileFailed::class,
         };
     }
 }

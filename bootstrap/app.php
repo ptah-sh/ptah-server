@@ -1,7 +1,7 @@
 <?php
 
 use ApiNodes\Http\Middleware\AgentTokenAuth;
-use App\Console\Commands\ExecuteScheduledWorker;
+use App\Actions\Workers\ExecuteWorker;
 use App\Http\Middleware\AdminAccess;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\CheckAgentUpdates;
@@ -78,7 +78,7 @@ return Application::configure(basePath: dirname(__DIR__))
                         }
 
                         $schedule
-                            ->command(ExecuteScheduledWorker::class, [
+                            ->command(ExecuteWorker::class, [
                                 '--service-id' => $service->id,
                                 '--process' => $process->dockerName,
                                 '--worker' => $worker->dockerName,
