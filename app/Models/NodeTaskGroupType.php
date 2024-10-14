@@ -18,8 +18,9 @@ enum NodeTaskGroupType: int
     case JoinSwarm = 8;
     case UpdateDirdConfig = 9;
     case LaunchService = 10;
-    case ExecuteScheduledWorker = 11;
+    case ExecuteWorker = 11;
     case BackupCreate = 12;
+    case BackupRestore = 13;
 
     public function completed(): ?string
     {

@@ -37,3 +37,4 @@ enum LaunchMode: string
 }
 
 const CRONJOB_LAUNCH_MODES = [LaunchMode::Cronjob, LaunchMode::BackupCreate];
+const BACKUP_LAUNCH_MODES = [LaunchMode::BackupCreate, LaunchMode::BackupRestore];

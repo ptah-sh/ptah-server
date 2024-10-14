@@ -3,6 +3,7 @@
 use App\Actions\Nodes\InitCluster;
 use App\Actions\Services\CreateService;
 use App\Actions\Services\StartDeployment;
+use App\Actions\Workers\ExecuteWorker;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\NodeTaskGroupController;
@@ -62,8 +63,10 @@ Route::middleware([
         Route::get('/services/{service}/deployments', [ServiceController::class, 'deployments'])->name('services.deployments');
         Route::get('/services/{service}/backups', [ServiceBackupController::class, 'index'])->name('services.backups');
 
+        Route::post('/services/{service}/processes/{process}/workers/{worker}/execute', ExecuteWorker::class)->name('workers.execute');
+
         Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
-            require_once __DIR__.'/admin.php';
+            require __DIR__.'/admin.php';
         });
     });
 });

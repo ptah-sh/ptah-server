@@ -31,6 +31,6 @@ class S3Storage extends Data
             && $this->bucket === $s3Storage->bucket
             && $this->pathPrefix === $s3Storage->pathPrefix
             && $this->accessKey === $s3Storage->accessKey
-            && is_null($this->secretKey);
+            && $this->secretKey === $s3Storage->secretKey;
     }
 }

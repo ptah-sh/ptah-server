@@ -2,9 +2,12 @@
 
 namespace App\Models\DeploymentData;
 
+use App\Models\Backup;
 use App\Models\Deployment;
+use App\Models\NodeTasks\DownloadS3File\DownloadS3FileMeta;
 use App\Models\NodeTasks\LaunchService\LaunchServiceMeta;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
+use App\Models\NodeTasks\UploadS3File\UploadS3FileMeta;
 use App\Models\NodeTaskType;
 use App\Rules\Crontab;
 use Exception;
@@ -34,7 +37,10 @@ class Worker extends Data
         public Healthcheck $healthcheck,
         #[RequiredIf('launchMode', LaunchMode::BackupCreate), ProhibitedUnless('launchMode', LaunchMode::BackupCreate)]
         public ?BackupCreateOptions $backupCreate,
-        #[RequiredIf('launchMode', LaunchMode::BackupRestore), ProhibitedUnless('launchMode', LaunchMode::BackupRestore)]
+        #[
+            // Required is disabled as the backup restore has on other options except Volume
+            // RequiredIf('launchMode', LaunchMode::BackupRestore),
+            ProhibitedUnless('launchMode', LaunchMode::BackupRestore)]
         public ?BackupRestoreOptions $backupRestore,
     ) {
         $maxReplicas = $this->launchMode->maxReplicas();
@@ -48,8 +54,20 @@ class Worker extends Data
         }
     }
 
-    public function asNodeTasks(Deployment $deployment, Process $process, bool $pullImage = true, ?int $desiredReplicas = null): array
+    public function asNodeTasks(Deployment $deployment, Process $process, bool $pullImage = true, ?int $desiredReplicas = null, ?Backup $backup = null): array
     {
+        $launchNow = is_null($desiredReplicas) ? $this->replicas > 0 : $desiredReplicas > 0;
+
+        if ($launchNow) {
+            if (in_array($this->launchMode, BACKUP_LAUNCH_MODES)) {
+                if (! $backup) {
+                    throw new Exception('Backup is required for backup launch mode');
+                }
+            } elseif ($backup) {
+                throw new Exception('Backup is not supported for this launch mode');
+            }
+        }
+
         [$command, $args] = $this->getCommandAndArgs();
 
         $internalDomain = $this->getInternalDomain($deployment, $process);
@@ -73,15 +91,21 @@ class Worker extends Data
             ]);
         }
 
-        if ($this->launchMode->value === LaunchMode::BackupRestore->value && ! $this->backupRestore->restoreVolume) {
-            $dockerName = dockerize_name($this->dockerName.'_vol_ptah_restore');
+        if ($this->launchMode->value === LaunchMode::BackupRestore->value) {
+            if (! $this->backupRestore) {
+                $this->backupRestore = BackupRestoreOptions::from([]);
+            }
 
-            $this->backupRestore->restoreVolume = Volume::validateAndCreate([
-                'id' => 'volume-'.Str::random(11),
-                'name' => $dockerName,
-                'dockerName' => $dockerName,
-                'path' => '/ptah/backup/restore',
-            ]);
+            if (! $this->backupRestore->restoreVolume) {
+                $dockerName = dockerize_name($this->dockerName.'_vol_ptah_restore');
+
+                $this->backupRestore->restoreVolume = Volume::validateAndCreate([
+                    'id' => 'volume-'.Str::random(11),
+                    'name' => $dockerName,
+                    'dockerName' => $dockerName,
+                    'path' => '/ptah/backup/restore',
+                ]);
+            }
         }
 
         $labels = dockerize_labels([
@@ -95,6 +119,10 @@ class Worker extends Data
 
         if ($pullImage) {
             $tasks[] = $this->getPullImageTask($deployment);
+        }
+
+        if ($launchNow && $this->launchMode->value === LaunchMode::BackupRestore->value) {
+            $tasks[] = $this->getBackupRestoreTask($backup, $labels);
         }
 
         $tasks[] = [
@@ -177,6 +205,10 @@ class Worker extends Data
                 ],
             ],
         ];
+
+        if ($launchNow && $this->launchMode->value === LaunchMode::BackupCreate->value) {
+            $tasks[] = $this->getBackupCreateTask($backup, $labels);
+        }
 
         return $tasks;
     }
@@ -364,7 +396,7 @@ class Worker extends Data
         ];
     }
 
-    public function getRestartPolicy(): array
+    private function getRestartPolicy(): array
     {
         if ($this->launchMode->isDaemon()) {
             return [
@@ -374,6 +406,65 @@ class Worker extends Data
 
         return [
             'Condition' => 'none',
+        ];
+    }
+
+    private function getBackupCreateTask(Backup $backup, array $labels): array
+    {
+        if (! $this->backupCreate) {
+            return null;
+        }
+
+        $s3Storage = $backup->team->swarms()->first()->data->findS3Storage($this->backupCreate->s3StorageId);
+        if (! $s3Storage) {
+            throw new Exception("Could not find S3 storage {$this->backupCreate->s3StorageId} in swarm {$backup->team->swarm_id}.");
+        }
+
+        $archiveFormat = $this->backupCreate->archive?->format->value;
+
+        return [
+            'type' => NodeTaskType::UploadS3File,
+            'meta' => UploadS3FileMeta::validateAndCreate([
+                'serviceId' => $backup->service_id,
+                'backupId' => $backup->id,
+                'destPath' => $backup->dest_path,
+            ]),
+            'payload' => [
+                'Archive' => [
+                    'Format' => $archiveFormat,
+                ],
+                'S3StorageConfigName' => $s3Storage->dockerName,
+                'VolumeSpec' => $this->backupCreate->backupVolume->asMount($labels),
+                'SrcFilePath' => $this->backupCreate->backupVolume->path,
+                'DestFilePath' => $backup->dest_path,
+            ],
+        ];
+    }
+
+    private function getBackupRestoreTask(Backup $backup, array $labels): array
+    {
+        if (! $this->backupRestore) {
+            return null;
+        }
+
+        $s3Storage = $backup->team->swarms()->first()->data->findS3Storage($backup->s3_storage_id);
+        if (! $s3Storage) {
+            throw new Exception("Could not find S3 storage {$backup->s3_storage_id} in swarm {$backup->team->swarm_id}.");
+        }
+
+        return [
+            'type' => NodeTaskType::DownloadS3File,
+            'meta' => DownloadS3FileMeta::validateAndCreate([
+                'serviceId' => $backup->service_id,
+                'backupId' => $backup->id,
+                'destPath' => $backup->dest_path,
+            ]),
+            'payload' => [
+                'S3StorageConfigName' => $s3Storage->dockerName,
+                'VolumeSpec' => $this->backupRestore->restoreVolume->asMount($labels),
+                'DestFilePath' => $this->backupRestore->restoreVolume->path,
+                'SrcFilePath' => $backup->dest_path,
+            ],
         ];
     }
 

@@ -24,6 +24,6 @@ class DockerRegistry extends Data
             return false;
         }
 
-        return $this->serverAddress === $other->serverAddress && is_null($this->username) && is_null($this->password);
+        return $this->serverAddress === $other->serverAddress && $this->username === $other->username && $this->password === $other->password;
     }
 }

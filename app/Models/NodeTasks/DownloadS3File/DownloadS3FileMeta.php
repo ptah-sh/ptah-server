@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Models\NodeTasks\UploadS3File;
+namespace App\Models\NodeTasks\DownloadS3File;
 
 use App\Models\NodeTasks\AbstractTaskMeta;
 
-class UploadS3FileMeta extends AbstractTaskMeta
+class DownloadS3FileMeta extends AbstractTaskMeta
 {
     public function __construct(
         public int $serviceId,
-        public string $destPath,
         public ?int $backupId,
+        public string $destPath,
     ) {
         //
     }
 
     public function formattedHtml(): string
     {
-        return "Upload file to S3 Storage: {$this->destPath}";
+        return "Download file from S3 Storage: {$this->destPath}";
     }
 }
