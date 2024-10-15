@@ -65,6 +65,6 @@ class ServicePolicy
 
     public function deploy(User $user, Service $service): bool
     {
-        return $user->belongsToTeam($service->team) && $service->team->hasValidSubscription();
+        return $user->belongsToTeam($service->team) && ($service->team->hasValidSubscription() || $service->team->onTrial());
     }
 }

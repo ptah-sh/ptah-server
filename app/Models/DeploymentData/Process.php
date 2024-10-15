@@ -307,6 +307,12 @@ class Process extends Data
 
         if (isset($attributes['workers'])) {
             foreach ($attributes['workers'] as $idx => $worker) {
+                if (! isset($worker['name'])) {
+                    $errors["workers.{$idx}.name"] = 'Worker name is required';
+
+                    continue;
+                }
+
                 if (! $this->findWorkerByName($worker['name'])) {
                     $errors["workers.{$idx}.name"] = 'Worker '.$worker['name'].' does not exist';
                 }

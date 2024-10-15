@@ -83,7 +83,9 @@ jobs:
               workers:
                 - name: main
                   dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
-                - name: scheduler
+                - name: schedule_root
+                  dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
+                - name: schedule_run
                   dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
                 - name: queue
                   dockerImage: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
