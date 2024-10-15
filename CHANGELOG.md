@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.35.3](https://github.com/ptah-sh/ptah-server/compare/v0.35.2...v0.35.3) (2024-10-15)
+
+
+### Bug Fixes
+
+* unique name for release command ([1ed4a7c](https://github.com/ptah-sh/ptah-server/commit/1ed4a7cc9b4de188c2e6feb512bb2ed6e715ca53))
+
+
+### Miscellaneous Chores
+
+* update installation data ([68a1e1a](https://github.com/ptah-sh/ptah-server/commit/68a1e1ab93972b7aefaeaaaffca8b242b14f1839))
+
 ## [0.35.2](https://github.com/ptah-sh/ptah-server/compare/v0.35.1...v0.35.2) (2024-10-15)
 
 
