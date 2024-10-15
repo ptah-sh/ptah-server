@@ -56,6 +56,10 @@ class Worker extends Data
 
     public function asNodeTasks(Deployment $deployment, Process $process, bool $pullImage = true, ?int $desiredReplicas = null, ?Backup $backup = null): array
     {
+        if (! $this->dockerName) {
+            $this->dockerName = $process->makeResourceName('wkr_'.$this->name);
+        }
+
         $launchNow = is_null($desiredReplicas) ? $this->replicas > 0 : $desiredReplicas > 0;
 
         if ($launchNow) {
@@ -75,10 +79,6 @@ class Worker extends Data
         $hostname = $this->getHostname($deployment, $process);
 
         $tasks = [];
-
-        if (! $this->dockerName) {
-            $this->dockerName = $process->makeResourceName('wkr_'.$this->name);
-        }
 
         if ($this->launchMode->value === LaunchMode::BackupCreate->value && ! $this->backupCreate->backupVolume) {
             $dockerName = dockerize_name($this->dockerName.'_vol_ptah_backup');
@@ -136,7 +136,7 @@ class Worker extends Data
                 'workerName' => $this->name,
             ]),
             'payload' => [
-                'ReleaseCommand' => $this->getReleaseCommandPayload($process, $labels),
+                'ReleaseCommand' => $this->getReleaseCommandPayload($deployment, $labels),
                 'SecretVars' => $this->getSecretVars($process),
                 'SwarmServiceSpec' => [
                     'Name' => $this->dockerName,
@@ -283,7 +283,7 @@ class Worker extends Data
         return [['sh'], ['-c', $this->command]];
     }
 
-    private function getReleaseCommandPayload(Process $process, array $labels): array
+    private function getReleaseCommandPayload(Deployment $deployment, array $labels): array
     {
         if (! $this->releaseCommand->command) {
             return [
@@ -294,7 +294,7 @@ class Worker extends Data
         }
 
         // Always create a new config, as the command may be the same, but the image/entrypoint may be different.
-        $this->releaseCommand->dockerName = $process->makeResourceName('rel_cmd');
+        $this->releaseCommand->dockerName = $this->makeResourceName('dpl_'.$deployment->id.'_rel_cmd');
 
         return [
             'ConfigName' => $this->releaseCommand->dockerName,
@@ -466,6 +466,11 @@ class Worker extends Data
                 'SrcFilePath' => $backup->dest_path,
             ],
         ];
+    }
+
+    private function makeResourceName(string $name): string
+    {
+        return dockerize_name($this->dockerName.'_'.$name);
     }
 
     public static function make(array $attributes): static
