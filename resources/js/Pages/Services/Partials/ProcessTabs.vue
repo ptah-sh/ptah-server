@@ -13,10 +13,16 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(["close"]);
+const emit = defineEmits(["close", "change"]);
 
 const handleClose = (index) => {
     emit("close", index);
+};
+
+const handleChange = (index) => {
+    model.value.selectedProcessIndex[props.block] = index;
+
+    emit("change", index);
 };
 
 const canClose = computed(() => {
@@ -30,7 +36,7 @@ const canClose = computed(() => {
             <TabItem
                 v-for="(process, index) in processes"
                 :key="process.id"
-                @click="model.selectedProcessIndex[block] = index"
+                @click="handleChange(index)"
                 :active="model.selectedProcessIndex[block] === index"
                 :closable="canClose"
                 @close="handleClose(index)"

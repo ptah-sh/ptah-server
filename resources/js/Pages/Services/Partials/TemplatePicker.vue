@@ -153,30 +153,37 @@ const mapProcessTemplate = (formData, templateSlug, process, newIndex) => {
         id: makeId("process"),
         name: "process_" + newIndex,
         placementNodeId: null,
-        dockerRegistryId: null,
-        dockerImage: "",
-        releaseCommand: {
-            command: "",
-        },
-        command: "",
-        healthcheck: {
-            command: null,
-            interval: 10,
-            timeout: 5,
-            retries: 10,
-            startPeriod: 60,
-            startInterval: 10,
-        },
-        backups: [],
-        workers: [],
-        launchMode: "daemon",
         configFiles: [],
         secretFiles: [],
         ports: [],
-        replicas: 1,
         redirectRules: [],
         fastCgi: null,
         ...process.data,
+        workers: process.data.workers.map((worker, idx) => {
+            return {
+                id: makeId("worker"),
+                launchMode: "daemon",
+                replicas: 1,
+                dockerRegistryId: null,
+                dockerImage: "",
+                command: null,
+                ...worker,
+                name: idx === 0 ? "main" : worker.name || "worker_" + idx,
+                releaseCommand: {
+                    command: null,
+                    ...worker.releaseCommand,
+                },
+                healthcheck: {
+                    interval: 10,
+                    timeout: 5,
+                    retries: 10,
+                    startPeriod: 60,
+                    startInterval: 10,
+                    command: null,
+                    ...worker.healthcheck,
+                },
+            };
+        }),
         rewriteRules:
             process.data.rewriteRules?.map((rule) => {
                 return {
