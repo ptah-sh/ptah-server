@@ -33,12 +33,12 @@ class RecordBackupStatus
      */
     public function handleCompleted(BackupCreateCompleted $event): void
     {
-        Backup::where('task_group_id', $event->taskGroup->id)->update(['status' => BackupStatus::Succeeded, 'ended_at' => now()]);
+        $event->taskGroup->backups()->update(['status' => BackupStatus::Succeeded, 'ended_at' => now()]);
     }
 
     public function handleFailed(BackupCreateFailed $event): void
     {
-        Backup::where('task_group_id', $event->taskGroup->id)->update(['status' => BackupStatus::Failed, 'ended_at' => now()]);
+        $event->taskGroup->backups()->update(['status' => BackupStatus::Failed, 'ended_at' => now()]);
     }
 
     public function handleRemoveS3FileCompleted(RemoveS3FileCompleted $event): void
