@@ -10,9 +10,9 @@ class TeamController extends Controller
 {
     public function index()
     {
-        $teams = Team::with('owner')
-            ->withCount('nodes', 'services', 'onlineNodes', 'deployments')
-            ->paginate(30);
+        $teams = Team::withCount('nodes', 'services', 'onlineNodes', 'deployments')->paginate(30);
+
+        $teams->load('owner');
 
         return Inertia::render('Admin/Teams/List', [
             'teams' => $teams,
