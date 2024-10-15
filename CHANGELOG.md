@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.35.1](https://github.com/ptah-sh/ptah-server/compare/v0.35.0...v0.35.1) (2024-10-15)
+
+
+### Bug Fixes
+
+* disable team scope for admin pages ([51ad71c](https://github.com/ptah-sh/ptah-server/commit/51ad71cda2fbcb88c295dcb419fb6b4660f99bf3))
+
+
+### Miscellaneous Chores
+
+* update installation data ([0f48e46](https://github.com/ptah-sh/ptah-server/commit/0f48e4633867d82888c1e3df0883c6b01fecb0a1))
+
 ## [0.35.0](https://github.com/ptah-sh/ptah-server/compare/v0.34.0...v0.35.0) (2024-10-15)
 
 
