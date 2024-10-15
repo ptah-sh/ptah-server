@@ -10,11 +10,17 @@ use Illuminate\Support\Facades\Request;
 
 class TeamScope implements Scope
 {
+    private static $enabled = true;
+
     /**
      * Apply the scope to a given Eloquent query builder.
      */
     public function apply(Builder $builder, Model $model): void
     {
+        if (! self::$enabled) {
+            return;
+        }
+
         $user = auth()->user();
         if ($user) {
             // API Request
@@ -32,5 +38,15 @@ class TeamScope implements Scope
 
         // X-Ptah-Token
         $builder->where($builder->qualifyColumn('team_id'), app(Team::class)->id);
+    }
+
+    public static function disable(): void
+    {
+        self::$enabled = false;
+    }
+
+    public static function enable(): void
+    {
+        self::$enabled = true;
     }
 }
