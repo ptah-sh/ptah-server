@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.35.0](https://github.com/ptah-sh/ptah-server/compare/v0.34.0...v0.35.0) (2024-10-15)
+
+
+### Features
+
+* [#228](https://github.com/ptah-sh/ptah-server/issues/228) add extra worker ([02b349d](https://github.com/ptah-sh/ptah-server/commit/02b349d40eb29404f7b51e5ad67c0a69e034ae28))
+
+
+### Miscellaneous Chores
+
+* update installation data ([32f3bfa](https://github.com/ptah-sh/ptah-server/commit/32f3bfaf24ed894feb93a20dccfa05c3746a1680))
+
 ## [0.34.0](https://github.com/ptah-sh/ptah-server/compare/v0.33.1...v0.34.0) (2024-10-15)
 
 
