@@ -69,20 +69,36 @@ class CreateService {}
  */
 class StartDeployment {}
 
+namespace App\Actions\Teams\Settings;
+
+/**
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\Team $team, int $retentionDays)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\Team $team, int $retentionDays)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\Team $team, int $retentionDays)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\Team $team, int $retentionDays)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\Team $team, int $retentionDays)
+ * @method static dispatchSync(\App\Models\Team $team, int $retentionDays)
+ * @method static dispatchNow(\App\Models\Team $team, int $retentionDays)
+ * @method static dispatchAfterResponse(\App\Models\Team $team, int $retentionDays)
+ * @method static void run(\App\Models\Team $team, int $retentionDays)
+ */
+class SaveTeamBackupSettings {}
+
 namespace App\Actions\Workers;
 
 /**
- * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, \App\Models\Backup $backup = null)
- * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, \App\Models\Backup $backup = null)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, \App\Models\Backup $backup = null)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, \App\Models\Backup $backup = null)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, \App\Models\Backup $backup = null)
- * @method static dispatchSync(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, \App\Models\Backup $backup = null)
- * @method static dispatchNow(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, \App\Models\Backup $backup = null)
- * @method static dispatchAfterResponse(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, \App\Models\Backup $backup = null)
- * @method static void run(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, \App\Models\Backup $backup = null)
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, ?\App\Models\Backup $backup = null)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, ?\App\Models\Backup $backup = null)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, ?\App\Models\Backup $backup = null)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, ?\App\Models\Backup $backup = null)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, ?\App\Models\Backup $backup = null)
+ * @method static dispatchSync(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, ?\App\Models\Backup $backup = null)
+ * @method static dispatchNow(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, ?\App\Models\Backup $backup = null)
+ * @method static dispatchAfterResponse(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, ?\App\Models\Backup $backup = null)
+ * @method static void run(\App\Models\Service $service, \App\Models\DeploymentData\Process $process, \App\Models\DeploymentData\Worker $worker, ?\App\Models\Backup $backup = null)
  */
 class ExecuteWorker {}
+class RemoveStaleBackups {}
 
 namespace Lorisleiva\Actions\Concerns;
 

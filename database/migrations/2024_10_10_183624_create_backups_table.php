@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('worker');
             $table->string('s3_storage_id');
             $table->string('dest_path');
-            $table->string('archive_format')->nullable();
             $table->enum('status', ['in_progress', 'succeeded', 'failed']);
             $table->timestamp('started_at')->nullable();
             $table->timestamp('ended_at')->nullable();

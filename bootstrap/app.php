@@ -2,6 +2,7 @@
 
 use ApiNodes\Http\Middleware\AgentTokenAuth;
 use App\Actions\Workers\ExecuteWorker;
+use App\Actions\Workers\RemoveStaleBackups;
 use App\Http\Middleware\AdminAccess;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\CheckAgentUpdates;
@@ -63,6 +64,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $schedule->job(CheckAgentUpdates::class)
             ->everyMinute()
+            ->onOneServer()
+            ->withoutOverlapping();
+
+        $schedule->job(RemoveStaleBackups::class)
+            ->hourly()
             ->onOneServer()
             ->withoutOverlapping();
 
