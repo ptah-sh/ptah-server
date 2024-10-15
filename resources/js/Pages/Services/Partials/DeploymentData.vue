@@ -7,7 +7,6 @@ import Select from "@/Components/Select.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextArea from "@/Components/TextArea.vue";
 import { computed, effect, nextTick, reactive, ref } from "vue";
-import { FwbToggle, FwbTooltip } from "flowbite-vue";
 import ProcessTabs from "@/Pages/Services/Partials/ProcessTabs.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import DialogModal from "@/Components/DialogModal.vue";
@@ -161,6 +160,8 @@ const removeProcess = (index) => {
             state.selectedProcessIndex[key] = model.value.processes.length - 1;
         }
     }
+
+    state.selectedProcessIndex["workers"] = 0;
 };
 
 const addWorker = () => {
@@ -383,6 +384,7 @@ const selectedWorkerErrors = computed(() => {
                     block="processes"
                     :closable="true"
                     @close="confirmProcessRemoval"
+                    @change="state.selectedProcessIndex['workers'] = 0"
                 />
 
                 <div class="flex items-center">
