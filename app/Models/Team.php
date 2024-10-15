@@ -33,6 +33,7 @@ class Team extends JetstreamTeam
         'personal_team',
         'billing_name',
         'billing_email',
+        'backup_retention_days',
     ];
 
     protected $appends = [

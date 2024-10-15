@@ -3,6 +3,7 @@
 use App\Actions\Nodes\InitCluster;
 use App\Actions\Services\CreateService;
 use App\Actions\Services\StartDeployment;
+use App\Actions\Teams\Settings\SaveTeamBackupSettings;
 use App\Actions\Workers\ExecuteWorker;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NodeController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\SwarmController;
 use App\Http\Controllers\SwarmTaskController;
 use App\Http\Controllers\TeamBillingController;
 use App\Http\Controllers\TeamQuotasController;
+use App\Http\Controllers\TeamSettingsController;
 use App\Http\Middleware\EnsureTeamSubscription;
 use Illuminate\Support\Facades\Route;
 
@@ -35,6 +37,8 @@ Route::middleware([
     Route::get('/teams-billing', fn () => redirect()->route('teams.billing.show', auth()->user()->currentTeam));
     Route::get('/teams/{team}/billing', [TeamBillingController::class, 'show'])->name('teams.billing.show');
     Route::get('/teams/{team}/quotas', [TeamQuotasController::class, 'index'])->name('teams.billing.quotas');
+    Route::get('/teams/{team}/settings', [TeamSettingsController::class, 'index'])->name('teams.settings');
+    Route::patch('/teams/{team}/settings/backup', SaveTeamBackupSettings::class)->name('teams.settings.backup');
 
     Route::patch('/teams/{team}/billing/update-customer', [TeamBillingController::class, 'updateCustomer'])->name('teams.billing.update-customer');
     Route::get('/teams/{team}/billing/download-invoice', [TeamBillingController::class, 'downloadInvoice'])->name('teams.billing.download-invoice');

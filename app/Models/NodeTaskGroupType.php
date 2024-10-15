@@ -14,13 +14,14 @@ enum NodeTaskGroupType: int
     case SelfUpgrade = 4;
     case UpdateDockerRegistries = 5;
     case UpdateS3Storages = 6;
-    case CreateBackup = 7;
+    case __Unused__Safe_To_Re_Use__ = 7;
     case JoinSwarm = 8;
     case UpdateDirdConfig = 9;
     case LaunchService = 10;
     case ExecuteWorker = 11;
     case BackupCreate = 12;
     case BackupRestore = 13;
+    case BackupRemove = 14;
 
     public function completed(): ?string
     {

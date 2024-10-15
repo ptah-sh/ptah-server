@@ -36,6 +36,8 @@ use App\Events\NodeTasks\PullDockerImage\PullDockerImageCompleted;
 use App\Events\NodeTasks\PullDockerImage\PullDockerImageFailed;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigCompleted;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigFailed;
+use App\Events\NodeTasks\RemoveS3File\RemoveS3FileCompleted;
+use App\Events\NodeTasks\RemoveS3File\RemoveS3FileFailed;
 use App\Events\NodeTasks\ServiceExec\ServiceExecCompleted;
 use App\Events\NodeTasks\ServiceExec\ServiceExecFailed;
 use App\Events\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkCompleted;
@@ -82,6 +84,8 @@ use App\Models\NodeTasks\LaunchService\LaunchServiceMeta;
 use App\Models\NodeTasks\LaunchService\LaunchServiceResult;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageResult;
+use App\Models\NodeTasks\RemoveS3File\RemoveS3FileMeta;
+use App\Models\NodeTasks\RemoveS3File\RemoveS3FileResult;
 use App\Models\NodeTasks\ServiceExec\ServiceExecMeta;
 use App\Models\NodeTasks\ServiceExec\ServiceExecResult;
 use App\Models\NodeTasks\UpdateAgentSymlink\UpdateAgentSymlinkMeta;
@@ -121,6 +125,7 @@ enum NodeTaskType: int
     case UpdateDirdConfig = 20;
     case LaunchService = 21;
     case DownloadS3File = 22;
+    case RemoveS3File = 23;
 
     public function meta(): string
     {
@@ -148,6 +153,7 @@ enum NodeTaskType: int
             self::UpdateDirdConfig => UpdateDirdConfigMeta::class,
             self::LaunchService => LaunchServiceMeta::class,
             self::DownloadS3File => DownloadS3FileMeta::class,
+            self::RemoveS3File => RemoveS3FileMeta::class,
         };
     }
 
@@ -177,6 +183,7 @@ enum NodeTaskType: int
             self::UpdateDirdConfig => UpdateDirdConfigResult::class,
             self::LaunchService => LaunchServiceResult::class,
             self::DownloadS3File => DownloadS3FileResult::class,
+            self::RemoveS3File => RemoveS3FileResult::class,
         };
     }
 
@@ -206,6 +213,7 @@ enum NodeTaskType: int
             self::UpdateDirdConfig => UpdateDirdConfigCompleted::class,
             self::LaunchService => LaunchServiceCompleted::class,
             self::DownloadS3File => DownloadS3FileCompleted::class,
+            self::RemoveS3File => RemoveS3FileCompleted::class,
         };
     }
 
@@ -235,6 +243,7 @@ enum NodeTaskType: int
             self::UpdateDirdConfig => UpdateDirdConfigFailed::class,
             self::LaunchService => LaunchServiceFailed::class,
             self::DownloadS3File => DownloadS3FileFailed::class,
+            self::RemoveS3File => RemoveS3FileFailed::class,
         };
     }
 }

@@ -112,6 +112,11 @@ class Service extends Model
         return $this->hasMany(NodeTask::class, 'meta__service_id', 'id');
     }
 
+    public function backups(): HasMany
+    {
+        return $this->hasMany(Backup::class);
+    }
+
     public function makeResourceName($name): string
     {
         return dockerize_name('svc_'.$this->id.'_'.$name);
