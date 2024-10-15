@@ -45,10 +45,14 @@ class ExecuteWorker
             ]);
 
             $backup = match ($worker->launchMode) {
-                LaunchMode::BackupCreate => $this->createBackup($service, $process, $worker, $taskGroup),
+                LaunchMode::BackupCreate => $this->createBackup($service, $process, $worker),
                 LaunchMode::BackupRestore => $backup,
                 default => null,
             };
+
+            if ($backup) {
+                $taskGroup->backups()->attach($backup);
+            }
 
             $tasks = [];
 
@@ -105,7 +109,7 @@ class ExecuteWorker
         return [$service, $process, $worker];
     }
 
-    private function createBackup(Service $service, Process $process, Worker $worker, NodeTaskGroup $taskGroup): Backup
+    private function createBackup(Service $service, Process $process, Worker $worker): Backup
     {
         $s3Storage = $service->swarm->data->findS3Storage($worker->backupCreate->s3StorageId);
         if ($s3Storage === null) {
@@ -123,7 +127,6 @@ class ExecuteWorker
 
         $backup->forceFill([
             'team_id' => $service->team_id,
-            'task_group_id' => $taskGroup->id,
             'service_id' => $service->id,
             'process' => $process->dockerName,
             'worker' => $worker->dockerName,

@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('backups', function (Blueprint $table) {
             $table->id();
             $table->foreignId('team_id')->constrained('teams');
-            $table->foreignId('task_group_id')->constrained('node_task_groups');
             $table->foreignId('service_id')->constrained('services');
             $table->string('process');
             $table->string('worker');
