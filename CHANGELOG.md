@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.34.0](https://github.com/ptah-sh/ptah-server/compare/v0.33.1...v0.34.0) (2024-10-15)
+
+
+### Features
+
+* [#225](https://github.com/ptah-sh/ptah-server/issues/225) rework workers ui definition ([61d392c](https://github.com/ptah-sh/ptah-server/commit/61d392cc6a4ea71e0b5e42ad29a547121977448d))
+* [#225](https://github.com/ptah-sh/ptah-server/issues/225), [#226](https://github.com/ptah-sh/ptah-server/issues/226) new workers definition ui and scheduled workers ([1f585b7](https://github.com/ptah-sh/ptah-server/commit/1f585b76b10bdb35d2e63f19afdfa5647c365c10))
+* [#227](https://github.com/ptah-sh/ptah-server/issues/227) add backups page ([f0b8aac](https://github.com/ptah-sh/ptah-server/commit/f0b8aac2beca74ff4d1ace410e8ef5fdefc6b2b6))
+* [#227](https://github.com/ptah-sh/ptah-server/issues/227) better node task groups &lt;-&gt; backups relationship management ([534d4e2](https://github.com/ptah-sh/ptah-server/commit/534d4e2417f7c1c6f208f215f2a70090a9a6ce58))
+* [#228](https://github.com/ptah-sh/ptah-server/issues/228) allow to set team-wide backup retention setting ([1c971bf](https://github.com/ptah-sh/ptah-server/commit/1c971bf84dc627275250023f1cc767967eb17494))
+* [#229](https://github.com/ptah-sh/ptah-server/issues/229) restore data from backups ([d5678c2](https://github.com/ptah-sh/ptah-server/commit/d5678c2e3dfe4c548e971629ecc5715d640d427b))
+
+
+### Bug Fixes
+
+* [#227](https://github.com/ptah-sh/ptah-server/issues/227) minor bugfixes ([b967242](https://github.com/ptah-sh/ptah-server/commit/b9672420674bd6af49d6ab7e83159d2703a069e0))
+
+
+### Miscellaneous Chores
+
+* update installation data ([41b8ad3](https://github.com/ptah-sh/ptah-server/commit/41b8ad37364b2fab22df5b2c3f4c4e008019cc3e))
+
 ## [0.33.1](https://github.com/ptah-sh/ptah-server/compare/v0.33.0...v0.33.1) (2024-10-05)
 
 
