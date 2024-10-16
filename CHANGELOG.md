@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.35.4](https://github.com/ptah-sh/ptah-server/compare/v0.35.3...v0.35.4) (2024-10-16)
+
+
+### Bug Fixes
+
+* docker names for main workers ([c275634](https://github.com/ptah-sh/ptah-server/commit/c275634bf4aacc02057fa4e9f07cc479d35f10f5))
+
+
+### Miscellaneous Chores
+
+* update installation data ([dde7678](https://github.com/ptah-sh/ptah-server/commit/dde7678eb220492cf5624dbcc230989a6c98d7fa))
+
 ## [0.35.3](https://github.com/ptah-sh/ptah-server/compare/v0.35.2...v0.35.3) (2024-10-15)
 
 
