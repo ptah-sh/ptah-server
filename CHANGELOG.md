@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.35.5](https://github.com/ptah-sh/ptah-server/compare/v0.35.4...v0.35.5) (2024-10-17)
+
+
+### Bug Fixes
+
+* [#237](https://github.com/ptah-sh/ptah-server/issues/237) minor bugs to support chatwoot configuration ([9f7340f](https://github.com/ptah-sh/ptah-server/commit/9f7340f237181922d0910392eeea5ad1f47ae738))
+
+
+### Miscellaneous Chores
+
+* update installation data ([6f27f7a](https://github.com/ptah-sh/ptah-server/commit/6f27f7a1f9a7bbb2d6298ee04b80737c287381cf))
+
 ## [0.35.4](https://github.com/ptah-sh/ptah-server/compare/v0.35.3...v0.35.4) (2024-10-16)
 
 
