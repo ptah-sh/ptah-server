@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Actions\Nodes\RebuildCaddy;
 use App\Models\DeploymentData\Process;
+use App\Models\DeploymentData\Worker;
 use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
 use App\Traits\HasOwningTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -62,14 +63,16 @@ class Service extends Model
                 'invoker_id' => auth()->id(),
             ]);
 
-            $deleteProcessesTasks = collect($service->latestDeployment->data->processes)->map(function (Process $process) use ($service) {
-                return [
-                    'type' => NodeTaskType::DeleteService,
-                    'meta' => new DeleteServiceMeta($service->id, $process->name, $service->name),
-                    'payload' => [
-                        'ServiceName' => $process->dockerName,
-                    ],
-                ];
+            $deleteProcessesTasks = collect($service->latestDeployment->data->processes)->flatMap(function (Process $process) use ($service) {
+                return collect($process->workers)->map(function (Worker $worker) use ($service) {
+                    return [
+                        'type' => NodeTaskType::DeleteService,
+                        'meta' => new DeleteServiceMeta($service->id, $worker->name, $service->name),
+                        'payload' => [
+                            'ServiceName' => $worker->dockerName,
+                        ],
+                    ];
+                });
             })->toArray();
 
             $taskGroup->tasks()->createMany($deleteProcessesTasks);

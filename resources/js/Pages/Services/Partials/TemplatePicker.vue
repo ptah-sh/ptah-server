@@ -149,16 +149,29 @@ const mapProcessTemplate = (formData, templateSlug, process, newIndex) => {
             };
         }) || [];
 
+    const configFiles = process.data.configFiles
+        ? process.data.configFiles.map((configFile) => {
+              return {
+                  ...configFile,
+                  content: fillPlaceholders(
+                      formData,
+                      templateSlug,
+                      configFile.content,
+                  ),
+              };
+          })
+        : [];
+
     return {
         id: makeId("process"),
         name: "process_" + newIndex,
         placementNodeId: null,
-        configFiles: [],
         secretFiles: [],
         ports: [],
         redirectRules: [],
         fastCgi: null,
         ...process.data,
+        configFiles,
         workers: process.data.workers.map((worker, idx) => {
             return {
                 id: makeId("worker"),

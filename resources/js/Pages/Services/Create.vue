@@ -59,6 +59,29 @@ const applyTemplate = (template) => {
     const processes = template.deploymentData.processes.map((process) => {
         return {
             ...process,
+            workers: process.workers.map((worker) => {
+                const backupCreate =
+                    worker.launchMode === "backup_create"
+                        ? {
+                              ...worker.backupCreate,
+                              archive: {
+                                  format:
+                                      worker.backupCreate?.archive?.format ||
+                                      "tar.gz",
+                              },
+                              s3StorageId: props.s3Storages[0]?.id,
+                          }
+                        : null;
+
+                const crontab =
+                    worker.launchMode === "backup_create" ? "0 0 * * *" : null;
+
+                return {
+                    crontab,
+                    ...worker,
+                    backupCreate,
+                };
+            }),
             placementNodeId:
                 process.volumes.length > 0 && props.nodes.length === 1
                     ? props.nodes[0].id

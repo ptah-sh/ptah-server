@@ -117,13 +117,6 @@ class Process extends Data
         }
 
         foreach ($this->configFiles as $configFile) {
-            $previousConfig = $previous?->findConfigFile($configFile->path);
-            if ($previousConfig && $configFile->sameAs($previousConfig)) {
-                $configFile->dockerName = $previousConfig->dockerName;
-
-                continue;
-            }
-
             $configFile->dockerName = $this->makeResourceName('dpl_'.$deployment->id.'_cfg_'.$configFile->path);
 
             $tasks[] = [
@@ -157,8 +150,6 @@ class Process extends Data
             $previousSecret = $previous?->findSecretFile($secretFile->path);
             if ($secretFile->sameAs($previousSecret)) {
                 $secretFile->content = $previousSecret->content;
-
-                continue;
             }
 
             $secretFile->dockerName = $this->makeResourceName('dpl_'.$deployment->id.'_secret_'.$secretFile->path);

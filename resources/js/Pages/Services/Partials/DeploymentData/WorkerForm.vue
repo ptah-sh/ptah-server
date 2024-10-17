@@ -280,7 +280,11 @@ const commandPlaceholder = computed(() => {
 
             <Select
                 v-model="model.backupCreate.s3StorageId"
-                placeholder="No S3 Storages found"
+                :placeholder="
+                    s3Storages.length > 0
+                        ? 'Select S3 Storage'
+                        : 'No S3 Storages found'
+                "
             >
                 <option v-for="storage in s3Storages" :value="storage.id">
                     {{ storage.name }}
