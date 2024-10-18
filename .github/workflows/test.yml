@@ -23,7 +23,7 @@ jobs:
     # Docs: https://docs.github.com/en/actions/using-containerized-services
     services:
       postgres:
-        image: postgres:latest
+        image: postgres:16
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
