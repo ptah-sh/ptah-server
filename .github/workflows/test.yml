@@ -120,7 +120,7 @@ jobs:
           docker run --rm \
             --network="host" \
             --env PGPASSWORD=$DB_PASSWORD \
-            postgres \
+            postgres:16 \
             pg_dump \
             -U $DB_USERNAME \
             -h localhost \
