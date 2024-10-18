@@ -144,6 +144,12 @@ choose_ip_address() {
     header "$prompt"
     echo "$help_text"
 
+    if [ ${#ip_array[@]} -eq 0 ]; then
+        echo "$(red "No IP addresses found.")"
+        echo "$(red "Please check your network configuration.")"
+        exit 1
+    fi
+
     if [ ${#ip_array[@]} -eq 1 ]; then
         local chosen_ip="${ip_array[0]}"
         echo -e "$(green "Only one IP address available:") $(cyan "$chosen_ip")\n"
@@ -156,7 +162,7 @@ choose_ip_address() {
         echo "$(gray "(Enter the number of your choice)")"
         
         while true; do
-            read -p "$(green ">") " choice
+            read -r -p "$(green ">") " choice
             if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#ip_array[@]}" ]; then
                 local chosen_ip="${ip_array[$((choice-1))]}"
                 echo -e "\n$(green "You selected:") $(cyan "$chosen_ip")\n"
@@ -214,7 +220,7 @@ get_user_credentials() {
     echo -e "\n$(green "Credentials saved successfully.")"
 }
 
-IP_LIST=$(/tmp/ptah-agent list-ips)
+IP_LIST="$(/tmp/ptah-agent list-ips | tr -d '\n')"
 choose_ip_address "$IP_LIST" "Advertised IP addresses" "ADVERTISE_ADDR" "$ADVERTISED_IP_HELP"
 choose_ip_address "$IP_LIST" "Public IP address" "PUBLIC_IP" "$PUBLIC_IP_HELP"
 
