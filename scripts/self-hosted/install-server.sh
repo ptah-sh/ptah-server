@@ -156,7 +156,7 @@ choose_ip_address() {
         echo "$(gray "(Enter the number of your choice)")"
         
         while true; do
-            read -p "$(green ">") " choice
+            read -r -p "$(green ">") " choice
             if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#ip_array[@]}" ]; then
                 local chosen_ip="${ip_array[$((choice-1))]}"
                 echo -e "\n$(green "You selected:") $(cyan "$chosen_ip")\n"
@@ -190,7 +190,7 @@ get_user_credentials() {
     
     # Ask for email
     while true; do
-        read -p "$(green "Enter your email: ")" USER_EMAIL
+        read -r -p "$(green "Enter your email: ")" USER_EMAIL
         if [[ "$USER_EMAIL" =~ ^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}$ ]]; then
             break
         else
@@ -200,9 +200,9 @@ get_user_credentials() {
 
     # Ask for password
     while true; do
-        read -s -p "$(green "Enter your password: ")" USER_PASSWORD
+        read -r -s -p "$(green "Enter your password: ")" USER_PASSWORD
         echo
-        read -s -p "$(green "Confirm your password: ")" USER_PASSWORD_CONFIRM
+        read -r -s -p "$(green "Confirm your password: ")" USER_PASSWORD_CONFIRM
         echo
         if [ "$USER_PASSWORD" = "$USER_PASSWORD_CONFIRM" ]; then
             break
