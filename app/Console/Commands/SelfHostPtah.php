@@ -294,7 +294,7 @@ class SelfHostPtah extends Command
                                 'command' => null,
                             ],
                             'healthcheck' => [
-                                'command' => null,
+                                'command' => 'pgrep -f "php artisan schedule:work"',
                                 'interval' => 10,
                                 'timeout' => 5,
                                 'retries' => 3,
@@ -314,7 +314,7 @@ class SelfHostPtah extends Command
                                 'command' => null,
                             ],
                             'healthcheck' => [
-                                'command' => null,
+                                'command' => 'pgrep -f "php artisan queue:work"',
                                 'interval' => 10,
                                 'timeout' => 5,
                                 'retries' => 3,
