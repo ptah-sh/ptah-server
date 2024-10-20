@@ -8,7 +8,7 @@ LABEL org.opencontainers.image.licenses="FSL-1.1-Apache-2.0"
 LABEL org.opencontainers.image.vendor="Bohdan Shulha"
 
 RUN apt-get update \
-    && apt-get install -y nodejs npm unzip libpq-dev \
+    && apt-get install -y procps nodejs npm unzip libpq-dev \
     && curl https://raw.githubusercontent.com/composer/getcomposer.org/76a7060ccb93902cd7576b67264ad91c8a2700e2/web/installer | php -- --quiet \
     && docker-php-ext-configure pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql bcmath \
