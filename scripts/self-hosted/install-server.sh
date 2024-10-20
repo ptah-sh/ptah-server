@@ -265,10 +265,14 @@ export SKIP_CORE_INSTALL=1
 
 bash install-agent.sh
 
+header "Configuring Ptah.sh"
+echo "$(yellow "This may take up to a few minutes...")"
+
 export PTAH_ROOT_DIR=/home/ptah/ptah-agent
 
 $PTAH_ROOT_DIR/current exec-tasks tasks.json
 
+echo "$(green "Setup tasks completed successfully.")"
 
 sql_dump_file="db.sql"
 sql_dump_file_tmp="db.sql.tmp"
