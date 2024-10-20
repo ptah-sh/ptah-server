@@ -1,5 +1,32 @@
 # Changelog
 
+## [0.36.0](https://github.com/ptah-sh/ptah-server/compare/v0.35.5...v0.36.0) (2024-10-20)
+
+
+### Features
+
+* [#239](https://github.com/ptah-sh/ptah-server/issues/239) better info output ([de9bf00](https://github.com/ptah-sh/ptah-server/commit/de9bf00a4cb97c07f52c7baf74e7ceacfd7160a4))
+
+
+### Bug Fixes
+
+* [#239](https://github.com/ptah-sh/ptah-server/issues/239) fix postgres version ([cfae455](https://github.com/ptah-sh/ptah-server/commit/cfae4553f4738014e7355e07f47b62b7fa151469))
+* [#239](https://github.com/ptah-sh/ptah-server/issues/239) fix postgres version ([0d3d040](https://github.com/ptah-sh/ptah-server/commit/0d3d04057bcc8f516962564dbd665bbaa46cc7de))
+* [#239](https://github.com/ptah-sh/ptah-server/issues/239) fix postgres version ([dfb33db](https://github.com/ptah-sh/ptah-server/commit/dfb33dbe3db1dd0db023c950f4dc9499e769ed93))
+* [#239](https://github.com/ptah-sh/ptah-server/issues/239) healthcheck for workers ([f1c9c9a](https://github.com/ptah-sh/ptah-server/commit/f1c9c9a55fdcef8cfa10114dedc651d37a4c0bd4))
+* [#239](https://github.com/ptah-sh/ptah-server/issues/239) healthcheck for workers ([add9b05](https://github.com/ptah-sh/ptah-server/commit/add9b05c2b0f578d1bf78812e2a99f0076741d71))
+* [#239](https://github.com/ptah-sh/ptah-server/issues/239) ip address selection ([c36fed8](https://github.com/ptah-sh/ptah-server/commit/c36fed851c881539f8d661881b624d5b2fbe876c))
+
+
+### Miscellaneous Chores
+
+* update installation data ([0d5acc0](https://github.com/ptah-sh/ptah-server/commit/0d5acc0ad535da24bdc1412529334b37182dc3aa))
+* update installation data ([954eab1](https://github.com/ptah-sh/ptah-server/commit/954eab1f32cdab4d0fb33abf2fce720fd1c60754))
+* update installation data ([a84c0f9](https://github.com/ptah-sh/ptah-server/commit/a84c0f9234707f57e5655b6e9a6004c44c49d42d))
+* update installation data ([860b1da](https://github.com/ptah-sh/ptah-server/commit/860b1da4a3b12e0d241fca2afeafd272575718b9))
+* update installation data ([8e1ef08](https://github.com/ptah-sh/ptah-server/commit/8e1ef08ec921716d80fc987be1b2ac8c4c70ad02))
+* update installation data ([d82db3d](https://github.com/ptah-sh/ptah-server/commit/d82db3da1ab18d98077d96b3565e00a78cc32490))
+
 ## [0.35.5](https://github.com/ptah-sh/ptah-server/compare/v0.35.4...v0.35.5) (2024-10-17)
 
 
