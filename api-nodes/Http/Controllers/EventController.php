@@ -3,11 +3,18 @@
 namespace ApiNodes\Http\Controllers;
 
 use ApiNodes\Models\AgentStartedEventData;
+use App\Actions\Nodes\InitCluster;
+use App\Actions\Services\StartDeployment;
+use App\Models\DeploymentData;
+use App\Models\DeploymentData\LaunchMode;
+use App\Models\DeploymentData\Process;
+use App\Models\DeploymentData\Worker;
 use App\Models\Node;
 use App\Models\NodeTaskGroup;
 use App\Models\NodeTaskGroupType;
 use App\Models\NodeTasks\UpdateDirdConfig\UpdateDirdConfigMeta;
 use App\Models\NodeTaskType;
+use App\Util\ResourceId;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
@@ -19,9 +26,49 @@ class EventController
             $node->data = $data->node;
             $node->save();
 
-            if ($node->swarm && $data->swarm) {
-                $swarm = $node->swarm;
+            $advertiseAddr = $data->node->host->getPrivateIpv4() ?? $data->node->host->getPublicIpv4() ?? '127.0.0.1';
 
+            $swarm = $node->swarm;
+            if (! $swarm) {
+                $swarm = InitCluster::run($node->team->owner, $node, $advertiseAddr);
+
+                $demoService = $swarm->services()->create([
+                    'name' => 'nginx-demo',
+                    'team_id' => $node->team_id,
+                ]);
+
+                $publicAddr = $data->node->host->getPublicIpv4() ?? $data->node->host->getPrivateIpv4() ?? '127.0.0.1';
+
+                StartDeployment::run($node->team->owner, $demoService, DeploymentData::validateAndCreate([
+                    'networkName' => 'ptah_net',
+                    'internalDomain' => 'demo.ptah.local',
+                    'processes' => [
+                        Process::make([
+                            'name' => 'nginx',
+                            'workers' => [
+                                Worker::make([
+                                    'name' => 'main',
+                                    'dockerImage' => 'nginxdemos/hello',
+                                    'replicas' => 1,
+                                    'launchMode' => LaunchMode::Daemon->value,
+                                ])->toArray(),
+                            ],
+                            'caddy' => [
+                                [
+                                    'id' => ResourceId::make('nginx-demo'),
+                                    'targetProtocol' => 'http',
+                                    'targetPort' => 80,
+                                    'publishedPort' => 443,
+                                    'domain' => $publicAddr === '127.0.0.1' ? 'localhost' : $publicAddr,
+                                    'path' => '/',
+                                ],
+                            ],
+                        ])->toArray(),
+                    ],
+                ]));
+            }
+
+            if ($data->swarm) {
                 $swarm->data->joinTokens = $data->swarm->joinTokens;
                 $swarm->data->managerNodes = $data->swarm->managerNodes;
                 $swarm->data->encryptionKey = $data->swarm->encryptionKey;

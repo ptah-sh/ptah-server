@@ -1170,13 +1170,12 @@ const selectedWorkerErrors = computed(() => {
 
         <template #description>
             <p>
-                You can make certain ports of the containers accessible from the
-                internet. All requests will be forwarded to your containers via
-                Caddy.
+                You can expose any web service via Caddy reverse-proxy by
+                clicking <strong>HTTP(S)</strong> button.
             </p>
             <p>
-                Currently you can expose only HTTP services via Caddy
-                reverse-proxy.
+                Certain ports can be exposed to the internet. Use this in
+                limited cases, e.g. for databases or non-HTTP services.
             </p>
         </template>
 

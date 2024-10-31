@@ -2,10 +2,18 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import LayoutTab from "@/Components/LayoutTab.vue";
 import NodeStatus from "@/Components/NodeStatus.vue";
+import Warning from "@/Components/Warning.vue";
+import { usePage } from "@inertiajs/vue3";
 
 const props = defineProps({
     node: Object,
 });
+
+const page = usePage();
+
+const url = new URL(route("nodes.settings", props.node));
+
+const isSettingsPage = url.pathname === page.url;
 </script>
 
 <template>
@@ -83,6 +91,23 @@ const props = defineProps({
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <Warning
+                    v-if="!node.online"
+                    :title="'The ' + props.node.name + ' node is offline'"
+                    :link="
+                        isSettingsPage
+                            ? null
+                            : {
+                                  href: route('nodes.settings', props.node),
+                                  text: 'Check Agent Status',
+                              }
+                    "
+                >
+                    The node is offline. It may be due to a temporary network
+                    issue or a problem with the node itself.
+                    <br />
+                    You might need to start an Agent on the node.
+                </Warning>
                 <slot />
             </div>
         </div>

@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Http\Responses\PtahVerifyEmailResponse;
 use App\Listeners\StartTrialFeedbackFlow;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Fortify\Contracts\VerifyEmailResponse;
 use Lorisleiva\Actions\Facades\Actions;
 
 class AppServiceProvider extends ServiceProvider
@@ -16,6 +18,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Actions::registerRoutes();
         Actions::registerCommands();
+
+        $this->app->singleton(
+            VerifyEmailResponse::class,
+            PtahVerifyEmailResponse::class
+        );
     }
 
     /**

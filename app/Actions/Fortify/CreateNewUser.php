@@ -2,6 +2,7 @@
 
 namespace App\Actions\Fortify;
 
+use App\Models\Node;
 use App\Models\QuotasOverride;
 use App\Models\Team;
 use App\Models\User;
@@ -45,13 +46,20 @@ class CreateNewUser implements CreatesNewUsers
      */
     protected function createTeam(User $user): void
     {
-        $user->ownedTeams()->save(Team::forceCreate([
+        $firstName = explode(' ', $user->name, 2)[0];
+
+        $team = $user->ownedTeams()->save(Team::forceCreate([
             'user_id' => $user->id,
-            'name' => explode(' ', $user->name, 2)[0]."'s Team",
+            'name' => $firstName."'s Team",
             'personal_team' => true,
             'billing_email' => $user->email,
             'billing_name' => $user->name,
             'quotas_override' => QuotasOverride::from([]),
+        ]));
+
+        $team->nodes()->save(Node::forceCreate([
+            'team_id' => $team->id,
+            'name' => $firstName."'s Server",
         ]));
     }
 }

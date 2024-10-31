@@ -9,6 +9,7 @@ import ServiceDetailsForm from "@/Pages/Services/Partials/ServiceDetailsForm.vue
 import DeploymentData from "@/Pages/Services/Partials/DeploymentData.vue";
 import TemplatePicker from "@/Pages/Services/Partials/TemplatePicker.vue";
 import { useCrypto } from "@/encryption";
+import Tour from "@/Components/Tour.vue";
 
 const props = defineProps({
     networks: Array,
@@ -93,9 +94,21 @@ const applyTemplate = (template) => {
 
     hideTemplatePicker();
 };
+
+const steps = [
+    {
+        target: "#use-template-button",
+        title: "Use a Template",
+        content:
+            "Use a template to quickly start a database (PostgreSQL, MySQL, MongoDB, etc.) or web service (Wordpress, Plausible Analytics, etc.).",
+        position: "bottom",
+    },
+];
 </script>
 
 <template>
+    <Tour auto-start tour-id="use-template" :steps="steps" />
+
     <AppLayout title="Dashboard">
         <TemplatePicker
             :marketplace-url="marketplaceUrl"
@@ -113,9 +126,12 @@ const applyTemplate = (template) => {
         </template>
 
         <template #actions>
-            <SecondaryButton @click="openTemplatePicker"
-                >Use a Template</SecondaryButton
+            <SecondaryButton
+                id="use-template-button"
+                @click="openTemplatePicker"
             >
+                Use a Template
+            </SecondaryButton>
         </template>
 
         <div class="py-12">

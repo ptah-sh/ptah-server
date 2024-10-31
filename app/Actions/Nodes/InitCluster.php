@@ -40,9 +40,9 @@ class InitCluster
         return $request->user()->belongsToTeam($node->team);
     }
 
-    public function handle(User $user, Node $node, string $advertiseAddr)
+    public function handle(User $user, Node $node, string $advertiseAddr): Swarm
     {
-        DB::transaction(function () use ($node, $advertiseAddr, $user) {
+        return DB::transaction(function () use ($node, $advertiseAddr, $user) {
             $teamId = $user->currentTeam->id;
 
             $swarm = $this->createSwarm($teamId);
@@ -58,6 +58,8 @@ class InitCluster
             $taskGroup->tasks()->createMany($tasks);
 
             $this->createCaddyService($swarm, $network, $node, $teamId);
+
+            return $swarm;
         });
     }
 

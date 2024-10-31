@@ -6,6 +6,7 @@ use App\Http\Requests\UpdateServiceRequest;
 use App\Models\DeploymentData;
 use App\Models\DeploymentData\Process;
 use App\Models\DeploymentData\Worker;
+use App\Models\Node;
 use App\Models\Service;
 use App\Models\Swarm;
 use Illuminate\Support\Facades\DB;
@@ -31,9 +32,12 @@ class ServiceController extends Controller
         $serviceQuota = $team->quotas()->services;
         $quotaReached = $serviceQuota->quotaReached();
 
+        $hasOnlineNodes = Node::online()->exists();
+
         return Inertia::render('Services/Index', [
             'services' => $services,
             'swarmExists' => $swarmExists,
+            'hasOnlineNodes' => $hasOnlineNodes,
             'quotaReached' => $quotaReached,
         ]);
     }

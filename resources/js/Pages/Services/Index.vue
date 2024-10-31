@@ -11,6 +11,7 @@ const props = defineProps({
     services: Array,
     swarmExists: Boolean,
     quotaReached: Boolean,
+    hasOnlineNodes: Boolean,
 });
 </script>
 
@@ -59,7 +60,50 @@ const props = defineProps({
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <NoDataYet v-if="$props.services.length === 0" />
+                <NoDataYet v-if="$props.services.length === 0">
+                    <template v-if="!hasOnlineNodes">
+                        <p class="text-balance text-center mb-4">
+                            You need at least one online node to create
+                            services.
+                        </p>
+
+                        <p class="text-balance text-center">
+                            Go to the
+                            <Link
+                                :href="route('nodes.index')"
+                                class="text-blue-500 hover:underline"
+                            >
+                                Nodes page
+                            </Link>
+                            to add and initialize your first node.
+                        </p>
+                    </template>
+                    <template v-else-if="!swarmExists">
+                        <p class="text-balance text-center mb-4">
+                            Your node is online but Swarm is not initialized.
+                        </p>
+
+                        <p class="text-balance text-center">
+                            Go to the
+                            <Link
+                                :href="route('nodes.index')"
+                                class="text-blue-500 hover:underline"
+                            >
+                                Nodes page
+                            </Link>
+                            to initialize Swarm.
+                        </p>
+                    </template>
+                    <template v-else>
+                        <p class="text-balance text-center mb-4">
+                            You're all set!
+                        </p>
+                        <p class="text-balance text-center">
+                            Click the Create button above to deploy your first
+                            service.
+                        </p>
+                    </template>
+                </NoDataYet>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div v-for="service in props.services" :key="service.slug">

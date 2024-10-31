@@ -6,7 +6,6 @@ import ShowLayout from "@/Pages/Nodes/ShowLayout.vue";
 import AgentStatus from "@/Pages/Nodes/Partials/AgentStatus.vue";
 import SectionBorder from "@/Components/SectionBorder.vue";
 import InitSwarmProgress from "@/Pages/Nodes/Partials/InitSwarmProgress.vue";
-import SwarmDetails from "@/Pages/Nodes/Partials/SwarmDetails.vue";
 import AgentUpgradeStatus from "@/Pages/Nodes/Partials/AgentUpgradeStatus.vue";
 import DockerRegistries from "@/Pages/Nodes/Partials/DockerRegistries.vue";
 import S3Storages from "@/Pages/Nodes/Partials/S3Storages.vue";
@@ -62,10 +61,6 @@ const destroyNode = () => router.delete(route("nodes.destroy", props.node.id));
             <template
                 v-if="!$props.initTaskGroup && $props.node.swarm_id !== null"
             >
-                <SwarmDetails :node="$props.node" />
-
-                <SectionBorder />
-
                 <S3Storages
                     :swarm="$props.node.swarm"
                     :task-group="$props.s3SUpdateTaskGroup"

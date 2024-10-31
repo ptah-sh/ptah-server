@@ -22,6 +22,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "lorisleiva/laravel-actions": "^2.8",
+        "mlocati/ip-lib": "^1.18",
         "resend/resend-laravel": "^0.14.0",
         "sentry/sentry-laravel": "^4.8",
         "spatie/laravel-data": "^4.7",

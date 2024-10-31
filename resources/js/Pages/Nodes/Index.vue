@@ -113,7 +113,11 @@ onUnmounted(() => {
                 <a
                     v-for="node in nodes"
                     :key="node.id"
-                    :href="route('nodes.show', { node: node.id })"
+                    :href="
+                        node.online
+                            ? route('nodes.show', { node: node.id })
+                            : route('nodes.settings', { node: node.id })
+                    "
                     class="bg-white dark:bg-gray-800 overflow-hidden shadow sm:rounded-lg p-4 flex flex-col gap-4"
                 >
                     <div class="flex gap-4">

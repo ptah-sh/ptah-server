@@ -26,7 +26,7 @@ namespace App\Actions\Nodes;
  * @method static dispatchSync(\App\Models\User $user, \App\Models\Node $node, string $advertiseAddr)
  * @method static dispatchNow(\App\Models\User $user, \App\Models\Node $node, string $advertiseAddr)
  * @method static dispatchAfterResponse(\App\Models\User $user, \App\Models\Node $node, string $advertiseAddr)
- * @method static mixed run(\App\Models\User $user, \App\Models\Node $node, string $advertiseAddr)
+ * @method static \App\Models\Swarm run(\App\Models\User $user, \App\Models\Node $node, string $advertiseAddr)
  */
 class InitCluster {}
 /**

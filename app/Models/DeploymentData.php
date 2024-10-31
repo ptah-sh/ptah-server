@@ -41,6 +41,7 @@ class DeploymentData extends Data
         $result = $this->toArray();
         $errors = [];
 
+        // TODO: there is a bug. If the $result['processes'] array has multiple items and only second (by name) item is in $attributes, it will copy the first item instead of the second.
         if (isset($attributes['processes'])) {
             foreach ($attributes['processes'] as $idx => $process) {
                 if (! isset($process['name'])) {

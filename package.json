@@ -33,7 +33,9 @@
         "lodash.clonedeep": "^4.5.0",
         "lodash.set": "^4.3.2",
         "swrv": "^1.0.4",
-        "vue3-apexcharts": "^1.6.0"
+        "vue3-apexcharts": "^1.6.0",
+        "nanopop": "^2.3.0",
+        "jump.js": "^1.0.2"
     },
     "lint-staged": {
         "*.{js,vue,css,md,json}": "prettier --write",
