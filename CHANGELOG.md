@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.37.0](https://github.com/ptah-sh/ptah-server/compare/v0.36.0...v0.37.0) (2024-10-31)
+
+
+### Features
+
+* [#164](https://github.com/ptah-sh/ptah-server/issues/164) create user onboarding process ([456acab](https://github.com/ptah-sh/ptah-server/commit/456acaba71776216bf54fe9f4493a41eecb7bc03))
+
+
+### Miscellaneous Chores
+
+* update installation data ([d69ca6c](https://github.com/ptah-sh/ptah-server/commit/d69ca6c5e4b8337ce5194300916020122a8ab153))
+
 ## [0.36.0](https://github.com/ptah-sh/ptah-server/compare/v0.35.5...v0.36.0) (2024-10-20)
 
 
