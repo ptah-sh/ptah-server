@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.38.0](https://github.com/ptah-sh/ptah-server/compare/v0.37.0...v0.38.0) (2024-11-02)
+
+
+### Features
+
+* [#249](https://github.com/ptah-sh/ptah-server/issues/249) improve 'services' page ux ([5ce928f](https://github.com/ptah-sh/ptah-server/commit/5ce928fb9e716238c6a4d2af9ebe26a9236bff9c))
+
+
+### Bug Fixes
+
+* [#164](https://github.com/ptah-sh/ptah-server/issues/164) disable failing test ([f37dd22](https://github.com/ptah-sh/ptah-server/commit/f37dd2243bdd90620b94973e342d7af67fca8770))
+
+
+### Miscellaneous Chores
+
+* update installation data ([6237d24](https://github.com/ptah-sh/ptah-server/commit/6237d241feea34d385ed67f2f80e7dc3b70d9fe6))
+
 ## [0.37.0](https://github.com/ptah-sh/ptah-server/compare/v0.36.0...v0.37.0) (2024-10-31)
 
 
