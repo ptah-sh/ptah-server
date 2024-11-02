@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\NodeTaskGroupType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,13 +17,12 @@ return new class extends Migration
 
         $query = <<<'SQL'
         UPDATE deployments d
-        SET configured_by_id = ntg.invoker_id
-        FROM deployment_node_task_group dntg
-        INNER JOIN node_task_groups ntg ON ntg.id = dntg.node_task_group_id
-        WHERE dntg.deployment_id = d.id AND ntg.type IN (?, ?, ?)
+        SET configured_by_id = t.user_id
+        FROM teams t
+        WHERE t.id = d.team_id
         SQL;
 
-        DB::update($query, [NodeTaskGroupType::LaunchService->value, NodeTaskGroupType::CreateService->value, NodeTaskGroupType::UpdateService->value]);
+        DB::update($query);
     }
 
     /**
