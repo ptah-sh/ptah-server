@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('deployments', function (Blueprint $table) {
-            $table->foreignId('configured_by_id')->constrained('users');
+            $table->foreignId('configured_by_id')->nullable()->constrained('users');
         });
 
         $query = <<<'SQL'
@@ -23,6 +23,10 @@ return new class extends Migration
         SQL;
 
         DB::update($query);
+
+        Schema::table('deployments', function (Blueprint $table) {
+            $table->foreignId('configured_by_id')->change();
+        });
     }
 
     /**
