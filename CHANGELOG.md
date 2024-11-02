@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.38.1](https://github.com/ptah-sh/ptah-server/compare/v0.38.0...v0.38.1) (2024-11-02)
+
+
+### Bug Fixes
+
+* [#249](https://github.com/ptah-sh/ptah-server/issues/249) correct invoker id for deployments ([5a5f248](https://github.com/ptah-sh/ptah-server/commit/5a5f248d0e2bf9fbd58361d9218ecc6acbb6ed99))
+
+
+### Miscellaneous Chores
+
+* update installation data ([bf725e8](https://github.com/ptah-sh/ptah-server/commit/bf725e8dd9b091d365cddb94fa6c90ebb6ebe3a3))
+
 ## [0.38.0](https://github.com/ptah-sh/ptah-server/compare/v0.37.0...v0.38.0) (2024-11-02)
 
 
