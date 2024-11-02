@@ -45,7 +45,10 @@ class StartDeployment
             $deployment = $service->deployments()->create([
                 'team_id' => $service->team_id,
                 'data' => $deploymentData,
+                'configured_by_id' => $user->id,
             ]);
+
+            $deployment->taskGroups()->attach($taskGroup);
 
             $taskGroup->tasks()->createMany($deployment->asNodeTasks());
 

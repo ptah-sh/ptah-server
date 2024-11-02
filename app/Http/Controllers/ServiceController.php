@@ -19,11 +19,7 @@ class ServiceController extends Controller
      */
     public function index()
     {
-        $services = Service::with(['latestDeployment' => function ($query) {
-            $query->with(['latestTaskGroup' => function ($query) {
-                $query->with('latestTask');
-            }]);
-        }])->orderBy('name')->get();
+        $services = Service::with('latestDeployment', 'latestDeployment.latestTaskGroup')->orderBy('name')->get();
 
         $swarmExists = Swarm::exists();
 

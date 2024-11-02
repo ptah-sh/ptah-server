@@ -2,10 +2,10 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { router } from "@inertiajs/vue3";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
-import TaskResult from "@/Components/NodeTasks/TaskResult.vue";
 import { Link } from "@inertiajs/vue3";
 import NoDataYet from "@/Components/NoDataYet.vue";
 import { FwbTooltip } from "flowbite-vue";
+import TaskStatus from "@/Components/NodeTasks/TaskStatus.vue";
 
 const props = defineProps({
     services: Array,
@@ -114,13 +114,15 @@ const props = defineProps({
                                 :href="route('services.show', service)"
                                 class="p-4 grid grid-cols-2"
                             >
-                                <div class="flex flex-col">
+                                <div class="flex items-center">
+                                    <TaskStatus
+                                        :task-status="
+                                            service.latest_deployment
+                                                .latest_task_group.status
+                                        "
+                                    />
                                     <span class="font-semibold text-lg">{{
                                         service.name
-                                    }}</span>
-                                    <span class="text-sm text-gray-500">{{
-                                        service.latest_deployment.data
-                                            .dockerImage
                                     }}</span>
                                 </div>
 
@@ -175,25 +177,7 @@ const props = defineProps({
                                         more)</span
                                     >
                                 </div>
-
-                                <!--          <pre>{{service}}</pre>-->
                             </Link>
-                            <ul
-                                v-if="
-                                    service.latest_deployment.latest_task_group
-                                        .status !== 'completed'
-                                "
-                                class="border-t-2 relative"
-                            >
-                                <TaskResult
-                                    :task="
-                                        service.latest_deployment
-                                            .latest_task_group.latest_task
-                                    "
-                                    class=""
-                                >
-                                </TaskResult>
-                            </ul>
                         </div>
                     </div>
                 </div>

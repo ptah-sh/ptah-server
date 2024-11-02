@@ -40,7 +40,7 @@ class ExecuteWorker
                 'type' => $taskGroupType,
                 'swarm_id' => $service->swarm_id,
                 'node_id' => $process->placementNodeId,
-                'invoker_id' => $deployment->latestTaskGroup->invoker_id,
+                'invoker_id' => $deployment->taskGroups()->latest('id')->first()->invoker_id,
                 'team_id' => $service->team_id,
             ]);
 
