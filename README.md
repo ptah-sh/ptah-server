@@ -34,6 +34,10 @@ We would like to extend our thanks to the following sponsors for funding Ptah.sh
 
 -   _None so far_
 
+#### Want to get some feature being developed faster?
+
+Consider sponsoring the project via [GitHub Sponsors](https://github.com/sponsors/bohdan-shulha).
+
 ## Supported Operating Systems
 
 Currently we support only the latest stable Ubuntu (24.04) with x86_64 architecture. You can build Agent and/or the server software for other operating systems, but no guarantee it will work.
