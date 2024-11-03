@@ -16,6 +16,7 @@
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
         @paddleJS
+        <script defer data-domain="ctl.ptah.sh" src="https://plausible.ptah.sh/js/script.js"></script>
     </head>
     <body class="font-sans antialiased">
         @inertia

@@ -49,6 +49,16 @@ class RebuildCaddy extends Action
                         ];
                     }
 
+                    // TODO: enable gzip compression?
+                    // $handlers[] = [
+                    //     'handler' => 'encode',
+                    //     'encodings' => [
+                    //         'gzip' => [
+                    //             'level' => 9,
+                    //         ],
+                    //     ],
+                    // ];
+
                     $handlers[] = [
                         'handler' => 'reverse_proxy',
                         'headers' => [
