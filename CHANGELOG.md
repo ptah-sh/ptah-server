@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.39.0](https://github.com/ptah-sh/ptah-server/compare/v0.38.2...v0.39.0) (2024-11-03)
+
+
+### Features
+
+* try plausible analytics ([f23acbb](https://github.com/ptah-sh/ptah-server/commit/f23acbb8c4df2fa9d85730004fdc17f9cd4fd880))
+
+
+### Miscellaneous Chores
+
+* update installation data ([9e808d2](https://github.com/ptah-sh/ptah-server/commit/9e808d23c61abcb07f3033463c139083649bfa15))
+
 ## [0.38.2](https://github.com/ptah-sh/ptah-server/compare/v0.38.1...v0.38.2) (2024-11-02)
 
 
