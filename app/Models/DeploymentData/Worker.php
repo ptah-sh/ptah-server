@@ -6,6 +6,7 @@ use App\Models\Backup;
 use App\Models\Deployment;
 use App\Models\DeploymentData\AppSource\AppSourceType;
 use App\Models\NodeTasks\BuildImageWithDockerfile\BuildImageWithDockerfileMeta;
+use App\Models\NodeTasks\BuildImageWithNixpacks\BuildImageWithNixpacksMeta;
 use App\Models\NodeTasks\DownloadS3File\DownloadS3FileMeta;
 use App\Models\NodeTasks\LaunchService\LaunchServiceMeta;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
@@ -55,35 +56,11 @@ class Worker extends Data
         if ($this->replicas > $maxInitialReplicas) {
             $this->replicas = $maxInitialReplicas;
         }
-
-        if ($this->source->type === AppSourceType::GitWithDockerfile) {
-            if (! $this->source->git->volume) {
-                $this->source->git->volume = Volume::validateAndCreate([
-                    'id' => ResourceId::make('volume'),
-                    'name' => 'data',
-                    'dockerName' => $this->makeResourceName('vol_ptah_git'),
-                    'path' => '/ptah/git',
-                ]);
-            }
-        }
-
-        // if ($this->source->type === AppSourceType::GitWithNixpacks) {
-        //     if (! $this->source->nixpacks->volume) {
-        //         $this->source->nixpacks->volume = Volume::validateAndCreate([
-        //             'id' => ResourceId::make('volume'),
-        //             'name' => $this->dockerName.'_vol_ptah_nixpacks',
-        //             'dockerName' => $this->dockerName.'_vol_ptah_nixpacks',
-        //             'path' => '/nixpacks',
-        //         ]);
-        //     }
-        // }
     }
 
     public function asNodeTasks(Deployment $deployment, Process $process, bool $buildOrPull = true, ?int $desiredReplicas = null, ?Backup $backup = null): array
     {
-        if (! $this->dockerName) {
-            $this->dockerName = $process->makeResourceName('wkr_'.$this->name);
-        }
+        $this->ensureVolumes($process);
 
         $launchNow = is_null($desiredReplicas) ? $this->replicas > 0 : $desiredReplicas > 0;
 
@@ -164,14 +141,14 @@ class Worker extends Data
                 'workerName' => $this->name,
             ]),
             'payload' => [
-                'ReleaseCommand' => $this->getReleaseCommandPayload($deployment, $labels),
+                'ReleaseCommand' => $this->getReleaseCommandPayload($deployment, $process, $labels),
                 'SecretVars' => $this->getSecretVars($process),
                 'SwarmServiceSpec' => [
                     'Name' => $this->dockerName,
                     'Labels' => $labels,
                     'TaskTemplate' => [
                         'ContainerSpec' => [
-                            'Image' => $this->getDockerImage(),
+                            'Image' => $this->getDockerImage($process),
                             'Labels' => $labels,
                             'Command' => $command,
                             'Args' => $args,
@@ -241,28 +218,66 @@ class Worker extends Data
         return $tasks;
     }
 
-    public function getDockerImage(): string
+    private function getDockerName(Process $process): string
+    {
+        if (! $this->dockerName) {
+            $this->dockerName = $process->makeResourceName('wkr_'.$this->name);
+        }
+
+        return $this->dockerName;
+    }
+
+    private function ensureVolumes(Process $process): void
+    {
+
+        if ($this->source->type === AppSourceType::GitWithDockerfile) {
+            if (! $this->source->git->volume) {
+                $this->source->git->volume = Volume::validateAndCreate([
+                    'id' => ResourceId::make('volume'),
+                    'name' => 'data',
+                    'dockerName' => $this->makeResourceName($process, 'vol_ptah_git'),
+                    'path' => '/ptah/git',
+                ]);
+            }
+        }
+
+        if ($this->source->type === AppSourceType::GitWithNixpacks) {
+            if (! $this->source->nixpacks->volume) {
+                $this->source->nixpacks->volume = Volume::validateAndCreate([
+                    'id' => ResourceId::make('volume'),
+                    'name' => 'data',
+                    'dockerName' => $this->makeResourceName($process, 'vol_ptah_nixpacks'),
+                    'path' => '/ptah/nixpacks',
+                ]);
+            }
+        }
+    }
+
+    public function getDockerImage(Process $process): string
     {
         return match ($this->source->type) {
             AppSourceType::DockerImage => $this->source->docker->image,
-            AppSourceType::GitWithDockerfile => '127.0.0.1:5000/'.$this->dockerName.':'.$this->source->git->ref,
-            // AppSourceType::GitWithNixpacks => $this->source->nixpacks->dockerImage,
+            AppSourceType::GitWithDockerfile => '127.0.0.1:5000/'.$this->getDockerName($process).':'.$this->source->git->ref,
+            AppSourceType::GitWithNixpacks => '127.0.0.1:5000/'.$this->getDockerName($process).':'.$this->source->nixpacks->ref,
         };
     }
 
     public function getBuildOrPullImageTasks(Deployment $deployment, Process $process): array
     {
-        $labels = $process->resourceLabels($deployment);
+        // Something went wrong as we have to call ensureVolumes here
+        $this->ensureVolumes($process);
 
         return match ($this->source->type) {
-            AppSourceType::DockerImage => $this->getPullImageTasks($deployment),
-            AppSourceType::GitWithDockerfile => $this->getBuildImageTasks($deployment, $process, $labels),
-            // AppSourceType::GitWithNixpacks => $this->getBuildImageFromNixpacksTask($deployment),
+            AppSourceType::DockerImage => $this->getPullImageTasks($deployment, $process),
+            AppSourceType::GitWithDockerfile => $this->getBuildImageWithDockerfileTasks($deployment, $process),
+            AppSourceType::GitWithNixpacks => $this->getBuildImageWithNixpacksTasks($deployment, $process),
         };
     }
 
-    protected function getPullRepoTask(Deployment $deployment, Process $process, array $labels): array
+    protected function getPullRepoTask(Deployment $deployment, Process $process, Volume $volume, string $repo, string $ref): array
     {
+        $labels = $process->resourceLabels($deployment);
+
         return [
             'type' => NodeTaskType::PullGitRepo,
             'meta' => PullGitRepoMeta::from([
@@ -270,62 +285,85 @@ class Worker extends Data
                 'deploymentId' => $deployment->id,
                 'process' => $process->name,
                 'worker' => $this->name,
-                'repo' => $this->source->git->repo,
-                'ref' => $this->source->git->ref,
+                'repo' => $repo,
+                'ref' => $ref,
             ]),
             'payload' => [
-                'Repo' => $this->source->git->repo,
-                'Ref' => $this->source->git->ref,
+                'Repo' => $repo,
+                'Ref' => $ref,
+                'VolumeSpec' => $volume->asMount($labels),
+                'TargetDir' => "{$volume->path}/{$ref}",
+            ],
+        ];
+    }
+
+    protected function getBuildImageWithDockerfileTasks(Deployment $deployment, Process $process): array
+    {
+        $labels = $process->resourceLabels($deployment);
+
+        $tasks = [];
+
+        $tasks[] = $this->getPullRepoTask($deployment, $process, $this->source->git->volume, $this->source->git->repo, $this->source->git->ref);
+
+        $tasks[] = [
+            'type' => NodeTaskType::BuildImageWithDockerfile,
+            'meta' => BuildImageWithDockerfileMeta::from([
+                'dockerImage' => $this->getDockerImage($process),
+                'dockerfilePath' => $this->source->git->dockerfilePath,
+            ]),
+            'payload' => [
+                'DockerImage' => $this->getDockerImage($process),
+                'WorkingDir' => "{$this->source->git->volume->path}/{$this->source->git->ref}",
+                'Dockerfile' => $this->source->git->dockerfilePath,
                 'VolumeSpec' => $this->source->git->volume->asMount($labels),
-                'TargetDir' => "/ptah/git/{$this->source->git->ref}",
             ],
         ];
-    }
 
-    protected function getBuildImageTasks(Deployment $deployment, Process $process, array $labels): array
-    {
-        return [
-            $this->getPullRepoTask($deployment, $process, $labels),
-            [
-                'type' => NodeTaskType::BuildImageWithDockerfile,
-                'meta' => BuildImageWithDockerfileMeta::from([
-                    'dockerImage' => $this->getDockerImage(),
-                    'dockerfilePath' => $this->source->git->dockerfilePath,
-                ]),
-                'payload' => [
-                    'DockerImage' => $this->getDockerImage(),
-                    'WorkingDir' => "/ptah/git/{$this->source->git->ref}",
-                    'Dockerfile' => $this->source->git->dockerfilePath,
-                    'VolumeSpec' => $this->source->git->volume->asMount($labels),
-                ],
-            ],
-            // ...$this->getPullImageTasks($deployment),
+        $tasks = [
+            ...$tasks,
+            ...$this->getPullImageTasks($deployment, $process),
         ];
+
+        return $tasks;
     }
 
-    // protected function getBuildImageFromNixpacksTasks(Deployment $deployment): array
-    // {
-    //     return [
-    //         $this->getPullRepoTask($deployment),
-    //         [
-    //             'type' => NodeTaskType::BuildImageWithNixpacks,
-    //             'meta' => BuildImageWithNixpacksMeta::from([
-    //                 'deploymentId' => $deployment->id,
-    //                 'processName' => $this->dockerName,
-    //                 'serviceId' => $deployment->service_id,
-    //                 'serviceName' => $deployment->service->name,
-    //             ]),
-    //         ],
-    //     ];
-    // }
-
-    protected function getPullImageTasks(Deployment $deployment): array
+    protected function getBuildImageWithNixpacksTasks(Deployment $deployment, Process $process): array
     {
-        $dockerRegistry = $this->source->docker->registryId
+        $labels = $process->resourceLabels($deployment);
+
+        $tasks = [];
+
+        $tasks[] = $this->getPullRepoTask($deployment, $process, $this->source->nixpacks->volume, $this->source->nixpacks->repo, $this->source->nixpacks->ref);
+
+        $tasks[] = [
+            'type' => NodeTaskType::BuildImageWithNixpacks,
+            'meta' => BuildImageWithNixpacksMeta::from([
+                'dockerImage' => $this->getDockerImage($process),
+                'nixpacksFilePath' => $this->source->nixpacks->nixpacksFilePath,
+            ]),
+            'payload' => [
+                'DockerImage' => $this->getDockerImage($process),
+                'WorkingDir' => "{$this->source->nixpacks->volume->path}/{$this->source->nixpacks->ref}",
+                'NixpacksFilePath' => $this->source->nixpacks->nixpacksFilePath,
+                'VolumeSpec' => $this->source->nixpacks->volume->asMount($labels),
+            ],
+        ];
+
+        $tasks = [
+            ...$tasks,
+            ...$this->getPullImageTasks($deployment, $process),
+        ];
+
+        return $tasks;
+    }
+
+    protected function getPullImageTasks(Deployment $deployment, Process $process): array
+    {
+        $dockerRegistry = $this->source->docker?->registryId
             ? $deployment->service->swarm->data->findRegistry($this->source->docker->registryId)
             : null;
 
-        if ($this->source->docker->registryId && is_null($dockerRegistry)) {
+        if ($this->source->docker?->registryId && is_null($dockerRegistry)) {
             throw new Exception("Docker registry '{$this->source->docker->registryId}' not found");
         }
 
@@ -339,14 +377,14 @@ class Worker extends Data
             'type' => NodeTaskType::PullDockerImage,
             'meta' => PullDockerImageMeta::from([
                 'deploymentId' => $deployment->id,
-                'processName' => $this->dockerName,
+                'processName' => $this->getDockerName($process),
                 'serviceId' => $deployment->service_id,
                 'serviceName' => $deployment->service->name,
-                'dockerImage' => $this->getDockerImage(),
+                'dockerImage' => $this->getDockerImage($process),
             ]),
             'payload' => [
                 'AuthConfigName' => $authConfigName,
-                'Image' => $this->getDockerImage(),
+                'Image' => $this->getDockerImage($process),
                 'PullOptions' => (object) [],
             ],
         ];
@@ -393,7 +431,7 @@ class Worker extends Data
         return [['sh'], ['-c', $this->command]];
     }
 
-    private function getReleaseCommandPayload(Deployment $deployment, array $labels): array
+    private function getReleaseCommandPayload(Deployment $deployment, Process $process, array $labels): array
     {
         if (! $this->releaseCommand->command) {
             return [
@@ -404,7 +442,7 @@ class Worker extends Data
         }
 
         // Always create a new config, as the command may be the same, but the image/entrypoint may be different.
-        $this->releaseCommand->dockerName = $this->makeResourceName('dpl_'.$deployment->id.'_rel_cmd');
+        $this->releaseCommand->dockerName = $this->makeResourceName($process, 'dpl_'.$deployment->id.'_rel_cmd');
 
         return [
             'ConfigName' => $this->releaseCommand->dockerName,
@@ -578,9 +616,9 @@ class Worker extends Data
         ];
     }
 
-    private function makeResourceName(string $name): string
+    private function makeResourceName(Process $process, string $name): string
     {
-        return dockerize_name($this->dockerName.'_'.$name);
+        return dockerize_name($this->getDockerName($process).'_'.$name);
     }
 
     public static function make(array $attributes): static

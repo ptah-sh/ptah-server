@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Events\NodeTasks\BuildImageWithDockerfile\BuildImageWithDockerfileCompleted;
 use App\Events\NodeTasks\BuildImageWithDockerfile\BuildImageWithDockerfileFailed;
+use App\Events\NodeTasks\BuildImageWithNixpacks\BuildImageWithNixpacksCompleted;
+use App\Events\NodeTasks\BuildImageWithNixpacks\BuildImageWithNixpacksFailed;
 use App\Events\NodeTasks\CheckRegistryAuth\CheckRegistryAuthCompleted;
 use App\Events\NodeTasks\CheckRegistryAuth\CheckRegistryAuthFailed;
 use App\Events\NodeTasks\CheckS3Storage\CheckS3StorageCompleted;
@@ -58,6 +60,8 @@ use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigResult;
 use App\Models\NodeTasks\BuildImageWithDockerfile\BuildImageWithDockerfileMeta;
 use App\Models\NodeTasks\BuildImageWithDockerfile\BuildImageWithDockerfileResult;
+use App\Models\NodeTasks\BuildImageWithNixpacks\BuildImageWithNixpacksMeta;
+use App\Models\NodeTasks\BuildImageWithNixpacks\BuildImageWithNixpacksResult;
 use App\Models\NodeTasks\CheckRegistryAuth\CheckRegistryAuthMeta;
 use App\Models\NodeTasks\CheckRegistryAuth\CheckRegistryAuthResult;
 use App\Models\NodeTasks\CheckS3Storage\CheckS3StorageMeta;
@@ -136,6 +140,7 @@ enum NodeTaskType: int
     case RemoveS3File = 23;
     case PullGitRepo = 24;
     case BuildImageWithDockerfile = 25;
+    case BuildImageWithNixpacks = 26;
 
     public function meta(): string
     {
@@ -166,6 +171,7 @@ enum NodeTaskType: int
             self::RemoveS3File => RemoveS3FileMeta::class,
             self::PullGitRepo => PullGitRepoMeta::class,
             self::BuildImageWithDockerfile => BuildImageWithDockerfileMeta::class,
+            self::BuildImageWithNixpacks => BuildImageWithNixpacksMeta::class,
         };
     }
 
@@ -198,6 +204,7 @@ enum NodeTaskType: int
             self::RemoveS3File => RemoveS3FileResult::class,
             self::PullGitRepo => PullGitRepoResult::class,
             self::BuildImageWithDockerfile => BuildImageWithDockerfileResult::class,
+            self::BuildImageWithNixpacks => BuildImageWithNixpacksResult::class,
         };
     }
 
@@ -230,6 +237,7 @@ enum NodeTaskType: int
             self::RemoveS3File => RemoveS3FileCompleted::class,
             self::PullGitRepo => PullGitRepoCompleted::class,
             self::BuildImageWithDockerfile => BuildImageWithDockerfileCompleted::class,
+            self::BuildImageWithNixpacks => BuildImageWithNixpacksCompleted::class,
         };
     }
 
@@ -262,6 +270,7 @@ enum NodeTaskType: int
             self::RemoveS3File => RemoveS3FileFailed::class,
             self::PullGitRepo => PullGitRepoFailed::class,
             self::BuildImageWithDockerfile => BuildImageWithDockerfileFailed::class,
+            self::BuildImageWithNixpacks => BuildImageWithNixpacksFailed::class,
         };
     }
 }

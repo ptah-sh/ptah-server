@@ -23,6 +23,10 @@ function getSource() {
         return "git_with_dockerfile.null";
     }
 
+    if (model.value.source.type === "git_with_nixpacks") {
+        return "git_with_nixpacks.null";
+    }
+
     return null;
 }
 
@@ -32,24 +36,39 @@ effect(() => {
     model.value.source.type = source.value.split(".")[0];
 
     if (model.value.source.type === "docker_image") {
-        model.value.source.git = null;
-
         const registryId = source.value.split(".")[1];
 
-        model.value.source.docker = {
-            registryId: registryId === "null" ? null : parseInt(registryId),
-            image: model.value.source.docker?.image,
+        model.value.source = {
+            type: "docker_image",
+            docker: {
+                registryId: registryId === "null" ? null : parseInt(registryId),
+                image: model.value.source.docker?.image,
+            },
         };
     }
 
     if (model.value.source.type === "git_with_dockerfile") {
-        model.value.source.docker = null;
+        model.value.source = {
+            type: "git_with_dockerfile",
+            git: {
+                repo: model.value.source.git?.repo ?? null,
+                ref: model.value.source.git?.ref ?? "main",
+                dockerfilePath:
+                    model.value.source.git?.dockerfilePath ?? "Dockerfile",
+            },
+        };
+    }
 
-        model.value.source.git = {
-            repo: model.value.source.git?.repo ?? null,
-            ref: model.value.source.git?.ref ?? null,
-            dockerfilePath:
-                model.value.source.git?.dockerfilePath ?? "/Dockerfile",
+    if (model.value.source.type === "git_with_nixpacks") {
+        model.value.source = {
+            type: "git_with_nixpacks",
+            nixpacks: {
+                repo: model.value.source.nixpacks?.repo ?? null,
+                ref: model.value.source.nixpacks?.ref ?? "main",
+                nixpacksFilePath:
+                    model.value.source.nixpacks?.nixpacksFilePath ??
+                    "nixpacks.toml",
+            },
         };
     }
 });
@@ -281,7 +300,7 @@ const commandPlaceholder = computed(() => {
         </FormField>
     </div>
 
-    <FormField class="col-span-2" :error="props.errors['dockerRegistryId']">
+    <FormField class="col-span-2" :error="props.errors['source.type']">
         <template #label>Source</template>
 
         <Select v-model="source">
@@ -299,6 +318,9 @@ const commandPlaceholder = computed(() => {
             <optgroup label="Git Repository">
                 <option :value="'git_with_dockerfile.null'">
                     Git Repository with Dockerfile
+                </option>
+                <option :value="'git_with_nixpacks.null'">
+                    Git Repository with Nixpacks
                 </option>
             </optgroup>
         </Select>
@@ -352,7 +374,50 @@ const commandPlaceholder = computed(() => {
             <TextInput
                 v-model="model.source.git.dockerfilePath"
                 class="block w-full"
-                placeholder="/Dockerfile"
+                placeholder="Dockerfile"
+            />
+        </FormField>
+    </template>
+
+    <template v-if="model.source.type === 'git_with_nixpacks'">
+        <FormField
+            class="col-span-4"
+            :error="props.errors['source.nixpacks.repo']"
+        >
+            <template #label>Git Repository</template>
+
+            <div class="flex gap-4">
+                <TextInput
+                    v-model="model.source.nixpacks.repo"
+                    class="block w-full"
+                    placeholder="https://github.com/ptah-sh/ptah-server"
+                />
+            </div>
+        </FormField>
+
+        <FormField
+            class="col-span-2"
+            :error="props.errors['source.nixpacks.ref']"
+        >
+            <template #label>Git Branch / Tag / Commit</template>
+
+            <TextInput
+                v-model="model.source.nixpacks.ref"
+                class="block w-full"
+                placeholder="main"
+            />
+        </FormField>
+
+        <FormField
+            class="col-span-4"
+            :error="props.errors['source.nixpacks.nixpacksFilePath']"
+        >
+            <template #label>Nixpacks File Path</template>
+
+            <TextInput
+                v-model="model.source.nixpacks.nixpacksFilePath"
+                class="block w-full"
+                placeholder="nixpacks.toml"
             />
         </FormField>
     </template>
