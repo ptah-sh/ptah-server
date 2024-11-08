@@ -65,6 +65,11 @@ class NodeTaskGroup extends Model
         return $this->belongsTo(User::class, 'invoker_id');
     }
 
+    public function deployments(): BelongsToMany
+    {
+        return $this->belongsToMany(Deployment::class, DeploymentNodeTaskGroup::class, 'node_task_group_id', 'deployment_id');
+    }
+
     public function start(Node $node): void
     {
         $this->status = TaskStatus::Running;
@@ -86,6 +91,8 @@ class NodeTaskGroup extends Model
             'team_id',
         ])->toArray());
         $taskGroup->save();
+
+        $taskGroup->deployments()->sync($this->deployments->pluck('id'));
 
         $taskGroup->tasks()->saveMany($this->tasks->map(function (NodeTask $task) {
             $dataAttrs = $task->is_completed

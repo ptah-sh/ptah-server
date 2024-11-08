@@ -15,3 +15,9 @@ With this in mind, we currently accept code contributions only for the following
 If you would like to support Ptah.sh development, please feel free to create guides, screencasts, contribute on forums or donate a small amount via GitHub Sponsors or by subscribing to the Cloud option of the service.
 
 Thank you for your support!
+
+## Development Setup
+
+```bash
+echo "127.0.0.1 registry.ptah.local" >> /etc/hosts
+```

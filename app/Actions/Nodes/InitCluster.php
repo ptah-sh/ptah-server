@@ -172,7 +172,7 @@ class InitCluster
     private function createCaddyService(Swarm $swarm, Network $network, Node $node, int $teamId): void
     {
         $caddyService = $swarm->services()->create([
-            'name' => 'caddy',
+            'name' => 'ptah',
             'team_id' => $teamId,
         ]);
 
@@ -185,9 +185,10 @@ class InitCluster
     {
         return DeploymentData::validateAndCreate([
             'networkName' => $network->docker_name,
-            'internalDomain' => 'caddy.ptah.local',
+            'internalDomain' => 'ptah.local',
             'processes' => [
                 $this->getCaddyProcessConfig($node),
+                $this->getDockerRegistryProcessConfig($node),
             ],
         ]);
     }
@@ -195,18 +196,20 @@ class InitCluster
     private function getCaddyProcessConfig(Node $node): array
     {
         return [
-            'name' => 'svc',
+            'name' => 'caddy',
             'placementNodeId' => $node->id,
             'workers' => [
                 [
                     'name' => 'main',
-                    'dockerRegistryId' => null,
-                    'dockerImage' => 'ghcr.io/ptah-sh/ptah-caddy:latest',
-                    'dockerName' => 'caddy',
+                    'source' => [
+                        'type' => 'docker_image',
+                        'docker' => [
+                            'image' => 'ghcr.io/ptah-sh/ptah-caddy:latest',
+                        ],
+                    ],
                     'command' => 'sh /start.sh',
                     'replicas' => 1,
                     'launchMode' => LaunchMode::Daemon->value,
-                    'schedule' => null,
                     'releaseCommand' => [
                         'command' => null,
                     ],
@@ -255,6 +258,83 @@ class InitCluster
                 ['targetPort' => '443', 'publishedPort' => '443'],
                 ['targetPort' => '2019', 'publishedPort' => '2019'],
             ],
+            'caddy' => [],
+            'fastcgiVars' => null,
+            'redirectRules' => [],
+            'rewriteRules' => [],
+        ];
+    }
+
+    private function getDockerRegistryProcessConfig(Node $node): array
+    {
+        return [
+            'name' => 'registry',
+            'placementNodeId' => $node->id,
+            'workers' => [
+                [
+                    'name' => 'main',
+                    'source' => [
+                        'type' => 'docker_image',
+                        'docker' => [
+                            'image' => 'registry:latest',
+                        ],
+                    ],
+                    'releaseCommand' => [
+                        'command' => null,
+                    ],
+                    'healthcheck' => [
+                        'command' => null,
+                        'interval' => 10,
+                        'timeout' => 5,
+                        'retries' => 3,
+                        'startPeriod' => 30,
+                        'startInterval' => 5,
+                    ],
+                    'replicas' => 1,
+                    'launchMode' => LaunchMode::Daemon->value,
+                ],
+                [
+                    'name' => 'garbage-collector',
+                    'source' => [
+                        'type' => 'docker_image',
+                        'docker' => [
+                            'image' => 'registry:latest',
+                        ],
+                    ],
+                    'releaseCommand' => [
+                        'command' => null,
+                    ],
+                    'healthcheck' => [
+                        'command' => null,
+                        'interval' => 10,
+                        'timeout' => 5,
+                        'retries' => 3,
+                        'startPeriod' => 30,
+                        'startInterval' => 5,
+                    ],
+                    'replicas' => 0,
+                    'command' => '/bin/registry garbage-collect /etc/docker/registry/config.yml',
+                    'launchMode' => LaunchMode::Cronjob->value,
+                    'crontab' => '0 * * * *',
+                ],
+            ],
+            'envVars' => [
+                [
+                    'name' => 'REGISTRY_STORAGE_DELETE_ENABLED',
+                    'value' => 'true',
+                ],
+            ],
+            'secretVars' => [],
+            'configFiles' => [],
+            'secretFiles' => [],
+            'volumes' => [
+                [
+                    'id' => ResourceId::make('volume'),
+                    'name' => 'data',
+                    'path' => '/var/lib/registry',
+                ],
+            ],
+            'ports' => [],
             'caddy' => [],
             'fastcgiVars' => null,
             'redirectRules' => [],

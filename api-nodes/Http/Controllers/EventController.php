@@ -48,7 +48,12 @@ class EventController
                             'workers' => [
                                 Worker::make([
                                     'name' => 'main',
-                                    'dockerImage' => 'nginxdemos/hello',
+                                    'source' => [
+                                        'type' => 'docker_image',
+                                        'docker' => [
+                                            'image' => 'nginxdemos/hello',
+                                        ],
+                                    ],
                                     'replicas' => 1,
                                     'launchMode' => LaunchMode::Daemon->value,
                                 ])->toArray(),

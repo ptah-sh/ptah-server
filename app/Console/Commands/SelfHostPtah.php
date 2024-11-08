@@ -91,27 +91,28 @@ class SelfHostPtah extends Command
 
         $network = Network::first();
 
-        $service = Service::create([
-            'name' => 'ptah',
-            'team_id' => $team->id,
-            'swarm_id' => $node->swarm_id,
-        ]);
+        $service = Service::where('name', 'ptah')->first();
 
         // TODO: create processes from 1-Click App templates
         StartDeployment::run($user, $service, DeploymentData::validateAndCreate([
             'networkName' => $network->docker_name,
-            'internalDomain' => 'server.ptah.local',
+            'internalDomain' => 'ptah.local',
             'processes' => [
+                // TODO NOW!!!! append the existing processes from the service
                 [
                     'name' => 'pg',
                     'placementNodeId' => $node->id,
                     'workers' => [
                         [
                             'name' => 'main',
-                            'dockerImage' => 'bitnami/postgresql:16',
+                            'source' => [
+                                'type' => 'docker_image',
+                                'docker' => [
+                                    'image' => 'bitnami/postgresql:16',
+                                ],
+                            ],
                             'launchMode' => LaunchMode::Daemon->value,
                             'replicas' => 1,
-                            'dockerRegistryId' => null,
                             'command' => null,
                             'releaseCommand' => [
                                 'command' => null,
@@ -163,8 +164,12 @@ class SelfHostPtah extends Command
                             'name' => 'main',
                             'launchMode' => LaunchMode::Daemon->value,
                             'replicas' => 1,
-                            'dockerRegistryId' => null,
-                            'dockerImage' => 'bitnami/pgbouncer',
+                            'source' => [
+                                'type' => 'docker_image',
+                                'docker' => [
+                                    'image' => 'bitnami/pgbouncer',
+                                ],
+                            ],
                             'releaseCommand' => [
                                 'command' => null,
                             ],
@@ -227,8 +232,12 @@ class SelfHostPtah extends Command
                             'name' => 'main',
                             'launchMode' => LaunchMode::Daemon->value,
                             'replicas' => 1,
-                            'dockerRegistryId' => null,
-                            'dockerImage' => 'victoriametrics/victoria-metrics',
+                            'source' => [
+                                'type' => 'docker_image',
+                                'docker' => [
+                                    'image' => 'victoriametrics/victoria-metrics',
+                                ],
+                            ],
                             'releaseCommand' => [
                                 'command' => null,
                             ],
@@ -261,14 +270,18 @@ class SelfHostPtah extends Command
                     'rewriteRules' => [],
                 ],
                 [
-                    'name' => 'ptah-server',
+                    'name' => 'server',
                     'workers' => [
                         [
                             'name' => 'main',
                             'launchMode' => LaunchMode::Daemon->value,
                             'replicas' => 2,
-                            'dockerRegistryId' => null,
-                            'dockerImage' => 'ghcr.io/ptah-sh/ptah-server:latest',
+                            'source' => [
+                                'type' => 'docker_image',
+                                'docker' => [
+                                    'image' => 'ghcr.io/ptah-sh/ptah-server:latest',
+                                ],
+                            ],
                             'releaseCommand' => [
                                 'command' => 'php artisan config:cache && php artisan migrate --no-interaction --verbose --ansi --force',
                             ],
@@ -286,8 +299,12 @@ class SelfHostPtah extends Command
                             'name' => 'scheduler',
                             'launchMode' => LaunchMode::Daemon->value,
                             'replicas' => 1,
-                            'dockerRegistryId' => null,
-                            'dockerImage' => 'ghcr.io/ptah-sh/ptah-server:latest',
+                            'source' => [
+                                'type' => 'docker_image',
+                                'docker' => [
+                                    'image' => 'ghcr.io/ptah-sh/ptah-server:latest',
+                                ],
+                            ],
                             'replicas' => 1,
                             'command' => 'APP_SCHEDULER=main php artisan config:cache && php artisan schedule:work',
                             'releaseCommand' => [
@@ -306,9 +323,12 @@ class SelfHostPtah extends Command
                             'name' => 'queue',
                             'launchMode' => LaunchMode::Daemon->value,
                             'replicas' => 1,
-                            'dockerRegistryId' => null,
-                            'dockerImage' => 'ghcr.io/ptah-sh/ptah-server:latest',
-                            'replicas' => 1,
+                            'source' => [
+                                'type' => 'docker_image',
+                                'docker' => [
+                                    'image' => 'ghcr.io/ptah-sh/ptah-server:latest',
+                                ],
+                            ],
                             'command' => 'php artisan config:cache && php artisan queue:work',
                             'releaseCommand' => [
                                 'command' => null,

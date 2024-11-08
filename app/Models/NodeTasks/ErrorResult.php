@@ -10,6 +10,6 @@ class ErrorResult extends AbstractTaskResult
 
     public function formattedHtml(): string
     {
-        return $this->message;
+        return nl2br($this->message);
     }
 }

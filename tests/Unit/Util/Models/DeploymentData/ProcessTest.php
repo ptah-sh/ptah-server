@@ -16,7 +16,12 @@ describe(Process::class, function () {
                 'workers' => [
                     Worker::make([
                         'name' => 'worker',
-                        'dockerImage' => 'php:8.1-cli',
+                        'source' => [
+                            'type' => 'docker_image',
+                            'docker' => [
+                                'image' => 'php:8.1-cli',
+                            ],
+                        ],
                     ]),
                 ],
             ]);
@@ -44,14 +49,19 @@ describe(Process::class, function () {
                 'workers' => [
                     Worker::make([
                         'name' => 'worker',
-                        'dockerImage' => 'php:8.1-cli',
+                        'source' => [
+                            'type' => 'docker_image',
+                            'docker' => [
+                                'image' => 'php:8.1-cli',
+                            ],
+                        ],
                     ]),
                 ],
             ]);
 
             $process->copyWith([
                 'workers' => [
-                    ['name' => 'new-worker', 'dockerImage' => 'php:8.1-cli'],
+                    ['name' => 'new-worker', 'source' => ['type' => 'docker_image', 'docker' => ['image' => 'php:8.1-cli']]],
                 ],
             ]);
         });
@@ -61,21 +71,21 @@ describe(Process::class, function () {
                 'name' => 'service',
                 'workers' => [
                     Worker::make([
-                        'name' => 'worker', 'dockerImage' => 'php:8.1-cli',
+                        'name' => 'worker', 'source' => ['type' => 'docker_image', 'docker' => ['image' => 'php:8.1-cli']],
                     ]),
                 ],
             ]);
 
             $copy = $process->copyWith([
                 'workers' => [
-                    ['name' => 'worker', 'dockerImage' => 'php:9-cli'],
+                    ['name' => 'worker', 'source' => ['type' => 'docker_image', 'docker' => ['image' => 'php:9-cli']]],
                 ],
             ]);
 
             expect($copy->workers)->toHaveLength(1);
             expect($copy->workers)->toEqual([
                 Worker::make([
-                    'name' => 'worker', 'dockerImage' => 'php:9-cli',
+                    'name' => 'worker', 'source' => ['type' => 'docker_image', 'docker' => ['image' => 'php:9-cli']],
                 ]),
             ]);
         });

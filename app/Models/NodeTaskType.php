@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Events\NodeTasks\BuildImageWithDockerfile\BuildImageWithDockerfileCompleted;
+use App\Events\NodeTasks\BuildImageWithDockerfile\BuildImageWithDockerfileFailed;
 use App\Events\NodeTasks\CheckRegistryAuth\CheckRegistryAuthCompleted;
 use App\Events\NodeTasks\CheckRegistryAuth\CheckRegistryAuthFailed;
 use App\Events\NodeTasks\CheckS3Storage\CheckS3StorageCompleted;
@@ -34,6 +36,8 @@ use App\Events\NodeTasks\LaunchService\LaunchServiceCompleted;
 use App\Events\NodeTasks\LaunchService\LaunchServiceFailed;
 use App\Events\NodeTasks\PullDockerImage\PullDockerImageCompleted;
 use App\Events\NodeTasks\PullDockerImage\PullDockerImageFailed;
+use App\Events\NodeTasks\PullGitRepo\PullGitRepoCompleted;
+use App\Events\NodeTasks\PullGitRepo\PullGitRepoFailed;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigCompleted;
 use App\Events\NodeTasks\RebuildCaddyConfig\ApplyCaddyConfigFailed;
 use App\Events\NodeTasks\RemoveS3File\RemoveS3FileCompleted;
@@ -52,6 +56,8 @@ use App\Events\NodeTasks\UploadS3File\UploadS3FileCompleted;
 use App\Events\NodeTasks\UploadS3File\UploadS3FileFailed;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigResult;
+use App\Models\NodeTasks\BuildImageWithDockerfile\BuildImageWithDockerfileMeta;
+use App\Models\NodeTasks\BuildImageWithDockerfile\BuildImageWithDockerfileResult;
 use App\Models\NodeTasks\CheckRegistryAuth\CheckRegistryAuthMeta;
 use App\Models\NodeTasks\CheckRegistryAuth\CheckRegistryAuthResult;
 use App\Models\NodeTasks\CheckS3Storage\CheckS3StorageMeta;
@@ -84,6 +90,8 @@ use App\Models\NodeTasks\LaunchService\LaunchServiceMeta;
 use App\Models\NodeTasks\LaunchService\LaunchServiceResult;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageResult;
+use App\Models\NodeTasks\PullGitRepo\PullGitRepoMeta;
+use App\Models\NodeTasks\PullGitRepo\PullGitRepoResult;
 use App\Models\NodeTasks\RemoveS3File\RemoveS3FileMeta;
 use App\Models\NodeTasks\RemoveS3File\RemoveS3FileResult;
 use App\Models\NodeTasks\ServiceExec\ServiceExecMeta;
@@ -126,6 +134,8 @@ enum NodeTaskType: int
     case LaunchService = 21;
     case DownloadS3File = 22;
     case RemoveS3File = 23;
+    case PullGitRepo = 24;
+    case BuildImageWithDockerfile = 25;
 
     public function meta(): string
     {
@@ -154,6 +164,8 @@ enum NodeTaskType: int
             self::LaunchService => LaunchServiceMeta::class,
             self::DownloadS3File => DownloadS3FileMeta::class,
             self::RemoveS3File => RemoveS3FileMeta::class,
+            self::PullGitRepo => PullGitRepoMeta::class,
+            self::BuildImageWithDockerfile => BuildImageWithDockerfileMeta::class,
         };
     }
 
@@ -184,6 +196,8 @@ enum NodeTaskType: int
             self::LaunchService => LaunchServiceResult::class,
             self::DownloadS3File => DownloadS3FileResult::class,
             self::RemoveS3File => RemoveS3FileResult::class,
+            self::PullGitRepo => PullGitRepoResult::class,
+            self::BuildImageWithDockerfile => BuildImageWithDockerfileResult::class,
         };
     }
 
@@ -214,6 +228,8 @@ enum NodeTaskType: int
             self::LaunchService => LaunchServiceCompleted::class,
             self::DownloadS3File => DownloadS3FileCompleted::class,
             self::RemoveS3File => RemoveS3FileCompleted::class,
+            self::PullGitRepo => PullGitRepoCompleted::class,
+            self::BuildImageWithDockerfile => BuildImageWithDockerfileCompleted::class,
         };
     }
 
@@ -244,6 +260,8 @@ enum NodeTaskType: int
             self::LaunchService => LaunchServiceFailed::class,
             self::DownloadS3File => DownloadS3FileFailed::class,
             self::RemoveS3File => RemoveS3FileFailed::class,
+            self::PullGitRepo => PullGitRepoFailed::class,
+            self::BuildImageWithDockerfile => BuildImageWithDockerfileFailed::class,
         };
     }
 }

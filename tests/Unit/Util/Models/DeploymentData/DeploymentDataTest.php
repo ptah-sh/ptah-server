@@ -53,7 +53,12 @@ describe(DeploymentData::class, function () {
                         'workers' => [
                             Worker::make([
                                 'name' => 'worker',
-                                'dockerImage' => 'testimage',
+                                'source' => [
+                                    'type' => 'docker_image',
+                                    'docker' => [
+                                        'image' => 'testimage',
+                                    ],
+                                ],
                             ]),
                         ],
                         'envVars' => [

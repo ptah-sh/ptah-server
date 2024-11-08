@@ -1,13 +1,21 @@
 <script setup>
-import { computed, reactive } from "vue";
+import { computed, effect, reactive, ref } from "vue";
 import TaskStatus from "./TaskStatus.vue";
 
 const props = defineProps({
     task: Object,
 });
 
+const taskResultRef = ref(null);
+
 const state = reactive({
     expanded: props.task.status === "failed",
+});
+
+effect(() => {
+    if (taskResultRef.value) {
+        taskResultRef.value.scrollTop = taskResultRef.value.scrollHeight;
+    }
 });
 
 const classes = computed(() => {
@@ -83,7 +91,8 @@ const classes = computed(() => {
         </div>
         <div
             v-if="state.expanded"
-            class="px-4 py-2 border-t border-t-gray-100 bg-gray-50"
+            ref="taskResultRef"
+            class="px-4 py-2 border-t border-t-gray-100 bg-gray-50 max-h-[50vh] overflow-y-auto"
             v-html="task.formatted_result"
         />
     </li>

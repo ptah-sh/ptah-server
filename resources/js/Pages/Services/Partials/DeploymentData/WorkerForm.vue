@@ -14,6 +14,46 @@ const props = defineProps({
 
 const model = defineModel();
 
+function getSource() {
+    if (model.value.source.type === "docker_image") {
+        return "docker_image." + model.value.source.docker.registryId;
+    }
+
+    if (model.value.source.type === "git_with_dockerfile") {
+        return "git_with_dockerfile.null";
+    }
+
+    return null;
+}
+
+const source = ref(getSource());
+
+effect(() => {
+    model.value.source.type = source.value.split(".")[0];
+
+    if (model.value.source.type === "docker_image") {
+        model.value.source.git = null;
+
+        const registryId = source.value.split(".")[1];
+
+        model.value.source.docker = {
+            registryId: registryId === "null" ? null : parseInt(registryId),
+            image: model.value.source.docker?.image,
+        };
+    }
+
+    if (model.value.source.type === "git_with_dockerfile") {
+        model.value.source.docker = null;
+
+        model.value.source.git = {
+            repo: model.value.source.git?.repo ?? null,
+            ref: model.value.source.git?.ref ?? null,
+            dockerfilePath:
+                model.value.source.git?.dockerfilePath ?? "/Dockerfile",
+        };
+    }
+});
+
 const customCrontab = ref(null);
 
 const archiveFormat = ref(null);
@@ -242,27 +282,80 @@ const commandPlaceholder = computed(() => {
     </div>
 
     <FormField class="col-span-2" :error="props.errors['dockerRegistryId']">
-        <template #label>Docker Registry</template>
+        <template #label>Source</template>
 
-        <Select v-model="model.dockerRegistryId">
-            <option :value="null">Docker Hub / Anonymous</option>
-            <option v-for="registry in dockerRegistries" :value="registry.id">
-                {{ registry.name }}
-            </option>
+        <Select v-model="source">
+            <optgroup label="Docker Image">
+                <option :value="'docker_image.null'">
+                    Docker Hub / Anonymous
+                </option>
+                <option
+                    v-for="registry in dockerRegistries"
+                    :value="'docker_image' + registry.id"
+                >
+                    {{ registry.name }}
+                </option>
+            </optgroup>
+            <optgroup label="Git Repository">
+                <option :value="'git_with_dockerfile.null'">
+                    Git Repository with Dockerfile
+                </option>
+            </optgroup>
         </Select>
     </FormField>
 
-    <FormField class="col-span-4" :error="props.errors['dockerImage']">
+    <FormField
+        v-if="model.source.type === 'docker_image'"
+        class="col-span-4"
+        :error="props.errors['source.docker.image']"
+    >
         <template #label>Docker Image</template>
 
         <div class="flex gap-4">
             <TextInput
-                v-model="model.dockerImage"
+                v-model="model.source.docker.image"
                 class="block w-full"
                 placeholder="nginxdemos/hello:latest"
             />
         </div>
     </FormField>
+
+    <template v-if="model.source.type === 'git_with_dockerfile'">
+        <FormField class="col-span-4" :error="props.errors['source.git.repo']">
+            <template #label>Git Repository</template>
+
+            <div class="flex gap-4">
+                <TextInput
+                    v-model="model.source.git.repo"
+                    class="block w-full"
+                    placeholder="https://github.com/ptah-sh/ptah-server"
+                />
+            </div>
+        </FormField>
+
+        <FormField class="col-span-2" :error="props.errors['source.git.ref']">
+            <template #label>Git Branch / Tag / Commit</template>
+
+            <TextInput
+                v-model="model.source.git.ref"
+                class="block w-full"
+                placeholder="main"
+            />
+        </FormField>
+
+        <FormField
+            class="col-span-4"
+            :error="props.errors['source.git.dockerfilePath']"
+        >
+            <template #label>Dockerfile Path</template>
+
+            <TextInput
+                v-model="model.source.git.dockerfilePath"
+                class="block w-full"
+                placeholder="/Dockerfile"
+            />
+        </FormField>
+    </template>
 
     <div
         v-if="isBackup && model.backupCreate"

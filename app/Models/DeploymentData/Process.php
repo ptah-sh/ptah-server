@@ -182,13 +182,13 @@ class Process extends Data
 
         $tasks = [
             ...$tasks,
-            ...$this->getPullImageTasks($deployment),
+            ...$this->getBuildOrPullTasks($deployment),
         ];
 
         foreach ($this->workers as $worker) {
             $tasks = [
                 ...$tasks,
-                ...$worker->asNodeTasks($deployment, $this, pullImage: false),
+                ...$worker->asNodeTasks($deployment, $this, buildOrPull: false),
             ];
         }
 
@@ -238,20 +238,24 @@ class Process extends Data
         return collect($this->workers)->first(fn (Worker $worker) => $worker->name === $name);
     }
 
-    private function getPullImageTasks(Deployment $deployment): array
+    private function getBuildOrPullTasks(Deployment $deployment): array
     {
-        $pulledImages = [];
+        $sources = [];
 
         $tasks = [];
 
         foreach ($this->workers as $worker) {
-            if (in_array($worker->dockerImage, $pulledImages)) {
+            $encodedSource = json_encode($worker->source);
+            if (in_array($encodedSource, $sources)) {
                 continue;
             }
 
-            $pulledImages[] = $worker->dockerImage;
+            $sources[] = $encodedSource;
 
-            $tasks[] = $worker->getPullImageTask($deployment);
+            $tasks = [
+                ...$tasks,
+                ...$worker->getBuildOrPullImageTasks($deployment, $this),
+            ];
         }
 
         return $tasks;

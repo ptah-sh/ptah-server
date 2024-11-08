@@ -177,8 +177,6 @@ const mapProcessTemplate = (formData, templateSlug, process, newIndex) => {
                 id: makeId("worker"),
                 launchMode: "daemon",
                 replicas: 1,
-                dockerRegistryId: null,
-                dockerImage: "",
                 command: null,
                 ...worker,
                 name: idx === 0 ? "main" : worker.name || "worker_" + idx,
@@ -382,7 +380,7 @@ const validateForm = (formData, schema, errors, scope) => {
                                     {{ process.description }}
                                 </p>
                                 <ExternalLink :href="process.url">{{
-                                    process.dockerImage
+                                    "!!! process.dockerImage"
                                 }}</ExternalLink>
                             </li>
                         </ul>
