@@ -6,6 +6,7 @@ use App\Actions\Workers\RemoveStaleBackups;
 use App\Http\Middleware\AdminAccess;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Jobs\CheckAgentUpdates;
+use App\Jobs\PruneStaleDockerDataJob;
 use App\Models\Scopes\TeamScope;
 use App\Models\Service;
 use Illuminate\Console\Scheduling\Schedule;
@@ -72,6 +73,11 @@ return Application::configure(basePath: dirname(__DIR__))
             ->onOneServer()
             ->withoutOverlapping();
 
+        $schedule->job(PruneStaleDockerDataJob::class)
+            ->daily()
+            ->onOneServer()
+            ->withoutOverlapping();
+
         Service::withoutGlobalScope(TeamScope::class)->with(['latestDeployment'])->chunk(100, function (
             /* @var Service[] $services */
             $services
@@ -79,6 +85,8 @@ return Application::configure(basePath: dirname(__DIR__))
             foreach ($services as $service) {
                 foreach ($service->latestDeployment->data->processes as $process) {
                     foreach ($process->workers as $worker) {
+                        $imagesToKeep[] = $worker->getDockerImage($process);
+
                         if (! $worker->crontab) {
                             continue;
                         }

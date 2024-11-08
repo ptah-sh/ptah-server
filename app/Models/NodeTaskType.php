@@ -36,6 +36,8 @@ use App\Events\NodeTasks\JoinSwarm\JoinSwarmCompleted;
 use App\Events\NodeTasks\JoinSwarm\JoinSwarmFailed;
 use App\Events\NodeTasks\LaunchService\LaunchServiceCompleted;
 use App\Events\NodeTasks\LaunchService\LaunchServiceFailed;
+use App\Events\NodeTasks\PruneDockerRegistry\PruneDockerRegistryCompleted;
+use App\Events\NodeTasks\PruneDockerRegistry\PruneDockerRegistryFailed;
 use App\Events\NodeTasks\PullDockerImage\PullDockerImageCompleted;
 use App\Events\NodeTasks\PullDockerImage\PullDockerImageFailed;
 use App\Events\NodeTasks\PullGitRepo\PullGitRepoCompleted;
@@ -92,6 +94,8 @@ use App\Models\NodeTasks\JoinSwarm\JoinSwarmMeta;
 use App\Models\NodeTasks\JoinSwarm\JoinSwarmResult;
 use App\Models\NodeTasks\LaunchService\LaunchServiceMeta;
 use App\Models\NodeTasks\LaunchService\LaunchServiceResult;
+use App\Models\NodeTasks\PruneDockerRegistry\PruneDockerRegistryMeta;
+use App\Models\NodeTasks\PruneDockerRegistry\PruneDockerRegistryResult;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageMeta;
 use App\Models\NodeTasks\PullDockerImage\PullDockerImageResult;
 use App\Models\NodeTasks\PullGitRepo\PullGitRepoMeta;
@@ -141,6 +145,7 @@ enum NodeTaskType: int
     case PullGitRepo = 24;
     case BuildImageWithDockerfile = 25;
     case BuildImageWithNixpacks = 26;
+    case PruneDockerRegistry = 27;
 
     public function meta(): string
     {
@@ -172,6 +177,7 @@ enum NodeTaskType: int
             self::PullGitRepo => PullGitRepoMeta::class,
             self::BuildImageWithDockerfile => BuildImageWithDockerfileMeta::class,
             self::BuildImageWithNixpacks => BuildImageWithNixpacksMeta::class,
+            self::PruneDockerRegistry => PruneDockerRegistryMeta::class,
         };
     }
 
@@ -205,6 +211,7 @@ enum NodeTaskType: int
             self::PullGitRepo => PullGitRepoResult::class,
             self::BuildImageWithDockerfile => BuildImageWithDockerfileResult::class,
             self::BuildImageWithNixpacks => BuildImageWithNixpacksResult::class,
+            self::PruneDockerRegistry => PruneDockerRegistryResult::class,
         };
     }
 
@@ -238,6 +245,7 @@ enum NodeTaskType: int
             self::PullGitRepo => PullGitRepoCompleted::class,
             self::BuildImageWithDockerfile => BuildImageWithDockerfileCompleted::class,
             self::BuildImageWithNixpacks => BuildImageWithNixpacksCompleted::class,
+            self::PruneDockerRegistry => PruneDockerRegistryCompleted::class,
         };
     }
 
@@ -271,6 +279,7 @@ enum NodeTaskType: int
             self::PullGitRepo => PullGitRepoFailed::class,
             self::BuildImageWithDockerfile => BuildImageWithDockerfileFailed::class,
             self::BuildImageWithNixpacks => BuildImageWithNixpacksFailed::class,
+            self::PruneDockerRegistry => PruneDockerRegistryFailed::class,
         };
     }
 }

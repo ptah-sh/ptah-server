@@ -313,19 +313,23 @@ class InitCluster
                         'startInterval' => 5,
                     ],
                     'replicas' => 0,
-                    'command' => '/bin/registry garbage-collect /etc/docker/registry/config.yml',
+                    'command' => 'sh /ptah/prune_stale_data.sh',
                     'launchMode' => LaunchMode::Cronjob->value,
-                    'crontab' => '0 * * * *',
+                    'crontab' => '30 0 * * *',
                 ],
             ],
-            'envVars' => [
-                [
-                    'name' => 'REGISTRY_STORAGE_DELETE_ENABLED',
-                    'value' => 'true',
-                ],
-            ],
+            'envVars' => [],
             'secretVars' => [],
-            'configFiles' => [],
+            'configFiles' => [
+                [
+                    'path' => '/etc/docker/registry/config.yml',
+                    'content' => file_get_contents(resource_path('support/registry/config.yml')),
+                ],
+                [
+                    'path' => '/ptah/prune_stale_data.sh',
+                    'content' => file_get_contents(resource_path('support/registry/prune_stale_data.sh')),
+                ],
+            ],
             'secretFiles' => [],
             'volumes' => [
                 [
@@ -334,7 +338,12 @@ class InitCluster
                     'path' => '/var/lib/registry',
                 ],
             ],
-            'ports' => [],
+            'ports' => [
+                [
+                    'targetPort' => 5050,
+                    'publishedPort' => 5050,
+                ],
+            ],
             'caddy' => [],
             'fastcgiVars' => null,
             'redirectRules' => [],

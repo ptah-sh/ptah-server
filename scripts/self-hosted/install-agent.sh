@@ -123,8 +123,9 @@ if [ -z "$SKIP_CORE_INSTALL" ]; then
 
     # Allow access to internal Docker Registry port
     # Docker Registry will be available at registry.ptah.local:5000 on the overlay ptah_net network
-    iptables -I DOCKER-USER -p tcp -s 127.0.0.1 --dport 5000 -j ACCEPT
-    iptables -I DOCKER-USER -p tcp --dport 5000 -j REJECT --reject-with tcp-reset
+    iptables -I DOCKER-USER -p tcp -s 127.0.0.1 --dport 5050 -j ACCEPT
+    iptables -I DOCKER-USER -p tcp --dport 5050 -j REJECT --reject-with tcp-reset
+    echo '127.0.0.1 registry.ptah.local' >> /etc/hosts
 
     netfilter-persistent save
 

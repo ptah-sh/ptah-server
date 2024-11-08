@@ -14,7 +14,7 @@ enum NodeTaskGroupType: int
     case SelfUpgrade = 4;
     case UpdateDockerRegistries = 5;
     case UpdateS3Storages = 6;
-    case __Unused__Safe_To_Re_Use__ = 7;
+    case PruneDockerData = 7;
     case JoinSwarm = 8;
     case UpdateDirdConfig = 9;
     case LaunchService = 10;

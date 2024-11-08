@@ -43,7 +43,7 @@ return [
             'quotas' => [
                 'nodes' => ['limit' => 1, 'soft' => false, 'reset_period' => null],
                 'swarms' => ['limit' => 1, 'soft' => false, 'reset_period' => null],
-                'services' => ['limit' => 30, 'soft' => false, 'reset_period' => null],
+                'services' => ['limit' => 3, 'soft' => false, 'reset_period' => null],
                 'deployments' => ['limit' => 20, 'soft' => false, 'reset_period' => 'daily'],
             ],
         ],

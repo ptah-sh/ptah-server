@@ -255,10 +255,12 @@ class Worker extends Data
 
     public function getDockerImage(Process $process): string
     {
+        $registry = 'registry.ptah.local:5050';
+
         return match ($this->source->type) {
             AppSourceType::DockerImage => $this->source->docker->image,
-            AppSourceType::GitWithDockerfile => '127.0.0.1:5000/'.$this->getDockerName($process).':'.$this->source->git->ref,
-            AppSourceType::GitWithNixpacks => '127.0.0.1:5000/'.$this->getDockerName($process).':'.$this->source->nixpacks->ref,
+            AppSourceType::GitWithDockerfile => $registry.'/'.$this->getDockerName($process).':'.$this->source->git->ref,
+            AppSourceType::GitWithNixpacks => $registry.'/'.$this->getDockerName($process).':'.$this->source->nixpacks->ref,
         };
     }
 
