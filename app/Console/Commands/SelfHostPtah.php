@@ -6,6 +6,7 @@ use App\Actions\Nodes\InitCluster;
 use App\Actions\Services\StartDeployment;
 use App\Models\DeploymentData;
 use App\Models\DeploymentData\LaunchMode;
+use App\Models\DeploymentData\WorkerCookie;
 use App\Models\Network;
 use App\Models\Node;
 use App\Models\NodeTask;
@@ -55,6 +56,22 @@ class SelfHostPtah extends Command
             'd4e5f6g7h8',
             'j9k0l1m2n3',
             'p6q7r8s9t0',
+        ]);
+
+        WorkerCookie::useIdsPool([
+            '2n9nbwg6478lkifqu3rddqd2pgm47yxg',
+            't0q91vcef6mw518z6n97qhnz4q5wmmqs',
+            '3478lkifqu3rddqd2pgm47yxg2n9nbwg',
+            'f6mw518z6n97qhnz4q5wmmqs0q91vce6',
+            'ra6ybnsju9462o17w0gx3ead5eok94vb',
+            'bhypz8lg1afmvwyr8w4xw8sygvgdopjm',
+            'foymi9vgguk4rasy92tvktehwx2i13nn',
+            'ixhg42b170hzpvua5f21rce2bvxtos5u',
+            'nu5wh6u5w0jh4vablcb3xpbotrmxyq2v',
+            'hqx4obvypjc6rf1iu4dtdj7lei4ug520',
+            'acbxwbs2pws5ibf7hc4xap6jwk2thjlu',
+            '23lqtzbiyxjmftsnrufzlscbnazsbpde',
+            'c1ypwpft0vgoyj6tffj85wf9o14ozjik',
         ]);
 
         $user = User::create([

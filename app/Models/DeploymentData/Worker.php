@@ -16,7 +16,6 @@ use App\Models\NodeTaskType;
 use App\Rules\Crontab;
 use App\Util\ResourceId;
 use Exception;
-use Illuminate\Support\Str;
 use Spatie\LaravelData\Attributes\Validation\Enum;
 use Spatie\LaravelData\Attributes\Validation\Min;
 use Spatie\LaravelData\Attributes\Validation\ProhibitedUnless;
@@ -81,10 +80,10 @@ class Worker extends Data
         $hostname = $this->getHostname($deployment, $process);
 
         if ($this->launchMode->value === LaunchMode::BackupCreate->value && ! $this->backupCreate->backupVolume) {
-            $dockerName = dockerize_name($this->dockerName.'_vol_ptah_backup');
+            $dockerName = dockerize_name($this->getDockerName($process).'_vol_ptah_backup');
 
             $this->backupCreate->backupVolume = Volume::validateAndCreate([
-                'id' => 'volume-'.Str::random(11),
+                'id' => ResourceId::make('volume'),
                 'name' => $dockerName,
                 'dockerName' => $dockerName,
                 'path' => '/ptah/backup/create',
@@ -97,10 +96,10 @@ class Worker extends Data
             }
 
             if (! $this->backupRestore->restoreVolume) {
-                $dockerName = dockerize_name($this->dockerName.'_vol_ptah_restore');
+                $dockerName = dockerize_name($this->getDockerName($process).'_vol_ptah_restore');
 
                 $this->backupRestore->restoreVolume = Volume::validateAndCreate([
-                    'id' => 'volume-'.Str::random(11),
+                    'id' => ResourceId::make('volume'),
                     'name' => $dockerName,
                     'dockerName' => $dockerName,
                     'path' => '/ptah/backup/restore',
@@ -113,7 +112,7 @@ class Worker extends Data
             'kind' => 'worker',
             // Cookie is used to filter out stale tasks for the same Docker Service on the Docker Engine's side
             //   and avoid transferring loads of data between Ptah.sh Agent and Docker Engine.
-            'cookie' => Str::random(32),
+            'cookie' => WorkerCookie::make(),
             'worker.name' => $this->name,
         ]);
 
@@ -136,7 +135,7 @@ class Worker extends Data
                 'deploymentId' => $deployment->id,
                 'serviceId' => $deployment->service_id,
                 'serviceName' => $deployment->service->name,
-                'dockerName' => $this->dockerName,
+                'dockerName' => $this->getDockerName($process),
                 'processName' => $process->name,
                 'workerName' => $this->name,
             ]),
@@ -144,7 +143,7 @@ class Worker extends Data
                 'ReleaseCommand' => $this->getReleaseCommandPayload($deployment, $process, $labels),
                 'SecretVars' => $this->getSecretVars($process),
                 'SwarmServiceSpec' => [
-                    'Name' => $this->dockerName,
+                    'Name' => $this->getDockerName($process),
                     'Labels' => $labels,
                     'TaskTemplate' => [
                         'ContainerSpec' => [
