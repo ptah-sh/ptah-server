@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.40.0](https://github.com/ptah-sh/ptah-server/compare/v0.39.0...v0.40.0) (2024-11-09)
+
+
+### Features
+
+* [#257](https://github.com/ptah-sh/ptah-server/issues/257) allow to specify git repository for a builds ([eafbc50](https://github.com/ptah-sh/ptah-server/commit/eafbc5051f4c4fa0cd316cbedf9d2ccb07a885fb))
+* [#258](https://github.com/ptah-sh/ptah-server/issues/258) allow to build images with nixpacks ([22867a4](https://github.com/ptah-sh/ptah-server/commit/22867a4d31fa47f590230e776464d4d2827ecd41))
+* [#261](https://github.com/ptah-sh/ptah-server/issues/261) remove unused images from the registry ([3c3b390](https://github.com/ptah-sh/ptah-server/commit/3c3b3905e0466b1a83a2c2194648152fc7168503))
+* [#262](https://github.com/ptah-sh/ptah-server/issues/262) ensure stable ids for self-hosted seed data ([b4a2160](https://github.com/ptah-sh/ptah-server/commit/b4a21608cf324abf7d6fd0267aa13a1c569a97e4))
+* [#263](https://github.com/ptah-sh/ptah-server/issues/263) add registry firewall rule ([4bad313](https://github.com/ptah-sh/ptah-server/commit/4bad3133fb4a85043cb39d51b2bbf66bf38b4c0e))
+* [#263](https://github.com/ptah-sh/ptah-server/issues/263) add registry firewall rule ([7530d8c](https://github.com/ptah-sh/ptah-server/commit/7530d8c9a07477ee791f006294aab9e22dc9aac0))
+* [#263](https://github.com/ptah-sh/ptah-server/issues/263) store and display public ssh key ([16070c2](https://github.com/ptah-sh/ptah-server/commit/16070c2b57b85742b7fb42388fa922b5aba59eb9))
+
+
+### Miscellaneous Chores
+
+* sponsored features mention ([2f89676](https://github.com/ptah-sh/ptah-server/commit/2f89676839706e58318001753708ea4596437a11))
+* update installation data ([37afacb](https://github.com/ptah-sh/ptah-server/commit/37afacbd5e365ebe822a6bc877420153897f9f60))
+* update installation data ([342db69](https://github.com/ptah-sh/ptah-server/commit/342db69e7c74dfc1bc186790a75f9dc721d2a7e5))
+* update installation data ([6d16d5d](https://github.com/ptah-sh/ptah-server/commit/6d16d5d8a91b7524032ac730e6ffc83c4df0e1c0))
+* update installation data ([2c1a323](https://github.com/ptah-sh/ptah-server/commit/2c1a32310989fee66b1a51f350665b0f352787c8))
+
 ## [0.39.0](https://github.com/ptah-sh/ptah-server/compare/v0.38.2...v0.39.0) (2024-11-03)
 
 
