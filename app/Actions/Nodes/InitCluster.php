@@ -85,6 +85,7 @@ class InitCluster
                 ],
                 'managerNodes' => [],
                 'encryptionKey' => '-',
+                'publicSSHKey' => '-',
             ]),
         ]);
     }
