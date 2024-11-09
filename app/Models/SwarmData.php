@@ -27,6 +27,7 @@ class SwarmData extends Data
         /* @var ManagerNode[] */
         public array $managerNodes,
         public string $encryptionKey = '',
+        public string $publicSSHKey = '',
     ) {}
 
     public function findRegistry(string $id): ?DockerRegistry

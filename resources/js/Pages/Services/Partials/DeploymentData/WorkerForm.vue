@@ -350,7 +350,7 @@ const commandPlaceholder = computed(() => {
                 <TextInput
                     v-model="model.source.git.repo"
                     class="block w-full"
-                    placeholder="https://github.com/ptah-sh/ptah-server"
+                    placeholder="git@github.com:ptah-sh/ptah-server.git"
                 />
             </div>
         </FormField>
@@ -390,7 +390,7 @@ const commandPlaceholder = computed(() => {
                 <TextInput
                     v-model="model.source.nixpacks.repo"
                     class="block w-full"
-                    placeholder="https://github.com/ptah-sh/ptah-server"
+                    placeholder="git@github.com:ptah-sh/ptah-server.git"
                 />
             </div>
         </FormField>

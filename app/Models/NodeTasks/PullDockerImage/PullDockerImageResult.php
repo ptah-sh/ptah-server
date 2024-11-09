@@ -15,6 +15,6 @@ class PullDockerImageResult extends AbstractTaskResult
 
     public function formattedHtml(): string
     {
-        return implode("<br>\n", $this->output);
+        return implode('<br>', $this->output);
     }
 }

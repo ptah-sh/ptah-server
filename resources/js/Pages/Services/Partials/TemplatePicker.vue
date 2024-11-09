@@ -379,9 +379,6 @@ const validateForm = (formData, schema, errors, scope) => {
                                 >
                                     {{ process.description }}
                                 </p>
-                                <ExternalLink :href="process.url">{{
-                                    "!!! process.dockerImage"
-                                }}</ExternalLink>
                             </li>
                         </ul>
                     </div>

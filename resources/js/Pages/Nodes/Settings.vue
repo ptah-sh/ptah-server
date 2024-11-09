@@ -11,6 +11,7 @@ import DockerRegistries from "@/Pages/Nodes/Partials/DockerRegistries.vue";
 import S3Storages from "@/Pages/Nodes/Partials/S3Storages.vue";
 import DeleteResourceSection from "@/Components/DeleteResourceSection.vue";
 import { router } from "@inertiajs/vue3";
+import PublicSSHKey from "./Partials/PublicSSHKey.vue";
 
 const props = defineProps([
     "node",
@@ -58,9 +59,14 @@ const destroyNode = () => router.delete(route("nodes.destroy", props.node.id));
                 v-if="$props.initTaskGroup"
                 :taskGroup="$props.initTaskGroup"
             />
+
             <template
                 v-if="!$props.initTaskGroup && $props.node.swarm_id !== null"
             >
+                <PublicSSHKey :swarm="$props.node.swarm" />
+
+                <SectionBorder />
+
                 <S3Storages
                     :swarm="$props.node.swarm"
                     :task-group="$props.s3SUpdateTaskGroup"
