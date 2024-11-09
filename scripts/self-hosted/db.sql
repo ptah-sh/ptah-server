@@ -1490,7 +1490,7 @@ COPY public.subscriptions (id, billable_type, billable_id, type, paddle_id, stat
 --
 
 COPY public.swarms (id, team_id, created_at, updated_at, data) FROM stdin;
-1	1	2024-09-01 00:00:00	2024-09-01 00:00:00	{"joinTokens": {"worker": "-", "manager": "-"}, "registries": [], "s3Storages": [], "managerNodes": [], "publicSSHKey": "", "encryptionKey": "-", "registriesRev": 0, "s3StoragesRev": 0}
+1	1	2024-09-01 00:00:00	2024-09-01 00:00:00	{"joinTokens": {"worker": "-", "manager": "-"}, "registries": [], "s3Storages": [], "managerNodes": [], "publicSSHKey": "-", "encryptionKey": "-", "registriesRev": 0, "s3StoragesRev": 0}
 \.
 
 
