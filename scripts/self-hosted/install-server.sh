@@ -114,7 +114,6 @@ if [ -z "$SKIP_CORE_INSTALL" ]; then
     header "Configure Docker"
     help_text "Adding Caddy admin port to iptables"
 
-    # Allow access to Caddy admin port
     iptables -I DOCKER-USER -p tcp -s 127.0.0.1 --dport 2019 -j ACCEPT
     iptables -I DOCKER-USER -p tcp --dport 2019 -j REJECT --reject-with tcp-reset
 
