@@ -26,6 +26,6 @@ class PruneStaleDockerDataJob implements ShouldQueue
      */
     public function handle(PruneStaleDockerData $action): void
     {
-        $action();
+        $action->prune();
     }
 }

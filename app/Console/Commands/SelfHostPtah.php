@@ -6,10 +6,13 @@ use App\Actions\Nodes\InitCluster;
 use App\Actions\Services\StartDeployment;
 use App\Models\DeploymentData;
 use App\Models\DeploymentData\LaunchMode;
+use App\Models\DeploymentData\Process;
 use App\Models\DeploymentData\WorkerCookie;
 use App\Models\Network;
 use App\Models\Node;
 use App\Models\NodeTask;
+use App\Models\NodeTaskGroup;
+use App\Models\NodeTaskGroupType;
 use App\Models\NodeTasks\DummyTaskResult;
 use App\Models\Service;
 use App\Models\Team;
@@ -110,12 +113,14 @@ class SelfHostPtah extends Command
 
         $service = Service::where('name', 'ptah')->first();
 
+        $taskGroup = NodeTaskGroup::createForUser($user, $team, NodeTaskGroupType::InitPtahSh);
+
         // TODO: create processes from 1-Click App templates
-        StartDeployment::run($user, $service, DeploymentData::validateAndCreate([
+        StartDeployment::run($taskGroup, $service, DeploymentData::validateAndCreate([
             'networkName' => $network->docker_name,
             'internalDomain' => 'ptah.local',
             'processes' => [
-                // TODO NOW!!!! append the existing processes from the service
+                ...collect($service->latestDeployment->data->processes)->map(fn (Process $process) => $process->toArray()),
                 [
                     'name' => 'pg',
                     'placementNodeId' => $node->id,

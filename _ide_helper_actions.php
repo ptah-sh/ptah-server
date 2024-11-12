@@ -30,15 +30,15 @@ namespace App\Actions\Nodes;
  */
 class InitCluster {}
 /**
- * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
- * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
- * @method static dispatchSync(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
- * @method static dispatchNow(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
- * @method static dispatchAfterResponse(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
- * @method static mixed run(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Deployment $deployment)
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup)
+ * @method static dispatchSync(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup)
+ * @method static dispatchNow(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup)
+ * @method static dispatchAfterResponse(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup)
+ * @method static mixed run(\App\Models\Team $team, \App\Models\NodeTaskGroup $taskGroup)
  */
 class RebuildCaddy {}
 
@@ -57,15 +57,15 @@ namespace App\Actions\Services;
  */
 class CreateService {}
 /**
- * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
- * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
- * @method static dispatchSync(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
- * @method static dispatchNow(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
- * @method static dispatchAfterResponse(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
- * @method static \App\Models\Deployment run(\App\Models\User $user, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData)
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
+ * @method static dispatchSync(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
+ * @method static dispatchNow(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
+ * @method static dispatchAfterResponse(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
+ * @method static \App\Models\Deployment run(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
  */
 class StartDeployment {}
 

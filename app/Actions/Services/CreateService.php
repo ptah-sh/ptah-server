@@ -3,6 +3,8 @@
 namespace App\Actions\Services;
 
 use App\Models\DeploymentData;
+use App\Models\NodeTaskGroup;
+use App\Models\NodeTaskGroupType;
 use App\Models\Service;
 use App\Models\Team;
 use App\Models\User;
@@ -40,7 +42,9 @@ class CreateService
 
             $service->save();
 
-            StartDeployment::run($user, $service, $deploymentData);
+            $taskGroup = NodeTaskGroup::createForUser($user, $team, NodeTaskGroupType::LaunchService);
+
+            StartDeployment::run($taskGroup, $service, $deploymentData);
 
             return $service;
         });

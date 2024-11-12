@@ -2,6 +2,7 @@
 
 namespace App\Models\DeploymentData;
 
+use App\Util\ResourceId;
 use Spatie\LaravelData\Attributes\Validation\Between;
 use Spatie\LaravelData\Attributes\Validation\In;
 use Spatie\LaravelData\Data;
@@ -9,7 +10,7 @@ use Spatie\LaravelData\Data;
 class Caddy extends Data
 {
     public function __construct(
-        public string $id,
+        public ?string $id,
         #[In(['http', 'fastcgi'])]
         public string $targetProtocol,
         #[Between(1, 65535)]
@@ -18,5 +19,7 @@ class Caddy extends Data
         public int $publishedPort,
         public string $domain,
         public string $path,
-    ) {}
+    ) {
+        $this->id = $id ?? ResourceId::make('caddy');
+    }
 }

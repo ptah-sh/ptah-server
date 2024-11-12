@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\Services\DestroyService;
 use App\Http\Requests\UpdateServiceRequest;
 use App\Models\DeploymentData;
 use App\Models\DeploymentData\Process;
 use App\Models\DeploymentData\Worker;
 use App\Models\Node;
+use App\Models\NodeTaskGroup;
+use App\Models\NodeTaskGroupType;
 use App\Models\Service;
 use App\Models\Swarm;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
@@ -104,13 +108,15 @@ class ServiceController extends Controller
 
     public function deployments(Service $service)
     {
-        $service->load(['deployments' => function ($deployments) {
-            $deployments->with(['latestTaskGroup' => function ($taskGroups) {
-                $taskGroups->with([
-                    'invoker',
-                    'tasks' => function ($tasks) {}]);
+        $service->load([
+            'deployments.reviewApp',
+            'deployments' => function ($deployments) {
+                $deployments->with(['latestTaskGroup' => function ($taskGroups) {
+                    $taskGroups->with([
+                        'invoker',
+                        'tasks' => function ($tasks) {}]);
+                }]);
             }]);
-        }]);
 
         return Inertia::render('Services/Deployments', ['service' => $service]);
     }
@@ -138,10 +144,12 @@ class ServiceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Service $service)
+    public function destroy(Service $service, Request $request)
     {
-        DB::transaction(function () use ($service) {
-            $service->delete();
+        DB::transaction(function () use ($request, $service) {
+            $taskGroup = NodeTaskGroup::createForUser($request->user(), $service->team, NodeTaskGroupType::DeleteService);
+
+            (new DestroyService)->destroy($taskGroup, $service);
         });
 
         session()->flash('success', "Service '{$service->name}' deleted successfully!");

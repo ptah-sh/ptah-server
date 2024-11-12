@@ -16,6 +16,7 @@ class TeamQuotasController extends Controller
         $formattedQuotas = [];
         foreach ($quotas as $key => $quota) {
             $formattedQuotas[$key] = [
+                'name' => $quota->name,
                 'currentUsage' => $quota->currentUsage(),
                 'maxUsage' => $quota->maxUsage,
                 'isSoftQuota' => $quota->isSoftQuota,

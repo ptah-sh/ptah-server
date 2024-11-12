@@ -8,7 +8,6 @@ use App\Models\DeploymentData;
 use App\Models\NodeTaskGroup;
 use App\Models\NodeTaskGroupType;
 use App\Models\Service;
-use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Lorisleiva\Actions\ActionRequest;
@@ -29,30 +28,25 @@ class StartDeployment
         return true;
     }
 
-    public function handle(User $user, Service $service, DeploymentData $deploymentData): Deployment
+    public function handle(NodeTaskGroup $taskGroup, Service $service, DeploymentData $deploymentData, $reviewAppId = null): Deployment
     {
-        // TODO: Call this in Authorize? In rules?
-        $service->team->quotas()->deployments->ensureQuota();
+        $taskGroup->team->quotas()->deployments->ensureQuota();
 
-        return DB::transaction(function () use ($service, $deploymentData, $user) {
-            $taskGroup = NodeTaskGroup::create([
-                'swarm_id' => $service->swarm_id,
-                'team_id' => $service->team_id,
-                'invoker_id' => $user->id,
-                'type' => NodeTaskGroupType::LaunchService,
-            ]);
-
+        return DB::transaction(function () use ($taskGroup, $service, $deploymentData, $reviewAppId) {
             $deployment = $service->deployments()->create([
                 'team_id' => $service->team_id,
                 'data' => $deploymentData,
-                'configured_by_id' => $user->id,
+                'configured_by_id' => $taskGroup->invoker_id,
+                'review_app_id' => $reviewAppId,
             ]);
 
             $deployment->taskGroups()->attach($taskGroup);
 
             $taskGroup->tasks()->createMany($deployment->asNodeTasks());
 
-            RebuildCaddy::run($service->team, $taskGroup, $deployment);
+            RebuildCaddy::onceAfter($service->team, $taskGroup, function () {
+                // Intentionally left blank
+            });
 
             return $deployment;
         });
@@ -62,7 +56,9 @@ class StartDeployment
     {
         $deploymentData = DeploymentData::make($request->validated());
 
-        $this->handle($request->user(), $service, $deploymentData);
+        $taskGroup = NodeTaskGroup::createForUser($request->user(), $service->team, NodeTaskGroupType::LaunchService);
+
+        $this->handle($taskGroup, $service, $deploymentData, null);
 
         return to_route('services.deployments', $service);
     }

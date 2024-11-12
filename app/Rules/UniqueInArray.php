@@ -7,6 +7,7 @@ use Illuminate\Contracts\Validation\DataAwareRule;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Override;
 
+// FIXME: use Distinct instead? https://laravel.com/docs/11.x/validation#rule-distinct
 class UniqueInArray implements DataAwareRule, ValidationRule
 {
     protected array $data;

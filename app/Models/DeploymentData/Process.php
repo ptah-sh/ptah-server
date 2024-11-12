@@ -103,16 +103,18 @@ class Process extends Data
 
         $tasks = [];
 
-        $previousWorkers = $previous?->workers ?? [];
-        foreach ($previousWorkers as $worker) {
-            if ($this->findWorker($worker->dockerName) === null) {
-                $tasks[] = [
-                    'type' => NodeTaskType::DeleteService,
-                    'meta' => new DeleteServiceMeta($deployment->service_id, $worker->dockerName, $deployment->service->name),
-                    'payload' => [
-                        'ServiceName' => $worker->dockerName,
-                    ],
-                ];
+        if (! $deployment->review_app_id) {
+            $previousWorkers = $previous?->workers ?? [];
+            foreach ($previousWorkers as $worker) {
+                if ($this->findWorker($worker->dockerName) === null) {
+                    $tasks[] = [
+                        'type' => NodeTaskType::DeleteService,
+                        'meta' => new DeleteServiceMeta($deployment->service_id, $worker->dockerName, $deployment->service->name),
+                        'payload' => [
+                            'ServiceName' => $worker->dockerName,
+                        ],
+                    ];
+                }
             }
         }
 

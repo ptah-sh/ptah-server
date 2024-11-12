@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\NodeTasks\TaskStatus;
 use App\Traits\HasOwningTeam;
 use App\Traits\HasTaskStatus;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -142,5 +143,19 @@ class NodeTaskGroup extends Model
         if ($event) {
             event(new $event($this));
         }
+    }
+
+    public static function createForUser(User $user, Team $team, NodeTaskGroupType $type): NodeTaskGroup
+    {
+        if (! $user->belongsToTeam($team)) {
+            throw new Exception('User does not belong to team');
+        }
+
+        return self::create([
+            'type' => $type,
+            'invoker_id' => $user->id,
+            'swarm_id' => $team->swarms->first()->id,
+            'team_id' => $team->id,
+        ]);
     }
 }

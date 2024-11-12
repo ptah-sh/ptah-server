@@ -10,6 +10,7 @@ class QuotasOverride extends Data
         public int $nodes = 0,
         public int $swarms = 0,
         public int $services = 0,
+        public int $reviewApps = 0,
         public int $deployments = 0
     ) {}
 }

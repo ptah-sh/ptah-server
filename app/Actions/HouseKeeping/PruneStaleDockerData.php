@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 
 class PruneStaleDockerData
 {
-    public function __invoke(): void
+    public function prune(): void
     {
         $imagesToKeep = [];
 

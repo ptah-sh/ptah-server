@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NodeController;
 use App\Http\Controllers\NodeTaskGroupController;
 use App\Http\Controllers\RefundPolicyController;
+use App\Http\Controllers\ReviewAppsController;
 use App\Http\Controllers\ServiceBackupController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SwarmController;
@@ -66,6 +67,8 @@ Route::middleware([
         Route::post('/services', CreateService::class)->name('services.store');
         Route::get('/services/{service}/deployments', [ServiceController::class, 'deployments'])->name('services.deployments');
         Route::get('/services/{service}/backups', [ServiceBackupController::class, 'index'])->name('services.backups');
+
+        Route::get('/services/{service}/review-apps', [ReviewAppsController::class, 'index'])->name('services.review-apps');
 
         Route::post('/services/{service}/processes/{process}/workers/{worker}/execute', ExecuteWorker::class)->name('workers.execute');
 

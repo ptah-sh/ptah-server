@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Http\Responses\PtahVerifyEmailResponse;
 use App\Listeners\StartTrialFeedbackFlow;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Fortify\Contracts\VerifyEmailResponse;
@@ -30,6 +31,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Model::preventLazyLoading();
+        Model::preventAccessingMissingAttributes();
+
         Event::subscribe(StartTrialFeedbackFlow::class);
     }
 }

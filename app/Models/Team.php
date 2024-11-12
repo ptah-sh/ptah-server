@@ -8,6 +8,7 @@ use App\Models\PricingPlan\UsageQuotas;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Laravel\Jetstream\Events\TeamCreated;
@@ -95,6 +96,11 @@ class Team extends JetstreamTeam
     public function services(): HasMany
     {
         return $this->hasMany(Service::class);
+    }
+
+    public function reviewApps(): HasManyThrough
+    {
+        return $this->hasManyThrough(ReviewApp::class, Service::class, 'team_id', 'service_id');
     }
 
     public function deployments(): HasMany
@@ -203,6 +209,13 @@ class Team extends JetstreamTeam
                 getCurrentUsage: fn () => $this->services()->count(),
                 isSoftQuota: $plan->quotas['services']['soft'],
                 resetPeriod: $plan->quotas['services']['reset_period']
+            ),
+            new ItemQuota(
+                name: 'Review Apps',
+                maxUsage: max($plan->quotas['review_apps']['limit'], $override->reviewApps),
+                getCurrentUsage: fn () => $this->reviewApps()->count(),
+                isSoftQuota: $plan->quotas['review_apps']['soft'],
+                resetPeriod: $plan->quotas['review_apps']['reset_period']
             ),
             new ItemQuota(
                 name: 'Deployments',
