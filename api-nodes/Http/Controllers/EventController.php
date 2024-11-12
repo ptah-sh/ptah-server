@@ -39,7 +39,9 @@ class EventController
 
                 $publicAddr = $data->node->host->getPublicIpv4() ?? $data->node->host->getPrivateIpv4() ?? '127.0.0.1';
 
-                StartDeployment::run($node->team->owner, $demoService, DeploymentData::validateAndCreate([
+                $taskGroup = NodeTaskGroup::createForUser($node->team->owner, $node->team, NodeTaskGroupType::LaunchService);
+
+                StartDeployment::run($taskGroup, $demoService, DeploymentData::validateAndCreate([
                     'networkName' => 'ptah_net',
                     'internalDomain' => 'demo.ptah.local',
                     'processes' => [

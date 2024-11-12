@@ -2,10 +2,6 @@
 
 namespace App\Models;
 
-use App\Actions\Nodes\RebuildCaddy;
-use App\Models\DeploymentData\Process;
-use App\Models\DeploymentData\Worker;
-use App\Models\NodeTasks\DeleteService\DeleteServiceMeta;
 use App\Traits\HasOwningTeam;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -55,30 +51,6 @@ class Service extends Model
                 $service->saveQuietly();
             }
         });
-
-        self::deleting(function (Service $service) {
-            $taskGroup = $service->swarm->taskGroups()->create([
-                'type' => NodeTaskGroupType::DeleteService,
-                'team_id' => auth()->user()->currentTeam->id,
-                'invoker_id' => auth()->id(),
-            ]);
-
-            $deleteProcessesTasks = collect($service->latestDeployment->data->processes)->flatMap(function (Process $process) use ($service) {
-                return collect($process->workers)->map(function (Worker $worker) use ($service) {
-                    return [
-                        'type' => NodeTaskType::DeleteService,
-                        'meta' => new DeleteServiceMeta($service->id, $worker->name, $service->name),
-                        'payload' => [
-                            'ServiceName' => $worker->dockerName,
-                        ],
-                    ];
-                });
-            })->toArray();
-
-            $taskGroup->tasks()->createMany($deleteProcessesTasks);
-
-            RebuildCaddy::run($service->team, $taskGroup, $service->latestDeployment);
-        });
     }
 
     protected function generateUniqueSlug($id)
@@ -107,7 +79,9 @@ class Service extends Model
 
     public function latestDeployment(): HasOne
     {
-        return $this->hasOne(Deployment::class)->latest('id');
+        return $this->deployments()->one()->ofMany(['id' => 'MAX'], function ($query) {
+            $query->whereNull('review_app_id');
+        });
     }
 
     public function tasks(): HasMany
@@ -118,6 +92,11 @@ class Service extends Model
     public function backups(): HasMany
     {
         return $this->hasMany(Backup::class);
+    }
+
+    public function reviewApps(): HasMany
+    {
+        return $this->hasMany(ReviewApp::class);
     }
 
     public function makeResourceName($name): string

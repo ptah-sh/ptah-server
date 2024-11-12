@@ -46,6 +46,8 @@ const quotaDescriptions = {
     swarms: "The maximum number of swarms you can create for your team.",
     services:
         "The maximum number of services you can deploy across all swarms.",
+    reviewApps:
+        "The maximum number of review apps you can create across all services.",
     deployments: "The maximum number of deployments you can perform per day.",
 };
 
@@ -84,7 +86,7 @@ function getResetPeriodText(quota: ItemQuota): string | null {
                             <span
                                 class="text-sm font-medium text-gray-900 dark:text-gray-100 capitalize"
                             >
-                                {{ key }}
+                                {{ quota.name }}
                                 <span
                                     v-if="quota.isSoftQuota"
                                     class="text-xs text-gray-500 ml-1"
@@ -115,7 +117,7 @@ function getResetPeriodText(quota: ItemQuota): string | null {
                             </span>
                         </div>
                         <div
-                            class="mt-1 text-xs text-gray-500 dark:text-gray-400 flex items-center"
+                            class="mt-1 gap-1 text-xs text-gray-500 dark:text-gray-400 flex items-center"
                         >
                             {{
                                 quotaDescriptions[

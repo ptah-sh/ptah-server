@@ -10,6 +10,7 @@ class UsageQuotas extends Data
         public ItemQuota $nodes,
         public ItemQuota $swarms,
         public ItemQuota $services,
+        public ItemQuota $reviewApps,
         public ItemQuota $deployments
     ) {}
 }

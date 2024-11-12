@@ -649,4 +649,12 @@ class Worker extends Data
             ...$attributes,
         ]);
     }
+
+    public function copyWith(array $attributes): static
+    {
+        return self::make([
+            ...$this->toArray(),
+            ...$attributes,
+        ]);
+    }
 }

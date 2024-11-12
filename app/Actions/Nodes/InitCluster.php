@@ -179,7 +179,9 @@ class InitCluster
 
         $deploymentData = $this->createCaddyDeploymentData($network, $node);
 
-        StartDeployment::run($caddyService->team->owner, $caddyService, $deploymentData);
+        $taskGroup = NodeTaskGroup::createForUser($caddyService->team->owner, $caddyService->team, NodeTaskGroupType::LaunchService);
+
+        StartDeployment::run($taskGroup, $caddyService, $deploymentData);
     }
 
     private function createCaddyDeploymentData(Network $network, Node $node): DeploymentData

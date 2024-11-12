@@ -26,6 +26,6 @@ class PruneStaleDockerDataCommand extends Command
      */
     public function handle(PruneStaleDockerData $action): void
     {
-        $action();
+        $action->prune();
     }
 }

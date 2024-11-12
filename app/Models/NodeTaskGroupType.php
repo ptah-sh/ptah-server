@@ -22,6 +22,9 @@ enum NodeTaskGroupType: int
     case BackupCreate = 12;
     case BackupRestore = 13;
     case BackupRemove = 14;
+    case LaunchReviewApp = 15;
+    case DestroyReviewApp = 16;
+    case InitPtahSh = 17;
 
     public function completed(): ?string
     {

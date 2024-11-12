@@ -2,6 +2,7 @@
 
 namespace App\Actions\Nodes;
 
+use App;
 use App\Models\Deployment;
 use App\Models\DeploymentData\Caddy;
 use App\Models\DeploymentData\EnvVar;
@@ -10,13 +11,36 @@ use App\Models\NodeTaskGroup;
 use App\Models\NodeTasks\ApplyCaddyConfig\ApplyCaddyConfigMeta;
 use App\Models\NodeTaskType;
 use App\Models\Team;
+use Closure;
 use InvalidArgumentException;
 use Lorisleiva\Actions\Action;
 
 class RebuildCaddy extends Action
 {
-    // TODO: make the deployment optional? Remove it altogether?
-    public function handle(Team $team, NodeTaskGroup $taskGroup, Deployment $deployment)
+    public static function onceAfter(Team $team, NodeTaskGroup $taskGroup, Closure $callback): void
+    {
+        $lockKey = 'lock.'.RebuildCaddy::class.'.'.$taskGroup->id;
+
+        $shouldRun = ! App::has($lockKey);
+
+        if ($shouldRun) {
+            App::scoped($lockKey, 'rebuild-caddy');
+        }
+
+        try {
+            $callback();
+        } finally {
+            if ($shouldRun) {
+                App::forgetScopedInstances($lockKey);
+            }
+        }
+
+        if ($shouldRun) {
+            self::run($team, $taskGroup);
+        }
+    }
+
+    public function handle(Team $team, NodeTaskGroup $taskGroup)
     {
         $caddyHandlers = [];
 
@@ -208,9 +232,7 @@ class RebuildCaddy extends Action
 
         $taskGroup->tasks()->create([
             'type' => NodeTaskType::ApplyCaddyConfig,
-            'meta' => ApplyCaddyConfigMeta::from([
-                'deploymentId' => $deployment->id,
-            ]),
+            'meta' => ApplyCaddyConfigMeta::from([]),
             'payload' => [
                 'caddy' => $caddy,
             ],

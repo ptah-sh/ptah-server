@@ -10,8 +10,10 @@ defineProps({
 </script>
 
 <template>
-    <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-        <h2 class="text-lg font-bold mb-4">{{ title }}</h2>
+    <div
+        class="bg-white overflow-hidden shadow sm:rounded-lg p-6 hover:shadow-lg transition-shadow duration-200"
+    >
+        <h2 v-if="title" class="text-lg font-bold mb-4">{{ title }}</h2>
 
         <slot></slot>
     </div>

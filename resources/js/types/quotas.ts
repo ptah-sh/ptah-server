@@ -1,4 +1,5 @@
 export interface ItemQuota {
+  name: string;
   currentUsage: number;
   maxUsage: number;
   isSoftQuota: boolean;
@@ -11,5 +12,6 @@ export interface UsageQuotas {
   nodes: ItemQuota;
   swarms: ItemQuota;
   services: ItemQuota;
+  reviewApps: ItemQuota;
   deployments: ItemQuota;
 }
