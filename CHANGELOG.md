@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.41.0](https://github.com/ptah-sh/ptah-server/compare/v0.40.0...v0.41.0) (2024-11-13)
+
+
+### Features
+
+* [#265](https://github.com/ptah-sh/ptah-server/issues/265), [#266](https://github.com/ptah-sh/ptah-server/issues/266), [#268](https://github.com/ptah-sh/ptah-server/issues/268) allow to create and destroy review apps ([608eada](https://github.com/ptah-sh/ptah-server/commit/608eada16020c850c74763ab2ee5e659b75a20a4))
+
+
+### Miscellaneous Chores
+
+* possible 500 fix ([c214ece](https://github.com/ptah-sh/ptah-server/commit/c214ece63ab5cec73fe95790d680d475269030f8))
+* update installation data ([7d69ee3](https://github.com/ptah-sh/ptah-server/commit/7d69ee3d7cf533ae55687d7bc2524a9a69a87575))
+* update installation data ([8c117ec](https://github.com/ptah-sh/ptah-server/commit/8c117ec6aa4b0ec94949762dff357f9224fe2f9c))
+
 ## [0.40.0](https://github.com/ptah-sh/ptah-server/compare/v0.39.0...v0.40.0) (2024-11-09)
 
 
