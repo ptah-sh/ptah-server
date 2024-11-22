@@ -57,7 +57,7 @@ class Process extends Data
         #[Rule(new UniqueInArray('targetPort'))]
         /* @var NodePort[] */
         public array $ports,
-        #[DataCollectionOf(Caddy::class), Distinct('id')]
+        #[DataCollectionOf(Caddy::class), Distinct('id', mode: Distinct::Strict)]
         /* @var Caddy[] */
         public array $caddy,
         #[Rule(new RequiredIfArrayHas('caddy.*.targetProtocol', 'fastcgi'))]
