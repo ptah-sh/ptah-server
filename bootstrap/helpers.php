@@ -32,6 +32,6 @@ if (! function_exists('dockerize_name')) {
             $name = Str::substr($name, 0, 57).'_'.Str::random(5);
         }
 
-        return $name;
+        return Str::lower($name);
     }
 }
