@@ -31,7 +31,7 @@ class LaunchReviewApp
                 'visit_url' => $this->getVisitUrl($deploymentData, $process),
             ]);
 
-            StartDeployment::run($taskGroup, $service, $deploymentData, $reviewApp->id);
+            StartDeployment::run($taskGroup, $service, $deploymentData, $reviewApp);
 
             return $reviewApp;
         });
