@@ -58,12 +58,12 @@ class MetricsController
 
             $ruleIds = $processes->mapWithKeys(function (Process $process) {
                 $caddyIds = collect($process->caddy)->pluck('id');
-                $redirectRuleIds = collect($process)
-                    ->flatMap(fn (Process $process) => collect($process->caddy)->flatMap(fn (Caddy $caddy) => collect($caddy->redirectRules)->pluck('id')))
+                $redirectRuleIds = collect($process->caddy)
+                    ->flatMap(fn (Caddy $caddy) => collect($caddy->redirectRules)->pluck('id'))
                     ->unique()
                     ->toArray();
-                $rewriteRuleIds = collect($process)
-                    ->flatMap(fn (Process $process) => collect($process->caddy)->flatMap(fn (Caddy $caddy) => collect($caddy->rewriteRules)->pluck('id')))
+                $rewriteRuleIds = collect($process->caddy)
+                    ->flatMap(fn (Caddy $caddy) => collect($caddy->rewriteRules)->pluck('id'))
                     ->unique()
                     ->toArray();
 
