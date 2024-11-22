@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.2](https://github.com/ptah-sh/ptah-server/compare/v0.42.1...v0.42.2) (2024-11-22)
+
+
+### Bug Fixes
+
+* [#273](https://github.com/ptah-sh/ptah-server/issues/273) fix metrics validation ([899121f](https://github.com/ptah-sh/ptah-server/commit/899121f67592058c475da45c9089495bb27e7df1))
+
 ## [0.42.1](https://github.com/ptah-sh/ptah-server/compare/v0.42.0...v0.42.1) (2024-11-22)
 
 
