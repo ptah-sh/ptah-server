@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.4](https://github.com/ptah-sh/ptah-server/compare/v0.42.3...v0.42.4) (2024-11-22)
+
+
+### Bug Fixes
+
+* [#256](https://github.com/ptah-sh/ptah-server/issues/256) try shorter container names ([d1cba32](https://github.com/ptah-sh/ptah-server/commit/d1cba32ac73a5482947ee54c27ddf4b3d96149b6))
+
 ## [0.42.3](https://github.com/ptah-sh/ptah-server/compare/v0.42.2...v0.42.3) (2024-11-22)
 
 
