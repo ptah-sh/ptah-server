@@ -2,6 +2,7 @@
 
 namespace ApiNodes\Http\Controllers;
 
+use App\Models\DeploymentData\Caddy;
 use App\Models\DeploymentData\Process;
 use App\Models\Node;
 use App\Services\Metrics;
@@ -57,8 +58,14 @@ class MetricsController
 
             $ruleIds = $processes->mapWithKeys(function (Process $process) {
                 $caddyIds = collect($process->caddy)->pluck('id');
-                $redirectRuleIds = collect($process->redirectRules)->pluck('id');
-                $rewriteRuleIds = collect($process->rewriteRules)->pluck('id');
+                $redirectRuleIds = collect($process)
+                    ->flatMap(fn (Process $process) => collect($process->caddy)->flatMap(fn (Caddy $caddy) => collect($caddy->redirectRules)->pluck('id')))
+                    ->unique()
+                    ->toArray();
+                $rewriteRuleIds = collect($process)
+                    ->flatMap(fn (Process $process) => collect($process->caddy)->flatMap(fn (Caddy $caddy) => collect($caddy->rewriteRules)->pluck('id')))
+                    ->unique()
+                    ->toArray();
 
                 $ruleIds = $caddyIds->merge($redirectRuleIds)->merge($rewriteRuleIds)->toArray();
 
