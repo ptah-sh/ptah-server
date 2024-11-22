@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.0](https://github.com/ptah-sh/ptah-server/compare/v0.41.0...v0.42.0) (2024-11-22)
+
+
+### Features
+
+* [#273](https://github.com/ptah-sh/ptah-server/issues/273) allow to configure caddy endpoints via api ([349cf27](https://github.com/ptah-sh/ptah-server/commit/349cf27e5b6a66f4a31a4ba42c89678b5a13fed0))
+
 ## [0.41.0](https://github.com/ptah-sh/ptah-server/compare/v0.40.0...v0.41.0) (2024-11-13)
 
 
