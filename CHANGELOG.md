@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.42.1](https://github.com/ptah-sh/ptah-server/compare/v0.42.0...v0.42.1) (2024-11-22)
+
+
+### Bug Fixes
+
+* [#273](https://github.com/ptah-sh/ptah-server/issues/273) mode strict ([b911747](https://github.com/ptah-sh/ptah-server/commit/b911747e98abcc55ecfc1ad686fe5eeca9ff0245))
+* [#273](https://github.com/ptah-sh/ptah-server/issues/273) mode strict 2 ([25f7a28](https://github.com/ptah-sh/ptah-server/commit/25f7a289e932fd52e7ae7af06e122852a1e44c13))
+* [#273](https://github.com/ptah-sh/ptah-server/issues/273) mode strict 3 ([81f27ad](https://github.com/ptah-sh/ptah-server/commit/81f27adb5938ae108bbf9bee0f0f33c08d8b3e7e))
+
 ## [0.42.0](https://github.com/ptah-sh/ptah-server/compare/v0.41.0...v0.42.0) (2024-11-22)
 
 
