@@ -25,6 +25,7 @@ enum NodeTaskGroupType: int
     case LaunchReviewApp = 15;
     case DestroyReviewApp = 16;
     case InitPtahSh = 17;
+    case RebuildCaddy = 18;
 
     public function completed(): ?string
     {

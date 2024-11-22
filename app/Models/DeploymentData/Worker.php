@@ -5,6 +5,8 @@ namespace App\Models\DeploymentData;
 use App\Models\Backup;
 use App\Models\Deployment;
 use App\Models\DeploymentData\AppSource\AppSourceType;
+use App\Models\DeploymentData\AppSource\DockerSource;
+use App\Models\DeploymentData\AppSource\GitWithNixpacksSource;
 use App\Models\NodeTasks\BuildImageWithDockerfile\BuildImageWithDockerfileMeta;
 use App\Models\NodeTasks\BuildImageWithNixpacks\BuildImageWithNixpacksMeta;
 use App\Models\NodeTasks\DownloadS3File\DownloadS3FileMeta;
@@ -624,29 +626,39 @@ class Worker extends Data
 
     public static function make(array $attributes): static
     {
-        $defaults = [
-            'name' => 'main',
-            'source' => [
-                'type' => 'docker_image',
-                'docker' => [
-                    'registryId' => null,
-                    'image' => '',
-                ],
+        $source = isset($attributes['source']) ? ($attributes['source']) : ([
+            'type' => 'docker_image',
+            'docker' => [
+                'registryId' => null,
+                'image' => '',
             ],
+        ]);
+
+        if (isset($source['nixpacks'])) {
+            if (! isset($source['nixpacks']['nixpacksFilePath'])) {
+                $source['nixpacks']['nixpacksFilePath'] = 'nixpacks.toml';
+            }
+
+            $source['nixpacks'] = GitWithNixpacksSource::from($source['nixpacks']);
+        }
+
+        if (isset($source['docker'])) {
+            $source['docker'] = DockerSource::from($source['docker']);
+        }
+
+        return self::from([
+            ...$attributes,
+            'name' => 'main',
+            'source' => AppSource::from($source),
             'launchMode' => LaunchMode::Daemon->value,
             'replicas' => 1,
             'command' => null,
-            'releaseCommand' => ReleaseCommand::from([
+            'releaseCommand' => ([
                 'command' => null,
             ]),
-            'healthcheck' => Healthcheck::from([
+            'healthcheck' => ([
                 'command' => null,
             ]),
-        ];
-
-        return self::from([
-            ...$defaults,
-            ...$attributes,
         ]);
     }
 

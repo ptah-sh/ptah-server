@@ -14,6 +14,7 @@ use App\Util\Arrays;
 use Exception;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Attributes\Validation\Distinct;
 use Spatie\LaravelData\Attributes\Validation\Exists;
 use Spatie\LaravelData\Attributes\Validation\RequiredWith;
 use Spatie\LaravelData\Attributes\Validation\Rule;
@@ -56,17 +57,11 @@ class Process extends Data
         #[Rule(new UniqueInArray('targetPort'))]
         /* @var NodePort[] */
         public array $ports,
-        #[DataCollectionOf(Caddy::class)]
+        #[DataCollectionOf(Caddy::class), Distinct('id')]
         /* @var Caddy[] */
         public array $caddy,
         #[Rule(new RequiredIfArrayHas('caddy.*.targetProtocol', 'fastcgi'))]
         public ?FastCgi $fastCgi,
-        #[DataCollectionOf(RedirectRule::class)]
-        /* @var RedirectRule[] */
-        public array $redirectRules,
-        #[DataCollectionOf(RewriteRule::class)]
-        /* @var RewriteRule[] */
-        public array $rewriteRules
     ) {}
 
     public function findVolume(string $id): ?Volume
@@ -87,6 +82,43 @@ class Process extends Data
     public function findSecretVar(string $name): ?SecretVar
     {
         return collect($this->secretVars)->first(fn (SecretVar $var) => $var->name === $name);
+    }
+
+    public function findCaddyById(string $id): ?Caddy
+    {
+        return collect($this->caddy)->first(fn (Caddy $caddy) => $caddy->id === $id);
+    }
+
+    public function addCaddy(Caddy $caddy): void
+    {
+        if ($this->findCaddyById($caddy->id)) {
+            throw ValidationException::withMessages([
+                'caddy' => 'Caddy with id '.$caddy->id.' already exists',
+            ]);
+        }
+
+        array_push($this->caddy, $caddy);
+    }
+
+    public function putCaddyById(string $id, Caddy $caddy): void
+    {
+        $this->removeCaddyById($id, safe: true);
+        $this->addCaddy($caddy);
+    }
+
+    public function removeCaddyById(string $id, bool $safe = false): void
+    {
+        if (! $this->findCaddyById($id)) {
+            if ($safe) {
+                return;
+            }
+
+            throw ValidationException::withMessages([
+                'caddy' => 'Caddy with id '.$id.' does not exist',
+            ]);
+        }
+
+        $this->caddy = array_filter($this->caddy, fn ($caddy) => $caddy->id !== $id);
     }
 
     /**
@@ -282,8 +314,6 @@ class Process extends Data
             'replicas' => 1,
             'caddy' => [],
             'fastCgi' => null,
-            'redirectRules' => [],
-            'rewriteRules' => [],
         ];
 
         return self::from([

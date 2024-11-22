@@ -59,7 +59,7 @@ class RebuildCaddy extends Action
                     ];
 
                     $pathRegexps = [];
-                    foreach ($process->rewriteRules as $rewriteRule) {
+                    foreach ($caddy->rewriteRules as $rewriteRule) {
                         $pathRegexps[] = [
                             'find' => $rewriteRule->pathFrom,
                             'replace' => $rewriteRule->pathTo,
@@ -115,8 +115,7 @@ class RebuildCaddy extends Action
                         'handle' => $handlers,
                     ];
 
-                    // FIXME: Here goes a big "OOPS": redirect rules are repeated for each caddy rule in the process
-                    foreach ($process->redirectRules as $redirectRule) {
+                    foreach ($caddy->redirectRules as $redirectRule) {
                         $regexpName = dockerize_name($redirectRule->id);
 
                         $pathTo = preg_replace("/\\$(\d+)/", "{http.regexp.$regexpName.$1}", $redirectRule->pathTo);

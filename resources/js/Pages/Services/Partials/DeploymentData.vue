@@ -10,13 +10,13 @@ import { computed, effect, nextTick, reactive, ref } from "vue";
 import ProcessTabs from "@/Pages/Services/Partials/ProcessTabs.vue";
 import DangerButton from "@/Components/DangerButton.vue";
 import DialogModal from "@/Components/DialogModal.vue";
-import AddComponentButton from "@/Components/Service/AddComponentButton.vue";
 import WorkerForm from "@/Pages/Services/Partials/DeploymentData/WorkerForm.vue";
 import ComponentBlock from "@/Components/Service/ComponentBlock.vue";
 import { evaluate } from "@/expr-lang.js";
 import ExternalLink from "@/Components/ExternalLink.vue";
 import cloneDeep from "lodash.clonedeep";
 import CloseButton from "@/Components/CloseButton.vue";
+import CaddyForm from "./DeploymentData/CaddyForm.vue";
 
 const model = defineModel();
 
@@ -104,29 +104,8 @@ const addCaddy = () => {
         publishedPort: "443",
         domain: "",
         path: "",
-    });
-};
-
-const addRedirectRule = () => {
-    model.value.processes[
-        state.selectedProcessIndex["caddy"]
-    ].redirectRules.push({
-        id: makeId("redirect-rule"),
-        domainFrom: "",
-        domainTo: "",
-        pathFrom: "",
-        pathTo: "",
-        statusCode: 301,
-    });
-};
-
-const addRewriteRule = () => {
-    model.value.processes[
-        state.selectedProcessIndex["caddy"]
-    ].rewriteRules.push({
-        id: makeId("rewrite-rule"),
-        pathFrom: "",
-        pathTo: "",
+        rewriteRules: [],
+        redirectRules: [],
     });
 };
 
@@ -1299,239 +1278,31 @@ const selectedWorkerErrors = computed(() => {
             >
                 Caddy
             </h3>
-            <div
+
+            <template
                 v-for="(caddy, index) in model.processes[
                     state.selectedProcessIndex['caddy']
                 ].caddy"
                 :key="caddy.id"
-                class="col-span-full grid grid-cols-6 gap-4"
             >
                 <hr class="col-span-full" v-if="index > 0" />
 
-                <FormField
-                    class="col-span-2"
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['caddy']}.caddy.${index}.targetProtocol`
-                        ]
-                    "
-                >
-                    <template #label> Container Protocol </template>
-
-                    <Select v-model="caddy.targetProtocol">
-                        <option value="http">HTTP</option>
-                        <option value="fastcgi">FastCGI</option>
-                    </Select>
-                </FormField>
-
-                <FormField
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['caddy']}.caddy.${index}.targetPort`
-                        ]
-                    "
-                >
-                    <template #label>Container Port</template>
-
-                    <TextInput
-                        v-model="caddy.targetPort"
-                        placeholder="8080"
-                        class="w-full"
-                    />
-                </FormField>
-
-                <FormField
-                    class="col-span-2"
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['caddy']}.caddy.${index}.publishedPort`
-                        ]
-                    "
-                >
-                    <template #label>Published Port</template>
-
-                    <div class="flex gap-2">
-                        <Select v-model="caddy.publishedPort">
-                            <option value="443">HTTPS</option>
-                            <option value="80">HTTP</option>
-                        </Select>
-
-                        <SecondaryButton
-                            @click="
-                                model.processes[
-                                    state.selectedProcessIndex['caddy']
-                                ].caddy.splice(index, 1)
-                            "
-                            tabindex="-1"
-                            class="grow"
-                        >
-                            <svg
-                                class="w-4 h-4 text-gray-800 dark:text-white"
-                                aria-hidden="true"
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke="currentColor"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M5 12h14"
-                                />
-                            </svg>
-                        </SecondaryButton>
-                    </div>
-                </FormField>
-
-                <div class="col-span-1"></div>
-
-                <FormField
-                    class="col-span-2"
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['caddy']}.caddy.${index}.domain`
-                        ]
-                    "
-                >
-                    <template #label>Domain</template>
-
-                    <TextInput
-                        v-model="caddy.domain"
-                        class="w-full"
-                        placeholder="example.com"
-                    />
-                </FormField>
-
-                <FormField
-                    class="col-span-4"
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['caddy']}.caddy.${index}.path`
-                        ]
-                    "
-                >
-                    <template #label>Path</template>
-                    <TextInput
-                        v-model="caddy.path"
-                        class="w-full"
-                        placeholder="/*"
-                    />
-                </FormField>
-
-                <!-- TODO: link to available placeholders docs https://caddyserver.com/docs/json/apps/http/#docs -->
-                <ComponentBlock
+                <CaddyForm
                     v-model="
                         model.processes[state.selectedProcessIndex['caddy']]
-                            .redirectRules
+                            .caddy[index]
                     "
-                    v-slot="{ item }"
-                    label="Redirect Rules"
-                    @remove="
+                    :errors="
+                        extractFieldErrors(
+                            `processes.${state.selectedProcessIndex['caddy']}.caddy.${index}`,
+                        )
+                    "
+                    @delete="
                         model.processes[
                             state.selectedProcessIndex['caddy']
-                        ].redirectRules.splice($event, 1)
+                        ].caddy.splice(index, 1)
                     "
-                >
-                    <FormField
-                        :error="
-                            props.errors[
-                                `processes.${state.selectedProcessIndex['caddy']}.redirectRules.${item.$index}.domainFrom`
-                            ]
-                        "
-                        class="col-span-2"
-                    >
-                        <template #label>Domain From</template>
-
-                        <TextInput
-                            v-model="item.domainFrom"
-                            class="w-full"
-                            placeholder="wp.example.com"
-                        />
-                    </FormField>
-
-                    <FormField
-                        :error="
-                            props.errors[
-                                `processes.${state.selectedProcessIndex['caddy']}.redirectRules.${item.$index}.domainTo`
-                            ]
-                        "
-                        class="col-span-2"
-                    >
-                        <template #label>Domain To</template>
-
-                        <TextInput
-                            v-model="item.domainTo"
-                            class="w-full"
-                            placeholder="example.com"
-                        />
-                    </FormField>
-
-                    <FormField
-                        :error="
-                            props.errors[
-                                `processes.${state.selectedProcessIndex['caddy']}.redirectRules.${item.$index}.statusCode`
-                            ]
-                        "
-                        class="col-span-2"
-                    >
-                        <template #label>Status Code</template>
-
-                        <!-- TODO: link to MDN https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections -->
-                        <Select v-model="item.statusCode">
-                            <optgroup label="Permanent Redirects">
-                                <option value="301">
-                                    301 Moved Permanently
-                                </option>
-                                <option value="308">
-                                    308 Permanent Redirect
-                                </option>
-                            </optgroup>
-                            <optgroup label="Temporary Redirects">
-                                <option value="302">302 Found</option>
-                                <option value="307">
-                                    307 Temporary Redirect
-                                </option>
-                            </optgroup>
-                        </Select>
-                    </FormField>
-
-                    <FormField
-                        :error="
-                            props.errors[
-                                `processes.${state.selectedProcessIndex['caddy']}.redirectRules.${item.$index}.pathFrom`
-                            ]
-                        "
-                        class="col-span-3"
-                    >
-                        <template #label>Path From</template>
-
-                        <TextInput
-                            v-model="item.pathFrom"
-                            class="w-full"
-                            placeholder="/(.*)"
-                        />
-                    </FormField>
-
-                    <FormField
-                        :error="
-                            props.errors[
-                                `processes.${state.selectedProcessIndex['caddy']}.redirectRules.${item.$index}.pathTo`
-                            ]
-                        "
-                        class="col-span-3"
-                    >
-                        <template #label>Path To</template>
-
-                        <TextInput
-                            v-model="item.pathTo"
-                            class="w-full"
-                            placeholder="/blog/$1"
-                        />
-                    </FormField>
-                </ComponentBlock>
+                />
 
                 <template v-if="hasFastCgiHandlers">
                     <hr class="col-span-full" />
@@ -1637,55 +1408,7 @@ const selectedWorkerErrors = computed(() => {
                         </div>
                     </template>
                 </template>
-            </div>
-
-            <ComponentBlock
-                v-model="
-                    model.processes[state.selectedProcessIndex['caddy']]
-                        .rewriteRules
-                "
-                v-slot="{ item }"
-                label="Rewrite Rules"
-                @remove="
-                    model.processes[
-                        state.selectedProcessIndex['caddy']
-                    ].rewriteRules.splice($event, 1)
-                "
-            >
-                <FormField
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['caddy']}.rewriteRules.${item.$index}.pathFrom`
-                        ]
-                    "
-                    class="col-span-3"
-                >
-                    <template #label>Path From</template>
-
-                    <TextInput
-                        v-model="item.pathFrom"
-                        class="w-full"
-                        placeholder="/old-path/(.*)"
-                    />
-                </FormField>
-
-                <FormField
-                    :error="
-                        props.errors[
-                            `processes.${state.selectedProcessIndex['caddy']}.rewriteRules.${item.$index}.pathTo`
-                        ]
-                    "
-                    class="col-span-3"
-                >
-                    <template #label>Path To</template>
-
-                    <TextInput
-                        v-model="item.pathTo"
-                        class="w-full"
-                        placeholder="/new-path/$1"
-                    />
-                </FormField>
-            </ComponentBlock>
+            </template>
         </template>
 
         <template #actions>
@@ -1730,25 +1453,6 @@ const selectedWorkerErrors = computed(() => {
                 </svg>
                 HTTP(S)
             </SecondaryButton>
-
-            <AddComponentButton
-                v-if="
-                    model.processes[state.selectedProcessIndex['caddy']].caddy
-                        .length > 0
-                "
-                @click="addRedirectRule"
-            >
-                Redirect Rule
-            </AddComponentButton>
-            <AddComponentButton
-                v-if="
-                    model.processes[state.selectedProcessIndex['caddy']].caddy
-                        .length > 0
-                "
-                @click="addRewriteRule"
-            >
-                Rewrite Rule
-            </AddComponentButton>
             <SecondaryButton v-if="hasFastCgiHandlers" @click="addFastCgiVar">
                 <svg
                     class="w-4 h-4 me-2 -ms-1 text-gray-800 dark:text-white"

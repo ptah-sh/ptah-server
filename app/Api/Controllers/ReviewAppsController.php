@@ -36,7 +36,7 @@ class ReviewAppsController extends Controller
                     'visit_url' => $reviewApp->visit_url,
                 ],
                 'deployment' => [
-                    'id' => $reviewApp->deployment->id,
+                    'id' => $reviewApp->latestDeployment->id,
                 ],
             ];
         });

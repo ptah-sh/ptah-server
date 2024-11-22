@@ -3,6 +3,7 @@
 namespace App\Models\DeploymentData;
 
 use App\Util\ResourceId;
+use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Between;
 use Spatie\LaravelData\Attributes\Validation\In;
 use Spatie\LaravelData\Data;
@@ -19,6 +20,10 @@ class Caddy extends Data
         public int $publishedPort,
         public string $domain,
         public string $path,
+        #[DataCollectionOf(RewriteRule::class)]
+        public array $rewriteRules = [],
+        #[DataCollectionOf(RedirectRule::class)]
+        public array $redirectRules = [],
     ) {
         $this->id = $id ?? ResourceId::make('caddy');
     }
