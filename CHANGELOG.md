@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.42.3](https://github.com/ptah-sh/ptah-server/compare/v0.42.2...v0.42.3) (2024-11-22)
+
+
+### Bug Fixes
+
+* [#273](https://github.com/ptah-sh/ptah-server/issues/273) fix metrics validation 2 ([0da92de](https://github.com/ptah-sh/ptah-server/commit/0da92de8fe1c91fecdd8ca8fde48e890304d9788))
+* lowercase docker name ([b1bafe0](https://github.com/ptah-sh/ptah-server/commit/b1bafe06268b39d2b8d96ca15706b59a444f23b6))
+
 ## [0.42.2](https://github.com/ptah-sh/ptah-server/compare/v0.42.1...v0.42.2) (2024-11-22)
 
 
