@@ -197,10 +197,10 @@ class Worker extends Data
                         'Networks' => [
                             [
                                 'Target' => $deployment->data->networkName,
-                                'Aliases' => [
+                                'Aliases' => array_unique([
                                     $internalDomain,
                                     $hostname,
-                                ],
+                                ]),
                             ],
                         ],
                     ],
@@ -397,7 +397,10 @@ class Worker extends Data
 
     private function getInternalDomain(Deployment $deployment, Process $process): string
     {
-        $base = $process->getInternalDomain($deployment);
+        $base = $deployment->reviewApp
+            ? "{$deployment->reviewApp->ref}.{$process->getInternalDomain($deployment)}"
+            : $process->getInternalDomain($deployment);
+
         if ($this->name === 'main') {
             return $base;
         }
@@ -407,7 +410,7 @@ class Worker extends Data
 
     private function getHostname(Deployment $deployment, Process $process): string
     {
-        return "dpl-{$deployment->id}.{$this->name}.{$process->getInternalDomain($deployment)}";
+        return 'dpl-'.$deployment->id.'.'.$this->getInternalDomain($deployment, $process);
     }
 
     private function getMounts(Deployment $deployment, Process $process, array $labels): array

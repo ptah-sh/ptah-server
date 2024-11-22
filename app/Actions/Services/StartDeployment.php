@@ -7,6 +7,7 @@ use App\Models\Deployment;
 use App\Models\DeploymentData;
 use App\Models\NodeTaskGroup;
 use App\Models\NodeTaskGroupType;
+use App\Models\ReviewApp;
 use App\Models\Service;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
@@ -28,16 +29,16 @@ class StartDeployment
         return true;
     }
 
-    public function handle(NodeTaskGroup $taskGroup, Service $service, DeploymentData $deploymentData, $reviewAppId = null): Deployment
+    public function handle(NodeTaskGroup $taskGroup, Service $service, DeploymentData $deploymentData, ?ReviewApp $reviewApp = null): Deployment
     {
         $taskGroup->team->quotas()->deployments->ensureQuota();
 
-        return DB::transaction(function () use ($taskGroup, $service, $deploymentData, $reviewAppId) {
+        return DB::transaction(function () use ($taskGroup, $service, $deploymentData, $reviewApp) {
             $deployment = $service->deployments()->create([
                 'team_id' => $service->team_id,
                 'data' => $deploymentData,
                 'configured_by_id' => $taskGroup->invoker_id,
-                'review_app_id' => $reviewAppId,
+                'review_app_id' => $reviewApp?->id,
             ]);
 
             $deployment->taskGroups()->attach($taskGroup);

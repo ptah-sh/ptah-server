@@ -57,15 +57,15 @@ namespace App\Actions\Services;
  */
 class CreateService {}
 /**
- * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
- * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
- * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
- * @method static dispatchSync(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
- * @method static dispatchNow(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
- * @method static dispatchAfterResponse(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
- * @method static \App\Models\Deployment run(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, mixed $reviewAppId = null)
+ * @method static \Lorisleiva\Actions\Decorators\JobDecorator|\Lorisleiva\Actions\Decorators\UniqueJobDecorator makeJob(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, ?\App\Models\ReviewApp $reviewApp = null)
+ * @method static \Lorisleiva\Actions\Decorators\UniqueJobDecorator makeUniqueJob(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, ?\App\Models\ReviewApp $reviewApp = null)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch dispatch(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, ?\App\Models\ReviewApp $reviewApp = null)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchIf(bool $boolean, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, ?\App\Models\ReviewApp $reviewApp = null)
+ * @method static \Illuminate\Foundation\Bus\PendingDispatch|\Illuminate\Support\Fluent dispatchUnless(bool $boolean, \App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, ?\App\Models\ReviewApp $reviewApp = null)
+ * @method static dispatchSync(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, ?\App\Models\ReviewApp $reviewApp = null)
+ * @method static dispatchNow(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, ?\App\Models\ReviewApp $reviewApp = null)
+ * @method static dispatchAfterResponse(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, ?\App\Models\ReviewApp $reviewApp = null)
+ * @method static \App\Models\Deployment run(\App\Models\NodeTaskGroup $taskGroup, \App\Models\Service $service, \App\Models\DeploymentData $deploymentData, ?\App\Models\ReviewApp $reviewApp = null)
  */
 class StartDeployment {}
 
