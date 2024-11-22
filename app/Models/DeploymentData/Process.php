@@ -14,7 +14,6 @@ use App\Util\Arrays;
 use Exception;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
-use Spatie\LaravelData\Attributes\Validation\Distinct;
 use Spatie\LaravelData\Attributes\Validation\Exists;
 use Spatie\LaravelData\Attributes\Validation\RequiredWith;
 use Spatie\LaravelData\Attributes\Validation\Rule;
@@ -57,7 +56,7 @@ class Process extends Data
         #[Rule(new UniqueInArray('targetPort'))]
         /* @var NodePort[] */
         public array $ports,
-        #[DataCollectionOf(Caddy::class), Distinct('id', mode: Distinct::Strict)]
+        #[DataCollectionOf(Caddy::class), UniqueInArray('id')]
         /* @var Caddy[] */
         public array $caddy,
         #[Rule(new RequiredIfArrayHas('caddy.*.targetProtocol', 'fastcgi'))]
