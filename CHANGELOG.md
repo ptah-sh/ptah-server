@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.5](https://github.com/ptah-sh/ptah-server/compare/v0.42.4...v0.42.5) (2024-11-22)
+
+
+### Bug Fixes
+
+* [#256](https://github.com/ptah-sh/ptah-server/issues/256) review app deploy ([aec5e4a](https://github.com/ptah-sh/ptah-server/commit/aec5e4ac3027dcc5820440c50a72a26a3630b6c7))
+
 ## [0.42.4](https://github.com/ptah-sh/ptah-server/compare/v0.42.3...v0.42.4) (2024-11-22)
 
 
