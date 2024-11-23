@@ -29,7 +29,7 @@ use Spatie\LaravelData\Data;
 class Worker extends Data
 {
     public function __construct(
-        #[Max(16)]
+        #[Max(10)]
         public string $name,
         public AppSource $source,
         public ?string $dockerName,
