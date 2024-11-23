@@ -7,6 +7,7 @@ use App\Rules\UniqueInArray;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
+use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Data;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -15,6 +16,7 @@ class DeploymentData extends Data
 {
     public function __construct(
         public string $networkName,
+        #[Max(16)]
         public string $internalDomain,
         #[DataCollectionOf(Process::class)]
         #[Rule(new UniqueInArray('name'))]

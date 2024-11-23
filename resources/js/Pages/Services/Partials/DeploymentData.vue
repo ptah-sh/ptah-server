@@ -17,6 +17,7 @@ import ExternalLink from "@/Components/ExternalLink.vue";
 import cloneDeep from "lodash.clonedeep";
 import CloseButton from "@/Components/CloseButton.vue";
 import CaddyForm from "./DeploymentData/CaddyForm.vue";
+import { sha256 } from "@/encryption";
 
 const model = defineModel();
 
@@ -48,6 +49,13 @@ const state = reactive({
 
 effect(() => {
     if (props.serviceName && !state.internalDomainTouched) {
+        if (props.serviceName.length > 16) {
+            props.serviceName =
+                props.serviceName.substring(0, 10) +
+                "-" +
+                sha256(props.serviceName).substring(0, 6);
+        }
+
         model.value.internalDomain = props.serviceName + ".local";
     }
 });

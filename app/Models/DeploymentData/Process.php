@@ -15,6 +15,7 @@ use Exception;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Exists;
+use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\RequiredWith;
 use Spatie\LaravelData\Attributes\Validation\Rule;
 use Spatie\LaravelData\Data;
@@ -22,6 +23,7 @@ use Spatie\LaravelData\Data;
 class Process extends Data
 {
     public function __construct(
+        #[Max(16)]
         public string $name,
         #[Exists(Node::class, 'id')]
         #[RequiredWith('volumes')]

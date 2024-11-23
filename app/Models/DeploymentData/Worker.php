@@ -19,6 +19,7 @@ use App\Rules\Crontab;
 use App\Util\ResourceId;
 use Exception;
 use Spatie\LaravelData\Attributes\Validation\Enum;
+use Spatie\LaravelData\Attributes\Validation\Max;
 use Spatie\LaravelData\Attributes\Validation\Min;
 use Spatie\LaravelData\Attributes\Validation\ProhibitedUnless;
 use Spatie\LaravelData\Attributes\Validation\RequiredIf;
@@ -28,6 +29,7 @@ use Spatie\LaravelData\Data;
 class Worker extends Data
 {
     public function __construct(
+        #[Max(16)]
         public string $name,
         public AppSource $source,
         public ?string $dockerName,
@@ -397,9 +399,16 @@ class Worker extends Data
 
     private function getInternalDomain(Deployment $deployment, Process $process): string
     {
-        $base = $deployment->reviewApp
-            ? "{$deployment->reviewApp->ref}.{$process->getInternalDomain($deployment)}"
-            : $process->getInternalDomain($deployment);
+        $reviewAppRef = $deployment->reviewApp?->ref;
+        if ($reviewAppRef && strlen($reviewAppRef) > 14) {
+            $reviewAppRef = substr($reviewAppRef, 0, 10).'-'.substr(hash('sha256', $reviewAppRef), 0, 6);
+        }
+
+        $internalDomain = $process->getInternalDomain($deployment);
+
+        $base = $reviewAppRef
+            ? "{$reviewAppRef}.{$internalDomain}"
+            : $internalDomain;
 
         if ($this->name === 'main') {
             return $base;
