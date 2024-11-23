@@ -23,7 +23,7 @@ use Spatie\LaravelData\Data;
 class Process extends Data
 {
     public function __construct(
-        #[Max(22)]
+        #[Max(16)]
         public string $name,
         #[Exists(Node::class, 'id')]
         #[RequiredWith('volumes')]

@@ -16,7 +16,7 @@ class DeploymentData extends Data
 {
     public function __construct(
         public string $networkName,
-        #[Max(16)]
+        #[Max(22)]
         public string $internalDomain,
         #[DataCollectionOf(Process::class)]
         #[Rule(new UniqueInArray('name'))]
