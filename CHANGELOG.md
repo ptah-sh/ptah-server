@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.42.7](https://github.com/ptah-sh/ptah-server/compare/v0.42.6...v0.42.7) (2024-11-23)
+
+
+### Miscellaneous Chores
+
+* update composer packages ([7fba5ea](https://github.com/ptah-sh/ptah-server/commit/7fba5eaad94ab3655784df2b0ee6c69e994b8fca))
+* use php 8.3 for dockerfile ([7797300](https://github.com/ptah-sh/ptah-server/commit/7797300e28584428641713924fb9f00e0c6c5df3))
+
 ## [0.42.6](https://github.com/ptah-sh/ptah-server/compare/v0.42.5...v0.42.6) (2024-11-23)
 
 
