@@ -1,4 +1,4 @@
-FROM dunglas/frankenphp:latest
+FROM dunglas/frankenphp:1.3-php8.3
 
 LABEL org.opencontainers.image.title="Ptah.sh"
 LABEL org.opencontainers.image.description="Self-hosted, open-source, and extensible PaaS"
