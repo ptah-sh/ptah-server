@@ -86,17 +86,17 @@ jobs:
                     type: docker_image
                     docker:
                       image: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
-                - name: schedule_root
-                  source:
-                    type: docker_image
-                    docker:
-                      image: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
-                - name: schedule_run
-                  source:
-                    type: docker_image
-                    docker:
-                      image: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
                 - name: queue
+                  source:
+                    type: docker_image
+                    docker:
+                      image: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
+                - name: schedule
+                  source:
+                    type: docker_image
+                    docker:
+                      image: ghcr.io/ptah-sh/ptah-server:${{ needs.release-please.outputs.tag_name }}
+                - name: worker
                   source:
                     type: docker_image
                     docker:
