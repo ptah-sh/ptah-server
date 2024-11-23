@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\DeploymentData\Process;
 use App\Rules\UniqueInArray;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Spatie\LaravelData\Attributes\DataCollectionOf;
 use Spatie\LaravelData\Attributes\Validation\Max;
@@ -89,7 +88,7 @@ class DeploymentData extends Data
 
         $result = $this->toArray();
 
-        $result['internalDomain'] = Str::slug($ref).'.'.$this->internalDomain;
+        $result['internalDomain'] = $this->internalDomain;
 
         $result['processes'] = [
             $process->copyWith($processData)->toArray(),
