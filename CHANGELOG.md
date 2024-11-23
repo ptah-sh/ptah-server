@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.42.11](https://github.com/ptah-sh/ptah-server/compare/v0.42.10...v0.42.11) (2024-11-23)
+
+
+### Bug Fixes
+
+* [#256](https://github.com/ptah-sh/ptah-server/issues/256) limit domain length to meet docker dns expectations 5 ([e0ece5d](https://github.com/ptah-sh/ptah-server/commit/e0ece5de814ecf9fead159d1cf78ebedf0eeb545))
+
 ## [0.42.10](https://github.com/ptah-sh/ptah-server/compare/v0.42.9...v0.42.10) (2024-11-23)
 
 
