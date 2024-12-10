@@ -1,3 +1,13 @@
+# Not under active development
+
+Docker Swarm shown itself to be a very unstable and unreliable solution for the deployment of the Ptah.sh platform.
+
+This lead to the decision to move away from Docker Swarm and to use Kubernetes (/hand-crafted orchestrator) as the underlying technology for the Ptah.sh platform.
+
+As this is going to be a big change, I'm archiving the project for now.
+
+If you would like to help with the development, please file a ticket.
+
 <p align="center"><a href="https://ptah.sh" target="_blank">
     <img src="https://github.com/ptah-sh/ptah-server/raw/main/.github/assets/logo.png" alt="Ptah.sh Logo">
 </a></p>

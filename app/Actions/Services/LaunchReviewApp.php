@@ -19,6 +19,7 @@ class LaunchReviewApp
         return DB::transaction(function () use ($taskGroup, $service, $meta, $process, $worker) {
             $latestDeployment = $service->latestDeployment->data;
 
+            // TODO: each request creates a new review app service !!!
             $deploymentData = $latestDeployment->fork($meta->ref, $process, $worker);
 
             $reviewApp = $service->reviewApps()->updateOrCreate([
