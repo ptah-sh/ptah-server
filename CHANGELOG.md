@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.42.12](https://github.com/ptah-sh/ptah-server/compare/v0.42.11...v0.42.12) (2024-12-14)
+
+
+### Miscellaneous Chores
+
+* makeadir.com link ([02cef3f](https://github.com/ptah-sh/ptah-server/commit/02cef3f7ece55a381c51c2a69aad76662b464d31))
+* not under active development ([a6dfcd2](https://github.com/ptah-sh/ptah-server/commit/a6dfcd28aeae8e391a0c035d68ea152147ae49ac))
+
 ## [0.42.11](https://github.com/ptah-sh/ptah-server/compare/v0.42.10...v0.42.11) (2024-11-23)
 
 
