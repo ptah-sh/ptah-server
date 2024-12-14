@@ -1,5 +1,7 @@
 # Not under active development
 
+TLDR; I am focusing on a [no-code directory/website builder](https://makeadir.com). I'd be able to continue working on Ptah.sh once I get stable financial stream.
+
 Docker Swarm shown itself to be a very unstable and unreliable solution for the deployment of the Ptah.sh platform.
 
 This lead to the decision to move away from Docker Swarm and to use Kubernetes (/hand-crafted orchestrator) as the underlying technology for the Ptah.sh platform.
